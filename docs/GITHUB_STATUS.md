@@ -12,3 +12,8 @@
 
 - Added `docs/PERFORMANCE.md` and `docs/performance-report.json` (real-world + load)
 - LATENCY / SHIPPED / ROADMAP cross-linked to measured numbers
+
+### P2 sync
+
+- Vectors + test_vectors in CI path (`verify.sh`)
+- `scripts/run_ws_demo.sh` documented

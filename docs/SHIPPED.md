@@ -17,6 +17,7 @@ What is in tree and verified (not aspirational).
 | HTTP Host (browser Peer) | `cek-surface/demo/http_host.py` + `browser_shop.html` |
 | Load / chaos bench | `cek-surface/demo/bench_load_chaos.py` |
 | WS peer server | `cek-surface/demo/ws_peer_server.mjs` |
+| WS one-command | `scripts/run_ws_demo.sh` |
 
 ## Tests (verify.sh)
 
@@ -26,6 +27,7 @@ What is in tree and verified (not aspirational).
 - `test_host_kernel.py`
 - `test_continuation_live.py`
 - `test_http_host.py`
+- `test_vectors.py`
 
 ## Invariants held
 
@@ -45,3 +47,9 @@ See [TIMELINE.md](./TIMELINE.md) and [ROADMAP.md](./ROADMAP.md).
 - Numbers published: `docs/PERFORMANCE.md` + `docs/performance-report.json`
 - Host-only p50 ~0.03 ms; Host→Peer p50 ~0.32 ms; lag RTT-bound
 - Default policy rate-limit 50 intents/s documented as product guard
+
+### 2026-08-15 — P2 vectors + WS demo
+
+- `cek-surface/vectors/surface_core.json` v2 (14 cases, aligns hot Op ns.name with cek-runtime)
+- `tests/test_vectors.py` in `scripts/verify.sh`
+- One-command WS: `sh scripts/run_ws_demo.sh` → Peer apply over WebSocketCarrier
