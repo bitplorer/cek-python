@@ -1,13 +1,18 @@
 # Publish cek-host + cek-surface 0.1.0 to TestPyPI via Trusted Publishing.
 #
-# One-time setup (PyPI / TestPyPI project pages):
-#   1. Create projects cek-host and cek-surface on https://test.pypi.org
-#   2. Add Trusted Publisher:
-#        Owner: bitplorer
-#        Repository: cek-python
-#        Workflow: publish-testpypi.yml
-#        Environment: testpypi
-#   3. Create GitHub Environment "testpypi" (Settings → Environments)
+# GitHub Environments (already created):
+#   testpypi-host    → cek-host
+#   testpypi-surface → cek-surface
+#
+# TestPyPI pending / trusted publishers (must match env names):
+#   cek-host:
+#     Owner: bitplorer  Repo: cek-python
+#     Workflow: publish-testpypi.yml  Environment: testpypi-host
+#   cek-surface:
+#     Owner: bitplorer  Repo: cek-python
+#     Workflow: publish-testpypi.yml  Environment: testpypi-surface
+#
+# See docs/TESTPYPI_SETUP.md
 #
 # Trigger: workflow_dispatch or push of tag v0.1.0*
 
@@ -38,22 +43,44 @@ jobs:
           python -m build --outdir dist cek-host
           python -m build --outdir dist cek-surface
           python -m twine check dist/*
+          mkdir -p dist-host dist-surface
+          cp dist/cek_host-* dist-host/
+          cp dist/cek_surface-* dist-surface/
       - uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist/
+          name: dist-host
+          path: dist-host/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-surface
+          path: dist-surface/
 
-  publish:
+  publish-host:
     needs: build
     runs-on: ubuntu-latest
-    environment: testpypi
+    environment: testpypi-host
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: dist
-      - name: publish to TestPyPI
+          name: dist-host
+          path: dist-host
+      - name: publish cek-host to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-          packages-dir: dist/
+          packages-dir: dist-host/
+
+  publish-surface:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi-surface
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-surface
+          path: dist-surface
+      - name: publish cek-surface to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist-surface/

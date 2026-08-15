@@ -1,7 +1,7 @@
 # TestPyPI setup (one-time + publish)
 
 **Purpose:** future reference for publishing `cek-host` / `cek-surface` to [TestPyPI](https://test.pypi.org).  
-**Repo wiring is done.** Live upload still needs the one-time account steps below (OIDC or token).
+**Repo wiring is done.** Live upload still needs Trusted Publishers on TestPyPI (OIDC) or a token.
 
 Related: [ORGANIZATION.md](./ORGANIZATION.md) · [PACKAGING.md](./PACKAGING.md) · `.github/workflows/publish-testpypi.yml`
 
@@ -14,24 +14,34 @@ Related: [ORGANIZATION.md](./ORGANIZATION.md) · [PACKAGING.md](./PACKAGING.md) 
 | Build both packages | `scripts/build_release.sh` |
 | Token upload helper | `scripts/publish_testpypi.sh` |
 | Trusted Publishing CI | `.github/workflows/publish-testpypi.yml` |
-| Versions | `cek-host` / `cek-surface` **0.1.0** in each `pyproject.toml` |
+| Versions | `cek-host` / `cek-surface` **0.1.0** |
 
-Workflow builds both wheels, runs `twine check`, then publishes to `https://test.pypi.org/legacy/` via OIDC (`id-token: write`) under GitHub Environment **`testpypi`**.
+Workflow:
+
+1. Builds both wheels + `twine check`
+2. **`publish-host`** → GitHub Environment **`testpypi-host`** → uploads only `cek_host-*`
+3. **`publish-surface`** → GitHub Environment **`testpypi-surface`** → uploads only `cek_surface-*`
 
 ---
 
-## One-time: Trusted Publishing (preferred)
+## GitHub Environments (done)
 
-### 1. GitHub Environment
+| Environment | Package |
+|-------------|---------| 
+| `testpypi-host` | `cek-host` |
+| `testpypi-surface` | `cek-surface` |
 
-Repo **Settings → Environments → New environment**
+https://github.com/bitplorer/cek-python/settings/environments
 
-- Name: `testpypi`  
-- (Optional later) second env `testpypi-surface` if you split publishers — see § Two packages below.
+No secrets required on these envs (OIDC). Protection rules optional.
 
-### 2. Pending publisher for `cek-host`
+---
 
-On [test.pypi.org](https://test.pypi.org) → account **Publishing** → **Add a new pending publisher**:
+## TestPyPI pending / trusted publishers
+
+On [test.pypi.org](https://test.pypi.org) → **Publishing** → pending publisher (or project Trusted Publisher after first upload).
+
+### `cek-host`
 
 | Field | Value |
 |-------|--------|
@@ -39,26 +49,28 @@ On [test.pypi.org](https://test.pypi.org) → account **Publishing** → **Add a
 | Owner | `bitplorer` |
 | Repository | `cek-python` |
 | Workflow name | `publish-testpypi.yml` |
-| Environment | `testpypi` |
+| Environment | **`testpypi-host`** |
 
-### 3. Pending publisher for `cek-surface` (important)
+### `cek-surface`
 
-**Do not** re-use the exact same `(owner, repo, workflow, environment)` tuple as a second *pending* publisher. TestPyPI rejects it:
+| Field | Value |
+|-------|--------|
+| Project name | `cek-surface` |
+| Owner | `bitplorer` |
+| Repository | `cek-python` |
+| Workflow name | `publish-testpypi.yml` |
+| Environment | **`testpypi-surface`** |
 
-> A pending trusted publisher matching this configuration has already been registered for a different project name.
+Different environment names avoid the pending-publisher clash.
 
-**Options (pick one):**
+If you previously registered env `testpypi` for host, **edit or remove** it and re-register with **`testpypi-host`** so it matches the workflow.
 
-| Option | What to do |
-|--------|------------|
-| **A — second environment (recommended)** | Pending publisher for `cek-surface` with Environment = `testpypi-surface`. Create matching GitHub Environment. Split workflow `publish` job (or add a second job) so surface uses `environment: testpypi-surface`. |
-| **B — publish host first** | Run workflow once for `cek-host` (pending becomes normal). Create `cek-surface` project via token upload, then add a **project-scoped** trusted publisher on the existing project page. |
-| **C — token only** | Skip pending publishers for the second package; use API token (§ Token path). |
+---
 
-### 4. First publish
+## First publish
 
-GitHub → **Actions → publish-testpypi → Run workflow**  
-(or push tag matching `v0.1.0*`)
+https://github.com/bitplorer/cek-python/actions/workflows/publish-testpypi.yml  
+→ **Run workflow**
 
 After success:
 
@@ -68,11 +80,9 @@ pip install -i https://test.pypi.org/simple/ \
   cek-host==0.1.0 cek-surface==0.1.0
 ```
 
-`--extra-index-url` is required so dependencies (and any missing index entries) still resolve from real PyPI.
-
 ---
 
-## Token path (no OIDC)
+## Token path (fallback)
 
 ```bash
 sh scripts/build_release.sh
@@ -81,26 +91,21 @@ export TWINE_PASSWORD=pypi-...   # TestPyPI API token
 sh scripts/publish_testpypi.sh
 ```
 
-Create token: TestPyPI → Account settings → API tokens (scope to project once projects exist).
-
 ---
 
-## Rules that bite later
+## Rules
 
-1. **Version is unique per index** — `0.1.0` can only be uploaded once to TestPyPI; bump for retries.  
-2. **TestPyPI ≠ PyPI** — production needs a separate publish + separate trusted publisher on pypi.org.  
-3. **Pending publisher uniqueness** — one pending config tuple → one project name (§3 above).  
-4. **Both packages in one workflow artifact** — current workflow uploads everything in `dist/`; if only one pending publisher is registered, the other package name may fail until option A/B/C is done.
+1. **Version unique per index** — `0.1.0` once on TestPyPI; bump for retries.  
+2. **TestPyPI ≠ PyPI** — production is a separate publish.  
+3. **Env names in workflow must match** pending publisher Environment fields exactly.
 
 ---
 
 ## Status checklist
 
-- [x] `pyproject.toml` + build scripts + workflow on `main`  
-- [ ] GitHub Environment `testpypi` (and optional `testpypi-surface`)  
-- [ ] Pending / trusted publisher for `cek-host`  
-- [ ] Path for `cek-surface` (second env, token, or project-scoped publisher)  
-- [ ] First successful `workflow_dispatch` (or token upload)  
+- [x] Build scripts + split workflow on `main`  
+- [x] GitHub Environments `testpypi-host` + `testpypi-surface`  
+- [ ] Pending publisher `cek-host` → env `testpypi-host`  
+- [ ] Pending publisher `cek-surface` → env `testpypi-surface`  
+- [ ] First successful `workflow_dispatch`  
 - [ ] Install smoke from TestPyPI confirmed  
-
-When the checklist is green, mark P3 complete in [ROADMAP.md](./ROADMAP.md) / [SHIPPED.md](./SHIPPED.md).
