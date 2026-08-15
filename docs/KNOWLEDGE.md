@@ -24,6 +24,7 @@
 | [TIMELINE.md](./TIMELINE.md) | Narrative history |
 | [PACKAGING.md](./PACKAGING.md) | setuptools today; uv/Poetry migration |
 | [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md) | Trusted Publisher + TestPyPI checklist |
+| [PYPI_SETUP.md](./PYPI_SETUP.md) | Production pypi.org Trusted Publisher checklist |
 
 ## External repos
 
