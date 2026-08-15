@@ -69,8 +69,10 @@ python cek-surface/demo/app.py
 
 # Browser shop + Host HTTP (real Surface.submit, not ?mock=1)
 python cek-surface/demo/http_host.py
-# then open the printed URL
+# open the printed URL — search coalesces, Enter flushes,
+# timer.fired submits the pre-minted search.commit Cap
 ```
+
 
 ## Doctrine
 

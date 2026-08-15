@@ -91,7 +91,7 @@ Conclusion shipped with the benches: **mechanism is not the lag; RTT and round-t
 - [x] Org docs for install
 - [x] Full surface tree on GitHub remote
 - [x] Editable install smoke (`pip install -e ./cek-host -e ./cek-surface`)
-- [ ] Browser E2E without `?mock=1` (P1)
-- [ ] Continuation live path `timer.fired` → pre-minted Cap (P1)
+- [x] Browser E2E without `?mock=1` (P1)
+- [x] Continuation live path `timer.fired` → pre-minted Cap (P1)
 - [ ] Production durable stores / Ed25519 parity with Rust
 - [ ] PyPI publish of `cek-host` / `cek-surface`

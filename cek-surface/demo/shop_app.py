@@ -13,7 +13,6 @@ sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 from cek_surface import Continuation, Op, Surface
 from cek_surface.ops import (
     clear_form_errors,
-    fetch_json,
     form_errors,
     navigate_to,
     plan,
@@ -28,8 +27,35 @@ CATALOG = {
 }
 
 
-def build_shop() -> Surface:
-    s = Surface()
+def _hits_for(q: str) -> list[dict]:
+    needle = q.lower().strip()
+    if not needle:
+        return []
+    return [it for it in CATALOG.values() if needle in it["title"].lower()]
+
+
+def _results_ops(q: str, items: list[dict]) -> list[Op]:
+    children = [
+        {
+            "tag": "li",
+            "attrs": {"id": f"hit-{it['id']}"},
+            "text": f"{it['title']} — ${it['price']}",
+        }
+        for it in items
+    ]
+    return plan(
+        Op.kv_set("search.results", items),
+        Op.ui_morph(
+            "results",
+            {"tag": "ul", "attrs": {"id": "results"}, "children": children},
+        ),
+        Op.ui_toast(f"Found {len(children)}", level="success", ms=1500),
+        Op.log_append("search.commit", fields={"q": q, "n": len(children)}),
+    )
+
+
+def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
+    s = Surface(carrier_kind=carrier_kind, carrier_opts=dict(carrier_opts))
     s.store["catalog"] = CATALOG
     s.store["cart"] = {}
 
@@ -46,19 +72,15 @@ def build_shop() -> Surface:
         return plan(
             *navigate_to("/shop", title="Shop"),
             Op.ui_morph(
-                "shell",
+                "catalog",
                 {
-                    "tag": "main",
-                    "attrs": {"id": "shell"},
-                    "children": [
-                        {"tag": "input", "attrs": {"id": "search-input", "placeholder": "Search"}},
-                        {"tag": "div", "attrs": {"id": "catalog"}, "children": cards},
-                        {"tag": "div", "attrs": {"id": "cart"}, "text": "Cart: 0"},
-                        {"tag": "ul", "attrs": {"id": "results"}, "children": []},
-                    ],
+                    "tag": "div",
+                    "attrs": {"id": "catalog"},
+                    "children": cards,
                 },
             ),
             Op.kv_set("catalog", CATALOG),
+            Op.ui_set_text("cart", "Cart: 0"),
             Op.signal_set("ui.theme", "light"),
             Op.log_append("shop.boot"),
         )
@@ -93,9 +115,16 @@ def build_shop() -> Surface:
     @s.action("search.commit")
     def search_commit(ctx):
         q = str(ctx.args.get("q") or ctx.store.get("search.pending") or "")
+        items = _hits_for(q)
+        ctx.store["search.results"] = items
         if not q.strip():
-            return plan(Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": []}))
-        return fetch_json("search-1", f"https://api.local/search?q={q}", busy_region="search")
+            return plan(
+                Op.ui_morph(
+                    "results",
+                    {"tag": "ul", "attrs": {"id": "results"}, "children": []},
+                )
+            )
+        return _results_ops(q, items)
 
     @s.action("cart.add")
     def cart_add(ctx):
@@ -167,27 +196,17 @@ def build_shop() -> Surface:
 
     @s.on("timer.fired")
     def on_timer(ev, surface: Surface):
-        if ev.get("id") != "search-debounce":
-            return None
-        q = str(surface.store.get("search.pending") or "").strip()
-        if not q:
-            return plan(Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": []}))
-        return fetch_json(
-            "search-1",
-            f"https://api.local/search?q={q}",
-            busy_region="search",
-        )
+        # Live path is the pre-minted continuation (Surface.handle_event).
+        # No un-capped compose — fail closed if nothing was armed.
+        return None
 
     @s.on("http.response")
     def on_http(ev, surface: Surface):
         if ev.get("id") != "search-1":
             return None
         items = (ev.get("body") or {}).get("items") or []
-        # merge catalog hits
         q = str(surface.store.get("search.pending") or "").lower()
-        local = [
-            it for it in CATALOG.values() if q in it["title"].lower()
-        ]
+        local = [it for it in CATALOG.values() if q in it["title"].lower()]
         merged = local or items
         surface.store["search.results"] = merged
         children = [

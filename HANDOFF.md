@@ -53,29 +53,30 @@ After each change: run the test suite above; update docs/SHIPPED.md and docs/GIT
 
 ### Immediately after unzip / clone
 
-- [ ] Open `docs/KNOWLEDGE.md`
-- [ ] `export PYTHONPATH=cek-host/src:cek-surface/src`
-- [ ] Run all four test files under `cek-surface/tests/`
-- [ ] Compare GitHub tree to local; push any missing `cek-surface/**` files
+- [x] Open `docs/KNOWLEDGE.md`
+- [x] `export PYTHONPATH=cek-host/src:cek-surface/src`
+- [x] Run all four test files under `cek-surface/tests/`
+- [x] Compare GitHub tree to local; push any missing `cek-surface/**` files
 
 ### P0 — Publish completeness
 
-- [ ] Remote contains `cek-surface/src/cek_surface/*.py`
-- [ ] Remote contains `cek-surface/js/{peer,peer_ir,browser_peer}.mjs`
-- [ ] Remote contains `demo/`, `tests/`, `vectors/`
-- [ ] `pip install -e ./cek-host -e ./cek-surface` works from a clean clone
+- [x] Remote contains `cek-surface/src/cek_surface/*.py`
+- [x] Remote contains `cek-surface/js/{peer,peer_ir,browser_peer}.mjs`
+- [x] Remote contains `demo/`, `tests/`, `vectors/`
+- [x] `pip install -e ./cek-host -e ./cek-surface` works from a clean clone
 
 ### P1 — Product path
 
-- [ ] `python demo/http_host.py` serves shop; Host submit path works
-- [ ] Coalesce + flush documented in browser peer
-- [ ] Continuation Cap path exercised in a test
+- [x] `python demo/http_host.py` serves shop; Host submit path works
+- [x] Coalesce + flush documented in browser peer
+- [x] Continuation Cap path exercised in a test
 
 ### P2 / P3
 
 - [ ] Contract/vector alignment notes in docs
 - [ ] WS demo in README
 - [ ] Version tags only after tests green
+
 
 ---
 

@@ -15,6 +15,7 @@
 11. Latency theory + benches (RTT-bound)
 12. Explicit non-goals (no ux-channel, no Peer mint)
 13. **P0:** full `cek-surface` tree on GitHub + editable-install smoke + CI
+14. **P1:** browser E2E against real Surface.submit; live continuation Cap path
 
 ## Present (2026-08-15)
 
@@ -22,17 +23,16 @@
 |-------|--------|
 | **GitHub** | `bitplorer/cek-python` holds complete host + surface (src/js/demo/tests/vectors) |
 | **Kernel** | `load_host_kernel()` resolves `CekHostPyKernel` when `cek_host` on path |
-| **Tests** | core / roadmap / carrier_ir / host_kernel — green via `sh scripts/verify.sh` |
+| **Tests** | core / roadmap / carrier_ir / host_kernel / continuation_live / http_host |
 | **Install** | `pip install -e ./cek-host -e ./cek-surface` |
+| **Browser** | `python cek-surface/demo/http_host.py` — no `?mock=1` required |
 
-**Happening now should be:** P1 product path (browser E2E + live continuations).
+**Happening now should be:** P2 contract/vector alignment + scripted WS demo.
 
 ## Next (ship in order — do not skip)
 
 | Priority | Item | Definition of done |
 |----------|------|--------------------|
-| **P1** | Browser E2E without `?mock=1` | http_host + browser_shop against real Surface.submit |
-| **P1** | Continuation live path | `timer.fired` uses pre-minted Cap path end-to-end |
 | **P2** | Contract name alignment | Hot Ops match cek-runtime / framework naming; golden vectors CI |
 | **P2** | WS demo scripted | `ws_peer_server` + Surface(websocket) one-command doc |
 | **P3** | PyPI test publish | `cek-host` 0.1.0, `cek-surface` 0.1.0 (depends on host) |
@@ -59,7 +59,8 @@
 ## Suggested next coding session (single slice)
 
 ```text
-1) Browser E2E: http_host.py + browser_shop.html without ?mock=1
-2) Live continuation: timer.fired → pre-minted Cap → search.commit
+1) Align hot Op names with cek-runtime / framework contract vectors
+2) One-command WS demo: ws_peer_server.mjs + Surface(websocket)
 3) Keep refuse → ops:[] / Peer no mint / fail closed
 ```
+

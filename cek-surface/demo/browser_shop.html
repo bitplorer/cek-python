@@ -2,62 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>cek-surface browser shop</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
-    #cart { margin: 1rem 0; font-weight: 600; }
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { font-family: ui-sans-serif, system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #14201a; background: #f4f1ea; }
+    h1 { font-size: 1.4rem; letter-spacing: -0.02em; }
+    h1 small { font-weight: 500; color: #5a6b62; }
+    #search-input { width: 100%; max-width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #c9c2b4; border-radius: 8px; background: #fff; }
+    #cart { margin: 1rem 0; font-weight: 650; }
     #results { list-style: none; padding: 0; }
-    #results li { padding: 0.4rem 0; border-bottom: 1px solid #eee; }
+    #results li { padding: 0.45rem 0; border-bottom: 1px solid #e3ddd2; }
+    #catalog article { padding: 0.35rem 0; color: #3d4a43; }
     .pending { opacity: 0.6; }
-    #toast { position: fixed; bottom: 1rem; right: 1rem; background: #111; color: #fff; padding: 0.6rem 1rem; border-radius: 6px; display: none; }
-    button { margin-right: 0.4rem; }
+    #toast { position: fixed; bottom: 1rem; right: 1rem; max-width: calc(100vw - 2rem); background: #14201a; color: #f4f1ea; padding: 0.6rem 1rem; border-radius: 6px; display: none; }
+    button { margin-right: 0.4rem; margin-top: 0.4rem; padding: 0.45rem 0.8rem; border: 0; border-radius: 8px; background: #1f6b4a; color: #fff; font-weight: 600; cursor: pointer; }
+    button.secondary { background: #3d4a43; }
+    #shell { margin-top: 1rem; }
+    #search-status { min-height: 1.2rem; color: #5a6b62; font-size: 0.9rem; }
   </style>
 </head>
 <body>
   <h1>Shop <small id="carrier-label"></small></h1>
-  <input id="search-input" placeholder="Search (coalesce + flush on Enter)" style="width:100%;padding:0.5rem" />
+  <input id="search-input" placeholder="Search (coalesce + flush on Enter)" autocomplete="off" />
   <p id="search-status"></p>
   <ul id="results"></ul>
+  <div id="catalog"></div>
   <div id="cart">Cart: 0</div>
   <div>
     <button id="add-1" type="button">Add Widget</button>
-    <button id="checkout" type="button">Checkout</button>
+    <button id="checkout" class="secondary" type="button">Checkout</button>
   </div>
   <div id="shell"></div>
   <div id="toast"></div>
 
   <script type="module">
     /**
-     * Demo uses in-page Host bridge via fetch to a tiny local server,
-     * or offline mock when ?mock=1.
+     * Default: real Host via POST /cek/submit (no ?mock=1).
      * Peer IR: coalesce/flush on the search input.
+     * timer.fired → pre-minted continuation Cap → search.commit.
      */
     import { mountBrowserPeer } from '../js/browser_peer.mjs';
 
     const mock = new URLSearchParams(location.search).has('mock');
-    document.getElementById('carrier-label').textContent = mock ? '(mock peer IR)' : '(wire to Host)';
+    document.getElementById('carrier-label').textContent = mock ? '(mock peer IR)' : '(Host wire)';
 
-    const log = [];
-    const peer = mountBrowserPeer({
-      coalesceMs: 50,
-      send: (msg) => {
-        // events from peer → would go to Host
-        if (msg.type === 'events') {
-          console.log('peer events', msg.events);
-        }
-      },
-    });
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 2000);
-    }
-
-    async function hostSubmit(action, args) {
+    async function hostSubmit(action, args, cap) {
       if (mock) {
-        // Local mock Result for UX demo without server
         if (action === 'search.type' || action === 'search.commit') {
           const q = (args.q || '').toLowerCase();
           const items = [
@@ -75,21 +68,34 @@
             ],
           };
           peer.onMessage({ type: 'apply', result });
-          document.getElementById('results').innerHTML = items.map((it) =>
-            `<li>${it.title} — $${it.price}</li>`).join('');
           document.getElementById('search-status').textContent = items.length + ' hits';
           document.getElementById('search-input').classList.remove('pending');
-          showToast('Found ' + items.length);
           return;
         }
         if (action === 'cart.add') {
-          showToast('Added (mock)');
-          document.getElementById('cart').textContent = 'Cart: 1 · $9.99';
+          peer.onMessage({
+            type: 'apply',
+            result: {
+              kind: 'ok',
+              ops: [
+                { ns: 'ui.dom', name: 'set_text', payload: { target: 'cart', text: 'Cart: 1 · $9.99' } },
+                { ns: 'ui', name: 'toast', payload: { message: 'Added (mock)', ms: 1500 } },
+              ],
+            },
+          });
           return;
         }
         if (action === 'checkout.submit') {
-          document.getElementById('shell').textContent = 'Order placed (mock)';
-          showToast('Order placed');
+          peer.onMessage({
+            type: 'apply',
+            result: {
+              kind: 'ok',
+              ops: [
+                { ns: 'ui.dom', name: 'morph', payload: { target: 'shell', patch: { tag: 'main', text: 'Order placed (mock)' } } },
+                { ns: 'ui', name: 'toast', payload: { message: 'Order placed', ms: 1500 } },
+              ],
+            },
+          });
           return;
         }
         return;
@@ -97,17 +103,41 @@
       const res = await fetch('/cek/submit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action, args }),
+        body: JSON.stringify({ action, args, cap: cap || null }),
       });
       const data = await res.json();
-      peer.onMessage({ type: 'apply', result: data.result });
+      peer.onMessage({
+        type: 'apply',
+        result: data.result,
+        continuations: data.continuations || data.result?.continuations || [],
+      });
+      const ops = data.result?.ops || [];
+      const morph = ops.find((o) => o.ns === 'ui.dom' && o.name === 'morph' && o.payload?.target === 'results');
+      const n = morph?.payload?.patch?.children?.length;
+      if (typeof n === 'number') {
+        document.getElementById('search-status').textContent = n + ' hits';
+        document.getElementById('search-input').classList.remove('pending');
+      }
+      if (data.result?.kind && data.result.kind !== 'ok') {
+        document.getElementById('search-status').textContent = data.result.error || data.result.kind;
+      }
     }
+
+    const peer = mountBrowserPeer({
+      coalesceMs: 50,
+      submitIntent: (action, args, cap) => hostSubmit(action, args, cap),
+      send: (msg) => {
+        if (msg.type === 'events') {
+          console.log('peer events', msg.events);
+        }
+      },
+    });
 
     peer.bindSearchInput(document.getElementById('search-input'), {
       action: 'search.type',
-      submitIntent: (action, args) => {
+      submitIntent: (action, args, cap) => {
         document.getElementById('search-input').classList.add('pending');
-        hostSubmit(action, args);
+        hostSubmit(action, args, cap);
       },
     });
 
@@ -116,7 +146,6 @@
     document.getElementById('checkout').onclick = () =>
       hostSubmit('checkout.submit', { email: 'buyer@example.com' });
 
-    // boot
     hostSubmit('shop.boot', {});
   </script>
 </body>

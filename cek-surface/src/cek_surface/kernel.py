@@ -125,6 +125,8 @@ def load_host_kernel() -> HostKernel:
         class CekHostPyKernel:
             def __init__(self) -> None:
                 self._inner = CekHost()
+                self.name = getattr(self._inner, "name", "cek_host.Host")
+
 
             def mint(self, action: str, **kw: Any) -> str:
                 return self._inner.mint(action, **kw)

@@ -77,55 +77,37 @@ class Surface:
         if auto_mint and not cap:
             cap = self.mint(action, once=once, args=args, seal_args=seal_args)
 
-        pol = self.policy.check_action(action)
-        if not pol.allow:
-            result = KernelResult("authority_refusal", [], pol.reason)
-            return self._deliver(result, drain_async=False)
-
-        handler = self._handlers.get(action)
-        if handler is None:
-            result = KernelResult("dispatch_error", [], f"unknown action: {action}")
-            return self._deliver(result, drain_async=False)
-
-        ctx = Ctx(action=action, args=args, surface=self, store=self.store)
-        try:
-            ops = handler(ctx)
-        except Exception as e:
-            result = KernelResult("dispatch_error", [], str(e))
-            return self._deliver(result, drain_async=False)
-
-        if not isinstance(ops, list):
-            result = KernelResult("dispatch_error", [], "handler must return list[Op]")
-            return self._deliver(result, drain_async=False)
-
-        wire = as_wire(ops)
-        pol2 = self.policy.check_ops(wire)
-        if not pol2.allow:
-            result = KernelResult("authority_refusal", [], pol2.reason)
-            return self._deliver(result, drain_async=False)
-
-        # Kernel: Cap check + package (does not re-compose)
-        result = self.kernel.submit(
-            action,
-            args,
-            cap,
-            activity_id=activity_id,
-            project_ops=wire,
+        result, armed = self._compose_and_authorize(
+            action, args, cap, activity_id=activity_id
         )
-        return self._deliver(result, drain_async=drain_async, continuations=getattr(ctx, "continuations", None))
+        return self._deliver(result, drain_async=drain_async, continuations=armed)
 
     def handle_event(self, event: dict[str, Any]) -> KernelResult | None:
+        """Peer event → Host. Continuations (pre-minted Caps) win; else @on.
+
+        Continuation path: fill slots, verify Cap, project. Fail closed.
+        Bare @on handlers must not mint and should return None when a
+        continuation was expected (timer.fired → search.commit).
+        """
         et = event.get("type")
         if not et:
             return None
+
+        cont = self._take_continuation(event)
+        if cont is not None:
+            args = resolve_args(cont, store=self.store, event=event)
+            result, armed = self._compose_and_authorize(cont.action, args, cont.cap)
+            if armed:
+                self.last_continuations = list(armed)
+            return result
+
         fn = self._events.get(str(et))
         if fn is None:
             return None
         ops = fn(event, self)
         if ops is None:
             return None
-        # Events are already authorized by the activity that armed them;
-        # still package as ok Result. Production: re-Cap or activity-scoped.
+        # Un-capped @on is a compatibility path (http.response). Prefer continuations.
         return KernelResult("ok", as_wire(ops))
 
     def ensure_peer(self) -> PeerSession:
@@ -133,16 +115,87 @@ class Surface:
             self.peer = PeerSession(carrier_kind=self.carrier_kind, **self.carrier_opts)
         return self.peer
 
+    def continuation_dicts(self) -> list[dict[str, Any]]:
+        out: list[dict[str, Any]] = []
+        for c in self.last_continuations:
+            if isinstance(c, Continuation):
+                out.append(c.to_dict())
+            else:
+                out.append(dict(c))
+        return out
+
+    def _compose_and_authorize(
+        self,
+        action: str,
+        args: dict[str, Any],
+        cap: str | None,
+        *,
+        activity_id: str | None = None,
+    ) -> tuple[KernelResult, list | None]:
+        pol = self.policy.check_action(action)
+        if not pol.allow:
+            return KernelResult("authority_refusal", [], pol.reason), None
+
+        handler = self._handlers.get(action)
+        if handler is None:
+            return KernelResult("dispatch_error", [], f"unknown action: {action}"), None
+
+        ctx = Ctx(action=action, args=args, surface=self, store=self.store)
+        try:
+            ops = handler(ctx)
+        except Exception as e:
+            return KernelResult("dispatch_error", [], str(e)), None
+
+        if not isinstance(ops, list):
+            return KernelResult("dispatch_error", [], "handler must return list[Op]"), None
+
+        wire = as_wire(ops)
+        pol2 = self.policy.check_ops(wire)
+        if not pol2.allow:
+            return KernelResult("authority_refusal", [], pol2.reason), None
+
+        result = self.kernel.submit(
+            action,
+            args,
+            cap,
+            activity_id=activity_id,
+            project_ops=wire,
+        )
+        return result, getattr(ctx, "continuations", None)
+
+    def _take_continuation(self, event: dict[str, Any]) -> Continuation | None:
+        cont = match_continuation(self.last_continuations, event)
+        if cont is None:
+            return None
+        remaining: list[Continuation] = []
+        found = False
+        for c in self.last_continuations:
+            cur = c if isinstance(c, Continuation) else Continuation.from_dict(c)
+            if not found and cur.event == cont.event and cur.cap == cont.cap:
+                found = True
+                continue
+            remaining.append(cur)
+        self.last_continuations = remaining
+        return cont
+
     def _deliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
         if continuations:
-            self.last_continuations = list(continuations)
+            self.last_continuations = [
+                c if isinstance(c, Continuation) else Continuation.from_dict(c)
+                for c in continuations
+            ]
         peer = self.ensure_peer()
         reply = peer.apply_result(result)
         self.last_world = reply.get("world") or {}
+        payload = result.to_dict()
+        conts = self.continuation_dicts()
+        if conts:
+            payload["continuations"] = conts
         out: dict[str, Any] = {
-            "result": result.to_dict(),
+            "result": payload,
             "receipt": reply.get("receipt"),
             "world": self.last_world,
+            "continuations": conts,
         }
         if drain_async and result.ok and _has_async(result.ops):
             out["followups"] = self.drain_events()
@@ -165,7 +218,12 @@ class Surface:
                 if nxt is not None:
                     reply = peer.apply_result(nxt)
                     self.last_world = reply.get("world") or {}
-                    entry["result"] = nxt.to_dict()
+                    payload = nxt.to_dict()
+                    if nxt.ok:
+                        conts = self.continuation_dicts()
+                        if conts:
+                            payload["continuations"] = conts
+                    entry["result"] = payload
                     entry["receipt"] = reply.get("receipt")
                     entry["world"] = self.last_world
                     if nxt.ok and _has_async(nxt.ops):

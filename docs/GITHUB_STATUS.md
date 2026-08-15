@@ -30,9 +30,12 @@ sh scripts/verify.sh
 2. Surface implementation is large; early API push was batched; credentials blocked bulk `git push`.
 3. Surface was **not** emptied — remote simply never received the blobs until this P0 commit.
 
-## Remaining publish (not P0)
+## Remaining publish (not P0/P1)
 
 | Item | Status |
 |------|--------|
-| PyPI `cek-host` / `cek-surface` 0.1.0 | P3 — after P1/P2 green |
+| PyPI `cek-host` / `cek-surface` 0.1.0 | P3 — after P2 green |
 | npm `@cek/peer` | Deferred (js/ under surface is enough) |
+| Contract/vector alignment | P2 |
+| Scripted WS demo | P2 |
+

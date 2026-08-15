@@ -34,4 +34,12 @@ python tests/test_carrier_ir.py
 python tests/test_host_kernel.py
 ```
 
-From repo root the one-liner is `sh scripts/verify.sh`.
+From repo root the one-liner is `sh scripts/verify.sh` (includes live continuation + HTTP Host tests).
+
+Browser shop (real Host, no `?mock=1`):
+
+```bash
+python demo/http_host.py
+# Peer IR coalesces search; timer.fired submits the pre-minted search.commit Cap
+```
+

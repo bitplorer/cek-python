@@ -1,5 +1,5 @@
 #!/bin/sh
-# Clone-path verify: import smoke + four test files.
+# Clone-path verify: import smoke + test files.
 # Usage (from repo root):
 #   sh scripts/verify.sh
 #   # or after editable install, same command (PYTHONPATH not required)
@@ -18,4 +18,6 @@ python3 cek-surface/tests/test_core.py
 python3 cek-surface/tests/test_roadmap.py
 python3 cek-surface/tests/test_carrier_ir.py
 python3 cek-surface/tests/test_host_kernel.py
+python3 cek-surface/tests/test_continuation_live.py
+python3 cek-surface/tests/test_http_host.py
 echo "verify ok"
