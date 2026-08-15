@@ -15,10 +15,11 @@ P0 full tree · P1 live continuations · P2 vectors+WS · **P3 TestPyPI + PyPI 0
 | BoundAsk | No public constructor. Bind after verify + idem + once-ensure |
 | Idem / Lineage | File+memory backends. `end_activity` landed-first reverse |
 | Ed25519 / law-gen | Opt-in Host policy. Blank/unknown generation refuse |
-| Vectors | surface v3 (20) + 28 aligned Rust JSON fixtures |
+| Vectors | surface v3 (20) + **29** aligned Rust JSON fixtures |
 | doctor / explain / create-app | `python -m cek_host` |
+| Phase 2 critic | **SHIP** (2026-08-15) |
 
-## Next (Phase 3 — gated on Phase 2 critic SHIP)
+## Next (Phase 3 — gated; do not start without explicit plan)
 
 | Item | Do |
 |------|----|
