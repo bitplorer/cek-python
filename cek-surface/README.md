@@ -22,4 +22,16 @@ from cek_surface import Surface, Op, open_carrier
 s = Surface()  # Host via cek_host; Peer via subprocess peer.mjs
 ```
 
-Source layout: `src/cek_surface/`, `js/`, `demo/`, `tests/`.
+## Verify from this monorepo
+
+```bash
+# from repo root
+pip install -e ../cek-host -e ".[ws]"   # or: pip install -e ./cek-host -e ./cek-surface
+python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
+python tests/test_core.py
+python tests/test_roadmap.py
+python tests/test_carrier_ir.py
+python tests/test_host_kernel.py
+```
+
+From repo root the one-liner is `sh scripts/verify.sh`.

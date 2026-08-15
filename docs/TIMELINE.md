@@ -1,3 +1,42 @@
-# Timeline
+# Narrative timeline (so “what happened” is not tribal knowledge)
 
-A Law+Rust → B Python Host↔JS Peer need → C radical surface (no plan IR) → D latency+Peer IR → E carriers+host package → F cek-python org (partial GitHub) → G knowledge docs (this set).
+## Phase A — Law and Rust
+
+- CEK framed as Cap → Intent → Result.ops → apply → lineage/reverse  
+- cek-framework = law; cek-runtime = Rust implementation + vectors  
+- Hard rules: refuse → zero ops; Peer no mint; once; fail closed  
+
+## Phase B — Python Host ↔ JS Peer need
+
+- Goal: write logic in Python, effects on JS, without shipping code on the wire  
+- Explored AST/N-API/FFI; concluded **Option 1**: plan-in-Python, execute-as-Ops-on-Peer  
+- Rejected “arbitrary JS composition on the wire”  
+
+## Phase C — Radical surface
+
+- Doctrine locked: Composition = Python + Caps; wire = Result.ops; Peer = drivers + events  
+- Built cek-surface Op catalog, Surface actions, embedded Cap then Host kernel split  
+- Absorbed **ideas** from ux-channel without depending on it  
+
+## Phase D — Latency and Peer IR
+
+- Benches showed Host/Peer local path ≪ human threshold  
+- Network RTT dominates; multi-round flows feel slow  
+- Peer IR: coalesce, flush, shadow, pending — perception clock only  
+
+## Phase E — Carriers and productization
+
+- Carrier abstraction: subprocess default, memory tests, websocket opt-in  
+- Shop demo, browser page, HTTP host, WS peer server  
+- Package split: **cek-host** + **cek-surface**  
+
+## Phase F — Organization
+
+- Created **bitplorer/cek-python** monorepo  
+- Documented install story; linked from cek-runtime PORTS.md  
+- Partial GitHub upload → surface remote incomplete → documented in GITHUB_STATUS.md  
+
+## Phase G — Knowledge capture (this docs set)
+
+- SHIPPED / ARCHITECTURE / DECISIONS / INVARIANTS / ROADMAP / LATENCY / GITHUB_STATUS  
+- Goal: next human or agent can continue without chat archaeology  

@@ -12,8 +12,8 @@ from cek_host import Host
 
 host = Host(secret=b"...")
 cap = host.mint("Cart.add", once=True)
-result = host.submit(action="Cart.add", args={}, cap=cap, project_ops=[])
-# result.kind == "ok" | "authority_refusal"; refuse => ops=[]
+result = host.submit(action="Cart.add", args={...}, cap=cap, project_ops=[...])
+# result.kind == "ok" | "authority_refusal"; refuse ⇒ ops=[]
 ```
 
 Peers and browsers **never** mint. See [ORGANIZATION](../docs/ORGANIZATION.md).

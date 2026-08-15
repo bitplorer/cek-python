@@ -19,3 +19,6 @@ Rust = "https://github.com/bitplorer/cek-runtime"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+cek_host = ["py.typed"]

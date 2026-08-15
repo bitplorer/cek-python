@@ -1,6 +1,6 @@
 # CEK Python — complete knowledge base
 
-**Audience:** maintainers and future agents.
+**Audience:** maintainers and future agents.  
 **Purpose:** nothing important stays only in chat. Past, present, and next work are explicit.
 
 | Doc | Contents |
@@ -13,7 +13,6 @@
 | [ROADMAP.md](./ROADMAP.md) | Past → present → next → later |
 | [LATENCY.md](./LATENCY.md) | Measured lag, human thresholds, Peer IR role |
 | [GITHUB_STATUS.md](./GITHUB_STATUS.md) | What is on GitHub vs local-only (honest inventory) |
-| [TIMELINE.md](./TIMELINE.md) | Narrative history of the project phases |
 
 **Related external repos**
 

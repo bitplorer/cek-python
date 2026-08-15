@@ -1,0 +1,28 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: editable install
+        run: pip install -e ./cek-host -e ./cek-surface
+      - name: import smoke
+        run: python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
+      - name: test suite
+        run: |
+          python cek-surface/tests/test_core.py
+          python cek-surface/tests/test_roadmap.py
+          python cek-surface/tests/test_carrier_ir.py
+          python cek-surface/tests/test_host_kernel.py

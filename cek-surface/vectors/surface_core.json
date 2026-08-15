@@ -1,0 +1,42 @@
+{
+  "pack": "cek-surface-core",
+  "version": 1,
+  "cases": [
+    {
+      "id": "refuse_no_cap",
+      "intent": { "action": "cart.add", "args": { "id": "sku-1" }, "cap": null },
+      "expect": { "kind": "authority_refusal", "ops": [] }
+    },
+    {
+      "id": "toast_op_shape",
+      "op": { "ns": "ui", "name": "toast", "payload": { "message": "hi", "level": "info", "ms": 3000 } },
+      "expect_wire_keys": ["ns", "name", "payload"]
+    },
+    {
+      "id": "morph_op_shape",
+      "op": { "ns": "ui.dom", "name": "morph", "payload": { "target": "shell", "patch": { "tag": "div" } } },
+      "expect_ns_name": ["ui.dom", "morph"]
+    },
+    {
+      "id": "once_second_use",
+      "note": "mint once, submit twice → second authority_refusal"
+    },
+    {
+      "id": "shadow_not_authority",
+      "note": "Peer IR shadow must not write authority kv; cleared on Result apply"
+    },
+    {
+      "id": "continuation_slot_resolve",
+      "continuation": {
+        "event": "timer.fired:d1",
+        "action": "search.commit",
+        "cap": "TEST",
+        "args_from": { "q": "store:search.pending" },
+        "static_args": { "ms": 0 }
+      },
+      "store": { "search.pending": "widget" },
+      "event": { "type": "timer.fired", "id": "d1" },
+      "expect_args": { "q": "widget", "ms": 0 }
+    }
+  ]
+}

@@ -12,18 +12,18 @@ Do **not** put law into runtime repos. Do **not** put Cap mint into Peer package
 
 ```text
                     cek-framework (law)
-                           |
-           +---------------+---------------+
-           v               v               v
+                           │
+           ┌───────────────┼───────────────┐
+           ▼               ▼               ▼
      cek-runtime      cek-python      (future: cek-js npm
      (Rust kernels)   (this monorepo)   if Peer grows large)
-           |               |
-           |         +-----+-----+
-           |         v           v
-           |     cek-host    cek-surface
-           |    (authority)  (compose + Peer IR + carriers)
-           +---------+-----------+
-                     v
+           │               │
+           │         ┌─────┴─────┐
+           │         ▼           ▼
+           │     cek-host    cek-surface
+           │    (authority)  (compose + Peer IR + carriers)
+           └─────────┬───────────┘
+                     ▼
               contract / vectors (align over time)
 ```
 
@@ -71,7 +71,7 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 ## What goes where
 
 | Concern | Package |
-|---------|----------|
+|---------|---------|
 | Cap mint / verify / once | **cek-host** |
 | Action handlers, Op catalog | **cek-surface** |
 | Peer apply drivers, Peer IR | **cek-surface/js** |
@@ -82,7 +82,7 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 ## Naming
 
 | Name | Meaning |
-|------|----------|
+|------|---------|
 | `cek-host` | PyPI + import `cek_host` |
 | `cek-surface` | PyPI + import `cek_surface` |
 | Not `cek-host-py` on PyPI | Prefer short `cek-host`; “py” is implied by the ecosystem repo |
