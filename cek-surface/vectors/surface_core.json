@@ -1,6 +1,6 @@
 {
   "pack": "cek-surface-core",
-  "version": 2,
+  "version": 3,
   "aligns_with": "cek-runtime/crates/cek-contract/vectors (hot Op ns.name + refuse empty ops)",
   "cases": [
     {
@@ -12,7 +12,7 @@
     {
       "id": "once_second_use",
       "family": "single_use",
-      "note": "mint once, submit twice → second authority_refusal with empty ops",
+      "note": "mint once, submit twice \u2192 second authority_refusal with empty ops",
       "action": "cart.add",
       "args": { "id": "sku-1", "qty": 1 },
       "once": true,
@@ -103,24 +103,50 @@
       "id": "hot_op_catalog",
       "family": "contract_alignment",
       "ops": [
-        ["kv", "set"],
-        ["kv", "delete"],
-        ["kv", "merge"],
-        ["ui.dom", "morph"],
-        ["ui.dom", "set_text"],
-        ["ui.dom", "remove"],
-        ["ui", "toast"],
-        ["ui", "busy"],
-        ["ui", "focus"],
-        ["nav", "push"],
-        ["nav", "replace"],
-        ["nav", "back"],
-        ["timer", "set"],
-        ["timer", "clear"],
-        ["http", "request"],
-        ["log", "append"],
-        ["sys", "noop"]
+        ["kv", "set"], ["kv", "delete"], ["kv", "merge"],
+        ["ui.dom", "morph"], ["ui.dom", "set_text"], ["ui.dom", "remove"],
+        ["ui", "toast"], ["ui", "busy"], ["ui", "focus"],
+        ["nav", "push"], ["nav", "replace"], ["nav", "back"],
+        ["timer", "set"], ["timer", "clear"],
+        ["http", "request"], ["log", "append"], ["sys", "noop"]
       ]
+    },
+    {
+      "id": "expired_cap_refuse",
+      "family": "authority",
+      "aligns_with": "cek-runtime cap_refuse_expired",
+      "description": "Expired Cap refuses with zero Ops"
+    },
+    {
+      "id": "action_mismatch_refuse",
+      "family": "authority",
+      "aligns_with": "cek-runtime cap_refuse_action_mismatch",
+      "description": "Cap action != intent action \u2192 refuse ops:[]"
+    },
+    {
+      "id": "peer_dispatch_error_no_mutate",
+      "family": "baseline_apply",
+      "aligns_with": "cek-runtime peer_dispatch_error_no_mutate",
+      "peer_result": { "kind": "dispatch_error", "ops": [], "error": "miss" },
+      "expect_peer_kv": {}
+    },
+    {
+      "id": "kv_delete_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "kv", "name": "delete", "payload": { "key": "a" } },
+      "expect_ns_name": ["kv", "delete"]
+    },
+    {
+      "id": "nav_push_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "nav", "name": "push", "payload": { "path": "/cart" } },
+      "expect_ns_name": ["nav", "push"]
+    },
+    {
+      "id": "http_request_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "http", "name": "request", "payload": { "method": "GET", "url": "https://example.com" } },
+      "expect_ns_name": ["http", "request"]
     }
   ]
 }
