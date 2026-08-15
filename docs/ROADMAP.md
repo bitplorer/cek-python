@@ -16,6 +16,7 @@
 12. Explicit non-goals (no ux-channel, no Peer mint)
 13. **P0:** full `cek-surface` tree on GitHub + editable-install smoke + CI
 14. **P1:** browser E2E against real Surface.submit; live continuation Cap path
+15. **P2:** golden vectors + WS one-command demo
 
 ## Present (2026-08-15)
 
@@ -23,20 +24,21 @@
 |-------|--------|
 | **GitHub** | `bitplorer/cek-python` holds complete host + surface (src/js/demo/tests/vectors) |
 | **Kernel** | `load_host_kernel()` resolves `CekHostPyKernel` when `cek_host` on path |
-| **Tests** | core / roadmap / carrier_ir / host_kernel / continuation_live / http_host |
+| **Tests** | core / roadmap / carrier_ir / host_kernel / continuation_live / http_host / **vectors** |
 | **Install** | `pip install -e ./cek-host -e ./cek-surface` |
 | **Browser** | `python cek-surface/demo/http_host.py` — no `?mock=1` required |
+| **WS** | `sh scripts/run_ws_demo.sh` |
 
 **Measured:** see [PERFORMANCE.md](./PERFORMANCE.md) (Host ~0.03 ms, Peer path ~0.3 ms, RTT-bound).
 
-**Happening now should be:** P2 contract/vector alignment + scripted WS demo.
+**Happening now should be:** P3 PyPI test publish when green; optional deeper vector parity with cek-runtime families.
 
 ## Next (ship in order — do not skip)
 
 | Priority | Item | Definition of done |
 |----------|------|--------------------|
-| **P2** | Contract name alignment | Hot Ops match cek-runtime / framework naming; golden vectors CI |
-| **P2** | WS demo scripted | `ws_peer_server` + Surface(websocket) one-command doc |
+| **P2** | Contract name alignment | **SHIPPED** — `vectors/surface_core.json` v2 + `test_vectors.py` (14 cases) in verify.sh |
+| **P2** | WS demo scripted | **SHIPPED** — `sh scripts/run_ws_demo.sh` (ws_peer_server + WebSocketCarrier) |
 | **P3** | PyPI test publish | `cek-host` 0.1.0, `cek-surface` 0.1.0 (depends on host) |
 
 ## Later (explicitly deferred)
@@ -61,7 +63,7 @@
 ## Suggested next coding session (single slice)
 
 ```text
-1) Align hot Op names with cek-runtime / framework contract vectors
-2) One-command WS demo: ws_peer_server.mjs + Surface(websocket)
+1) PyPI test publish for cek-host + cek-surface 0.1.0
+2) Optional: import more cek-runtime vector families as notes/exec cases
 3) Keep refuse → ops:[] / Peer no mint / fail closed
 ```

@@ -11,8 +11,6 @@ Python workspace for **CEK** (Cap-Effect Kernel).
 
 ## Knowledge base (start here)
 
-Everything that was shipped, why, architecture, decisions, invariants, and roadmap:
-
 **→ [docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)**
 
 | Doc | Purpose |
@@ -23,56 +21,43 @@ Everything that was shipped, why, architecture, decisions, invariants, and roadm
 | [INVARIANTS.md](./docs/INVARIANTS.md) | Never-regress rules |
 | [ROADMAP.md](./docs/ROADMAP.md) | Past / present / next / later |
 | [LATENCY.md](./docs/LATENCY.md) | RTT model and Peer IR |
+| [PERFORMANCE.md](./docs/PERFORMANCE.md) | Measured real-world + load |
 | [GITHUB_STATUS.md](./docs/GITHUB_STATUS.md) | Remote vs local honesty |
 | [ORGANIZATION.md](./docs/ORGANIZATION.md) | Repos and install |
 | [TIMELINE.md](./docs/TIMELINE.md) | Narrative history |
 
-## Quick start (local monorepo)
+## Quick start
 
 ```bash
 git clone https://github.com/bitplorer/cek-python
 cd cek-python
-pip install -e ./cek-host
-pip install -e "./cek-surface[ws]"
+pip install -e ./cek-host -e ./cek-surface
 python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
 ```
 
-Without install, set `PYTHONPATH`:
+Without install:
 
 ```bash
 export PYTHONPATH=cek-host/src:cek-surface/src
-python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
 ```
 
-## Verify (clone path)
-
-Requires Python 3.10+ and Node (subprocess Peer).
+## Verify
 
 ```bash
 sh scripts/verify.sh
 ```
 
-That runs the import smoke plus:
+Includes golden vectors (`test_vectors.py`) aligned with cek-runtime hot Op `ns.name`.
 
-- `cek-surface/tests/test_core.py`
-- `cek-surface/tests/test_roadmap.py`
-- `cek-surface/tests/test_carrier_ir.py`
-- `cek-surface/tests/test_host_kernel.py`
-
-Never-regress gates: Cap refuse → `ops: []`; Peer no mint; once / sealed-args fail closed; wire = `Result.ops`.
+Never-regress: Cap refuse → `ops: []`; Peer no mint; once / sealed-args fail closed; wire = `Result.ops`.
 
 ## Demos
 
 ```bash
-# Shop via default subprocess Peer
 python cek-surface/demo/app.py
-
-# Browser shop + Host HTTP (real Surface.submit, not ?mock=1)
 python cek-surface/demo/http_host.py
-# open the printed URL — search coalesces, Enter flushes,
-# timer.fired submits the pre-minted search.commit Cap
+sh scripts/run_ws_demo.sh   # WebSocket Peer (needs node ws + pip websockets)
 ```
-
 
 ## Doctrine
 
