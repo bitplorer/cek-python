@@ -96,3 +96,12 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 | Rust Peer | `cek-runtime` crates |
 
 New language Peers: same **contract messages** (`apply` / `chrome` / `events`), not a new Cap authority.
+
+## Publish (TestPyPI)
+
+```bash
+sh scripts/build_release.sh
+# Trusted Publishing: Actions → publish-testpypi → Run workflow
+# or token: TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-... sh scripts/publish_testpypi.sh
+pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ cek-host==0.1.0 cek-surface==0.1.0
+```
