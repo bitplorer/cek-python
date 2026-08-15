@@ -1,0 +1,74 @@
+# Publish cek-host + cek-surface to production PyPI via Trusted Publishing.
+#
+# One-time setup (see docs/PYPI_SETUP.md):
+#   GitHub Environments: pypi-host, pypi-surface
+#   pypi.org Trusted Publishers must match env names.
+#
+# Trigger: workflow_dispatch or push of tag vX.Y.Z
+
+name: publish-pypi
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install build tools
+        run: pip install build twine
+      - name: build
+        run: |
+          python -m build --outdir dist cek-host
+          python -m build --outdir dist cek-surface
+          python -m twine check dist/*
+          mkdir -p dist-host dist-surface
+          cp dist/cek_host-* dist-host/
+          cp dist/cek_surface-* dist-surface/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-host
+          path: dist-host/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-surface
+          path: dist-surface/
+
+  publish-host:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi-host
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-host
+          path: dist-host
+      - name: publish cek-host to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-host/
+
+  publish-surface:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi-surface
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-surface
+          path: dist-surface
+      - name: publish cek-surface to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-surface/
