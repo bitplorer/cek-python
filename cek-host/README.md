@@ -2,7 +2,7 @@
 
 Python **Host kernel** — the published Cap machine. Peers never mint.
 
-**Read [START.md](../START.md) first.** Tree is **0.1.1**. Indexes are still **0.1.0** (no `create-app` on PyPI yet).
+**Read [START.md](../START.md) first.** Tree is **0.1.2**. Indexes are still **0.1.0** (no `create-app` on PyPI yet).
 
 ```bash
 git clone https://github.com/bitplorer/cek-python && cd cek-python
@@ -22,6 +22,6 @@ r = host.submit(action="Cart.add", args={"sku": "abc-123", "qty": 2}, cap=cap, p
 # refuse ⇒ r.ops == [] and r.digest.startswith("cek1:")
 ```
 
-`Host()` is **demo** (memory once, default secret allowed). `Host.production()` refuses both.
+`Host()` is **demo** (memory stores, default secret allowed). `Host.production()` refuses the demo secret and memory once/idem/lineage unless `allow_memory_stores=True`. BoundAsk has no public constructor. Idempotency lookup runs before once-ensure. `end_activity` prefers landed receipts.
 
 Oracle: `args_hash({"sku":"abc-123","qty":2}) == 96e4f83e3793b646323a67f314b51044`

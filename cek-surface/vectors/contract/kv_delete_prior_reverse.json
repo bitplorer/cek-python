@@ -1,0 +1,23 @@
+{
+  "id": "kv-delete-prior-reverse",
+  "family": "reverse_on_end",
+  "description": "kv.delete with prior on the Op reverses to kv.set of that prior",
+  "now": 1000,
+  "intent": {
+    "action": "kv.delete",
+    "args": { "key": "greeting", "prior": "hello" },
+    "cap": { "id": "cap-delp", "action": "kv.delete", "once": false },
+    "activity_id": "act-del"
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    { "ns": "kv", "name": "delete", "payload": { "key": "greeting", "prior": "hello" } }
+  ],
+  "peer_apply": true,
+  "report_receipt": true,
+  "end_activity": "act-del",
+  "expect_used_landed": true,
+  "expect_reverse_ops": [
+    { "ns": "kv", "name": "set", "payload": { "key": "greeting", "value": "hello" } }
+  ]
+}

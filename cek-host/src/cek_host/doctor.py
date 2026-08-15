@@ -48,13 +48,26 @@ def _finding_secret(secret: bytes) -> Finding:
     return Finding(True, "secret", f"length {len(secret)}")
 
 
-def _finding_once(host: Host) -> Finding:
-    label = host.once_label()
+def _finding_store(host: Host, kind: str, label: str) -> Finding:
     if label == "memory" and host.mode != "demo" and not host.allow_memory_stores:
-        return Finding(False, "once-store", "memory — not a security domain across workers")
+        return Finding(False, kind, "memory — not a security domain across workers")
     if label == "down":
-        return Finding(False, "once-store", "marked down — Host must refuse (K6)")
-    return Finding(True, "once-store", label)
+        return Finding(False, kind, "marked down — Host must refuse (K6)")
+    return Finding(True, kind, label)
+
+
+def _finding_once(host: Host) -> Finding:
+    return _finding_store(host, "once-store", host.once_label())
+
+
+def _finding_idem(host: Host) -> Finding:
+    label = host.idem_label() if hasattr(host, "idem_label") else "memory"
+    return _finding_store(host, "idem-store", label)
+
+
+def _finding_lineage(host: Host) -> Finding:
+    label = host.lineage_label() if hasattr(host, "lineage_label") else "memory"
+    return _finding_store(host, "lineage-store", label)
 
 
 def _finding_embedded() -> Finding:
@@ -132,6 +145,8 @@ def doctor(host: Host | None = None, *, fail: bool = False) -> DoctorReport:
             _finding_secret(h.secret),
             Finding(h.require_cap, "require_cap", str(h.require_cap)),
             _finding_once(h),
+            _finding_idem(h),
+            _finding_lineage(h),
             Finding(True, "mode", h.mode),
             _finding_embedded(),
             _finding_d4(),

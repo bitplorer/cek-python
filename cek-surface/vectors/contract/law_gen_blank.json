@@ -1,0 +1,18 @@
+{
+  "id": "law-gen-blank",
+  "family": "cap_verify",
+  "description": "Blank law generation is refuse (unclear)",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-lg-blank",
+      "action": "kv.write",
+      "once": false,
+      "law_generation": "  "
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

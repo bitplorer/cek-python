@@ -1,0 +1,29 @@
+{
+  "id": "idempotency-conflict",
+  "family": "idempotent_submit",
+  "description": "Same idempotency key + different body refuses (no silent fork)",
+  "now": 1000,
+  "prior_intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 1 },
+    "cap": {
+      "id": "cap-idem-c",
+      "action": "kv.write",
+      "once": false
+    },
+    "idempotency_key": "conflict-key"
+  },
+  "prior_must_ok": true,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 999 },
+    "cap": {
+      "id": "cap-idem-c",
+      "action": "kv.write",
+      "once": false
+    },
+    "idempotency_key": "conflict-key"
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

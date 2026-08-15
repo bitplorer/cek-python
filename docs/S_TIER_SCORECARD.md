@@ -3,7 +3,7 @@
 **Trees read (not memory):**
 - [cek-framework](https://github.com/bitplorer/cek-framework) `@ 90d48fd` — law freeze (`2a0d17a` INDEX pointer only)
 - [cek-runtime](https://github.com/bitplorer/cek-runtime) `@ cce98b6` — reference + 57 vectors (docs after: START honesty)
-- [cek-python](https://github.com/bitplorer/cek-python) `@ e3a129a` — workhorse; tree **0.1.1** Phase 1
+- [cek-python](https://github.com/bitplorer/cek-python) `@ e3a129a` — workhorse; tree **0.1.2** Phase 2
 
 **Doctrine (quote, not a new slogan):**
 > Composition = Python + Caps · wire = `Result.ops` · Peer = closed drivers + perception IR · carriers = transport only · law = cek-framework · reference = cek-runtime
@@ -19,7 +19,7 @@ cek-framework          LAW         Cap, Intent, Op, lineage, reverse
      ▲                             CHARTER · KILL-CRITERIA K1–K14 · CORE 00–27
 cek-runtime            REFERENCE   BoundAsk, once, lineage, Ed25519, 57 vectors
      ▲                             ports/cek-host-py = historic sketch, not published
-cek-host (PyPI)        AUTHORITY   HMAC hex-token · OnceBackend · subject/scope · digest
+cek-host (PyPI)        AUTHORITY   HMAC hex-token · BoundAsk · Once/Idem/Lineage · Ed25519 policy
 cek-surface            COMPOSE     Op catalog, Peer IR, carriers, shop
      ▲                             no EmbeddedHostKernel · no sketch Host
 app / scaffold / demos CALLERS     create-app · doctor · explain · shop
@@ -42,7 +42,7 @@ ux-channel             PRODUCT     not imported (D4 held)
 | **ADAPT** | Aligned contract family | Runner **loads** Rust JSON (vendored + sibling). One Cap-dict → hex-token adapter |
 | **ADAPT** | Three READMEs | One screen + one START. PyPI 0.1.0 has no create-app — clone path is the command |
 | **KEEP** | CHARTER / KILL-CRITERIA / CORE 00–27 | Frozen. INDEX pointer only |
-| **KEEP** | Rust BoundAsk, lineage, Ed25519, File* stores, cek-cli | Phase 2 / stay in runtime |
+| **KEEP** | Rust BoundAsk, lineage, Ed25519, File* stores, cek-cli | Matched in published Host. Redis/crates.io stay Phase 3 |
 | **KEEP** | Surface Op catalog, Peer IR, carriers, continuations, shop | D1, D5, D6, D9 |
 | **KEEP** | D1–D10 | Especially D3 and D4 |
 | **KEEP** | Oracle | `hash_args({"sku":"abc-123","qty":2}) == 96e4f83e3793b646323a67f314b51044` |
@@ -74,32 +74,32 @@ Loop 3 is the critic’s listed diffs only.
 
 ---
 
-## Invariants claimed vs held (Python tree 0.1.1)
+## Invariants claimed vs held (Python tree 0.1.2)
 
 | # | Invariant | Status | Note |
 |---|-----------|--------|------|
 | 1 | Cap refuse → zero Ops | **held** | HMAC path, vectors, tests |
-| 2 | BoundAsk only after verify+once | **unclaimed** | Phase 2. Surface `check()` before compose (I2-lite) |
+| 2 | BoundAsk only after verify+once | **held** | `BoundAsk()` raises; bind after verify + idem + once-ensure |
 | 3 | Peer has no mint | **held** | JS Peer + test |
-| 4 | Once commit only after project | **held** | published Host commits after `project_ops` |
-| 5 | Idempotency before once-ensure | **unclaimed** | Phase 2 |
-| 6 | Same idem key + different body → refuse | **unclaimed** | Phase 2 |
-| 7 | Landed-first reverse | **unclaimed** | Phase 2 |
+| 4 | Once commit only after project | **held** | published Host commits after project |
+| 5 | Idempotency before once-ensure | **held** | once+same key replays (`test_phase2`) |
+| 6 | Same idem key + different body → refuse | **held** | `idempotency-conflict` |
+| 7 | Landed-first reverse | **held** | `receipt-landed-first-reverse` |
 | 8 | Digests `cek1:` + FIPS SHA-256 | **held** | Result.digest; args_hash oracle kept |
-| 9 | Fail closed on store down | **held** | MemoryOnceBackend(down=True) |
+| 9 | Fail closed on store down | **held** | once + idem |
 | 10 | Trace is not permission | **held by absence** | Host ignores trace |
-| 11 | Honest reverse | **unclaimed** | Phase 2 |
-| 12 | Concurrent once: exactly one ok | **partial** | flock on FileOnce |
+| 11 | Honest reverse | **held** | NonReversible listed; kv-delete no-prior |
+| 12 | Concurrent once: exactly one ok | **partial** | flock on FileOnce / FileIdem / FileLineage |
 | 13 | Scope deny / blank token → zero Ops | **held** | |
 | 14 | Attenuate cannot widen | **held** | |
-| 15–16 | ui/kv reverse | **unclaimed** | Phase 2 |
+| 15–16 | ui/kv reverse | **held** | `kv-delete-prior-reverse` / `ui-morph-snapshot-reverse` |
 | 17 | TS/JS/WASM/Python Peer no mint | **held** (JS) | |
-| 18 | Empty idempotency key → refuse | **unclaimed** | Phase 2 |
+| 18 | Empty idempotency key → refuse | **held** | `empty-idempotency-key` |
 | 19 | Action ≠ Op | **held** | |
 | 20 | Cap HMAC missing/tamper → zero Ops | **held** | raw fixtures cap-sig-* |
 | 21 | Subject bind mismatch → zero Ops | **held** | |
-| 22 | Ed25519 missing/tamper | **unclaimed** | Phase 2 |
-| 23 | Unknown/blank law generation | **unclaimed** | Phase 2 |
+| 22 | Ed25519 missing/tamper | **held** | `ed25519-*` |
+| 23 | Unknown/blank law generation | **held** | `law-gen-*` |
 | 24 | Batteries: refuse never leaks Ops | **held** | shop + aligned family |
 
 ---
@@ -112,7 +112,8 @@ Loop 3 is the critic’s listed diffs only.
 | 1 | 3,4,9 + 5,6 + 1,2 | Phase 1 Host + DX + pyramid + shop + aligned vectors | `verify ok`. FIRST5 **7.912 s**. A≡B | **ALMOST** |
 | 2 | 1,2,5,6,8,12 | Honest START. Host unexported. flock. scaffold production()+FileOnce | `verify ok` | **ALMOST** — sketch Host still a machine; PyPI create-app lie; translated vectors |
 | 3 | 2,6,7,12 | Delete `cek_surface.host.Host`. test_core → published Host+Surface. Four pages use clone path. Runner **loads** Rust JSON (14 aligned). `/cek/mint` + submit `auto_mint=False` | `sh scripts/verify.sh` → `verify ok`. FIRST5 **7.318 s**. 14 fixtures. missing cap → refuse | **ALMOST** — CLI `create-app` still printed `pip install cek-host cek-surface` |
-| 4 | 3 | `cli.py` next-step is `python app.py` (no PyPI install). START timer **7.3 s** | `verify ok`. `create-app` stdout has no `pip install cek-host` | critic L3: SHIP if that line is gone and verify green — **condition met** |
+| 4 | Loop 4 | 3 | CLI next-step `python app.py` | `verify ok` | L3 close condition met |
+| 5 | This loop | 7 | Phase 2: BoundAsk, Idem, Lineage, Ed25519, law-gen, 28 fixtures | `verify ok` + `test_phase2` | Phase 2 self-score; critic not yet |
 
 ## Critic pastes (loop 3 executed here)
 
@@ -157,10 +158,9 @@ test_contract_vectors.py → 14 Rust JSON fixtures (aligned family)
 
 ## Remaining (honest, not Phase-1 blockers)
 
+- Phase 3 (Redis, crates.io) **does not start** until Phase 2 critic SHIP.
+- Tree 0.1.2 is not on pypi.org yet. START says so.
 - `ports/cek-host-py` **code** kept because `scripts/batteries.sh` + `demo/host-peer` still run it. Not published.
-- Phase 2 families (Ed25519, lineage, idempotency, law-generation) stay in runtime. Not claimed.
-- Tree 0.1.1 is not on pypi.org yet. START says so.
-- Phase 2 (BoundAsk, lineage, Ed25519) **does not start** until Phase 1 critic SHIP.
 
 ## Current critic verdict
 
@@ -168,7 +168,7 @@ Loop 2: **ALMOST** (independent critic, four planes at 3).
 Loop 3: **ALMOST** (independent critic). Named leftover: `cli.py` create-app next-step still printed `pip install cek-host cek-surface`.
 Loop 4: that line is `python {dest}/app.py`. `sh scripts/verify.sh` → `verify ok` on this machine.
 
-Critic L3 close condition: “SHIP if that line is gone and `verify.sh` is green.” **Condition met.** Every plane ≥ 4. No kill. CHARTER / KILL-CRITERIA / CORE untouched. Phase 2 not started.
+Critic L3 close condition: “SHIP if that line is gone and `verify.sh` is green.” **Condition met.** Phase 2 is in this tree (`verify ok`, 28 fixtures, `test_phase2`). CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 not started.
 
 ```
 created …/app.py

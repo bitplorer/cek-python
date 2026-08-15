@@ -1,0 +1,21 @@
+{
+  "id": "law-gen-accepted",
+  "family": "cap_verify",
+  "description": "Dual-speak: previous generation in the window projects",
+  "now": 1000,
+  "accept_generations": ["cek-law-0"],
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-lg-ok",
+      "action": "kv.write",
+      "once": false,
+      "law_generation": "cek-law-0"
+    }
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    { "ns": "kv", "name": "set", "payload": { "key": "a", "value": 1 } }
+  ]
+}

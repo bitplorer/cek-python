@@ -1,0 +1,35 @@
+{
+  "id": "idempotency-replay",
+  "family": "idempotent_submit",
+  "description": "Same idempotency key + same body returns the cached ok Result",
+  "now": 1000,
+  "prior_intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 1 },
+    "cap": {
+      "id": "cap-idem",
+      "action": "kv.write",
+      "once": false
+    },
+    "idempotency_key": "same-key"
+  },
+  "prior_must_ok": true,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 1 },
+    "cap": {
+      "id": "cap-idem",
+      "action": "kv.write",
+      "once": false
+    },
+    "idempotency_key": "same-key"
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    {
+      "ns": "kv",
+      "name": "set",
+      "payload": { "key": "k", "value": 1 }
+    }
+  ]
+}

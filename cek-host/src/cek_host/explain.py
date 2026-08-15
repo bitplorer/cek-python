@@ -37,6 +37,66 @@ class Explanation:
 # Matched in order; first needle-in-error wins.
 _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
     (
+        ("empty idempotency", "empty idempotency key"),
+        Explanation(
+            "empty_idem",
+            "empty idempotency key is not allowed",
+            "An empty key is not a global bind. Unclear identity refuses (I18).",
+            "Pass a non-empty idempotency_key, or omit the field.",
+            "I18",
+        ),
+    ),
+    (
+        ("idempotency conflict",),
+        Explanation(
+            "idem_conflict",
+            "idempotency conflict",
+            "Same key, different body. Silent fork is refused (I6).",
+            "Use a new key for a new body, or retry the exact same Intent.",
+            "I6",
+        ),
+    ),
+    (
+        ("idempotency store",),
+        Explanation(
+            "idem_store_down",
+            "idempotency store down",
+            "Required idempotency store is down. Skipping the check would be I5.",
+            "Restore the IdemBackend (file path writable, or stop marking memory down).",
+            "I5 / I9",
+        ),
+    ),
+    (
+        ("empty law generation", "law generation"),
+        Explanation(
+            "law_gen",
+            "law generation refused",
+            "Blank or unknown law_generation is refuse. Unset = legacy accept.",
+            "Mint with law_generation='cek-law-1', or put the tag in accepted_generations.",
+            "I23",
+        ),
+    ),
+    (
+        ("cap signature required", "ed25519"),
+        Explanation(
+            "ed25519_required",
+            "Cap signature required",
+            "This Host has an Ed25519 policy. Unsigned or untrusted Caps refuse (I22).",
+            "Mint from the same Host (seed attached) or trust the minter's public key.",
+            "I22",
+        ),
+    ),
+    (
+        ("empty activity", "already ended", "no lineage", "lineage store"),
+        Explanation(
+            "lineage",
+            "lineage error",
+            "Activity id must be non-empty. Ended activities cannot take new commits.",
+            "Pass a fresh activity_id, or call end_activity only once.",
+            "I7 / I11",
+        ),
+    ),
+    (
         ("cap required", "missing cap", "no cap"),
         Explanation(
             "missing_cap",

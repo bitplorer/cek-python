@@ -1,0 +1,14 @@
+{
+  "id": "ed25519-missing",
+  "family": "cap_verify",
+  "description": "Host Ed25519 policy: unsigned Cap is refuse, zero Ops",
+  "now": 1000,
+  "ed25519_seed": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": { "id": "cap-ed-miss", "action": "kv.write", "once": false }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

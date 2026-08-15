@@ -73,6 +73,7 @@ class Surface:
         *,
         cap: str | None = None,
         activity_id: str | None = None,
+        idempotency_key: str | None = None,
         auto_mint: bool = False,
         once: bool = False,
         seal_args: bool = False,
@@ -83,7 +84,7 @@ class Surface:
             cap = self.mint(action, once=once, args=args, seal_args=seal_args)
 
         result, armed = self._compose_and_authorize(
-            action, args, cap, activity_id=activity_id
+            action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
         )
         return self._deliver(result, drain_async=drain_async, continuations=armed)
 
@@ -136,6 +137,7 @@ class Surface:
         cap: str | None,
         *,
         activity_id: str | None = None,
+        idempotency_key: str | None = None,
     ) -> tuple[KernelResult, list | None]:
         pol = self.policy.check_action(action)
         if not pol.allow:
@@ -143,7 +145,9 @@ class Surface:
 
         # Verify Cap BEFORE compose (store writes / continuation mint). I1 / I2-lite.
         if hasattr(self.kernel, "check"):
-            pre = self.kernel.check(action, args, cap, activity_id=activity_id)
+            pre = self.kernel.check(
+                action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
+            )
             if not getattr(pre, "ok", False):
                 return pre, None
 
@@ -171,6 +175,7 @@ class Surface:
             cap,
             activity_id=activity_id,
             project_ops=wire,
+            idempotency_key=idempotency_key,
         )
         return result, getattr(ctx, "continuations", None)
 

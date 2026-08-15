@@ -1,0 +1,29 @@
+{
+  "id": "receipt-landed-first-reverse",
+  "family": "apply_receipt",
+  "description": "Reverse prefers landed Ops when a Peer receipt was annotated",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "greet", "value": "hello" },
+    "cap": {
+      "id": "cap-rcpt",
+      "action": "kv.write",
+      "once": false
+    },
+    "activity_id": "act-rcpt"
+  },
+  "expect_kind": "ok",
+  "peer_apply": true,
+  "report_receipt": true,
+  "end_activity": "act-rcpt",
+  "expect_reverse_ops": [
+    {
+      "ns": "kv",
+      "name": "delete",
+      "payload": { "key": "greet" }
+    }
+  ],
+  "expect_used_landed": true,
+  "expect_peer_kv": { "greet": "hello" }
+}

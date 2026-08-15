@@ -25,5 +25,6 @@ python3 cek-surface/tests/test_host_parity.py
 python3 cek-surface/tests/test_layer_honesty.py
 python3 cek-surface/tests/test_hardening.py
 python3 cek-surface/tests/test_contract_vectors.py
+python3 cek-surface/tests/test_phase2.py
 python3 cek-surface/tests/test_explain_doctor.py
 echo "verify ok"

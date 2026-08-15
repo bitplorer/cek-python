@@ -19,7 +19,7 @@ python -m cek_host create-app ./hello-cek && python ./hello-cek/app.py
 
 **Start here:** [START.md](./START.md)
 
-Tree **0.1.1** (Phase 1). Indexes still **0.1.0** until the next publish — do not `pip install cek-host==0.1.1` yet.
+Tree **0.1.2** (Phase 2). Indexes still **0.1.0** until the next publish — do not `pip install cek-host==0.1.2` yet.
 
 ## Shop
 
@@ -42,4 +42,4 @@ python -m cek_host doctor --fail
 | 1 | [docs/INVARIANTS.md](./docs/INVARIANTS.md) · [docs/S_TIER_SCORECARD.md](./docs/S_TIER_SCORECARD.md) |
 | 2 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [docs/DECISIONS.md](./docs/DECISIONS.md) · [docs/PERFORMANCE.md](./docs/PERFORMANCE.md) — each says “read START first” |
 
-Status: tree **0.1.1** Phase 1 (one Host, subject/scope, digest, OnceBackend, doctor). PyPI indexes still **0.1.0** until publish. Phase 2 (BoundAsk / lineage / Ed25519) is gated.
+Status: tree **0.1.2** Phase 2 (BoundAsk, Idem/Lineage, Ed25519, law-generation). PyPI indexes still **0.1.0** until publish. Phase 3 (Redis / crates.io) is gated.

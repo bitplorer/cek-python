@@ -1,0 +1,26 @@
+{
+  "id": "lineage-reverse-on-end",
+  "family": "reverse_on_end",
+  "description": "Activity end emits inverse Ops from the commit plan",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 1 },
+    "cap": {
+      "id": "cap-rev",
+      "action": "kv.write",
+      "once": false
+    },
+    "activity_id": "act-rev"
+  },
+  "expect_kind": "ok",
+  "end_activity": "act-rev",
+  "expect_reverse_ops": [
+    {
+      "ns": "kv",
+      "name": "delete",
+      "payload": { "key": "k" }
+    }
+  ],
+  "expect_used_landed": false
+}

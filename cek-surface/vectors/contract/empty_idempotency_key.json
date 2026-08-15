@@ -1,0 +1,14 @@
+{
+  "id": "empty-idempotency-key",
+  "family": "idempotent_submit",
+  "description": "Empty idempotency_key is refuse (unclear bind, not a global key)",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": { "id": "cap-eik", "action": "kv.write", "once": false },
+    "idempotency_key": ""
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

@@ -1,0 +1,18 @@
+{
+  "id": "law-gen-unknown",
+  "family": "cap_verify",
+  "description": "Cap tagged with an unknown law generation is refuse, zero Ops",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-lg-bad",
+      "action": "kv.write",
+      "once": false,
+      "law_generation": "cek-law-99"
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

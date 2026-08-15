@@ -58,6 +58,7 @@ class HostKernel(Protocol):
         cap: str | None,
         *,
         activity_id: str | None = None,
+        idempotency_key: str | None = None,
     ) -> KernelResult: ...
 
     def submit(
@@ -68,6 +69,7 @@ class HostKernel(Protocol):
         *,
         activity_id: str | None = None,
         project_ops: list[dict[str, Any]] | None = None,
+        idempotency_key: str | None = None,
     ) -> KernelResult: ...
 
 
@@ -88,13 +90,11 @@ class CekHostPyKernel:
         cap: str | None,
         *,
         activity_id: str | None = None,
+        idempotency_key: str | None = None,
     ) -> KernelResult:
-        if hasattr(self._inner, "check"):
-            r = self._inner.check(action, args, cap, activity_id=activity_id)
-            return _as_kernel_result(r)
-        # older Host: verify via submit with empty ops, then we must not burn —
-        # current Host.check exists. Fall back is refuse-closed, not a shim.
-        r = self._inner.submit(action=action, args=args, cap=cap, project_ops=[])
+        r = self._inner.check(
+            action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
+        )
         return _as_kernel_result(r)
 
     def submit(
@@ -105,14 +105,23 @@ class CekHostPyKernel:
         *,
         activity_id: str | None = None,
         project_ops: list[dict[str, Any]] | None = None,
+        idempotency_key: str | None = None,
     ) -> KernelResult:
-        if project_ops is not None and hasattr(self._inner, "submit_ops"):
-            r = self._inner.submit_ops(project_ops, cap=cap, action=action, args=args)
-        else:
-            r = self._inner.submit(
-                {"action": action, "args": args, "cap": cap, "activity_id": activity_id}
-            )
+        r = self._inner.submit(
+            action=action,
+            args=args,
+            cap=cap,
+            activity_id=activity_id,
+            project_ops=project_ops,
+            idempotency_key=idempotency_key,
+        )
         return _as_kernel_result(r)
+
+    def report_receipt(self, activity_id: str, landed: list[dict[str, Any]] | None = None, **kw: Any):
+        return self._inner.report_receipt(activity_id, landed, **kw)
+
+    def end_activity(self, activity_id: str):
+        return self._inner.end_activity(activity_id)
 
     def explain(self, error: str | None = None):
         return explain(error)

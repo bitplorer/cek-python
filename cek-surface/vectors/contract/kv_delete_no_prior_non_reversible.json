@@ -1,0 +1,15 @@
+{
+  "id": "kv-delete-no-prior-non-reversible",
+  "family": "reverse_on_end",
+  "description": "kv.delete without prior is marked non-reversible (honest)",
+  "now": 1000,
+  "intent": {
+    "action": "kv.delete",
+    "args": { "key": "greeting" },
+    "cap": { "id": "cap-deln", "action": "kv.delete", "once": false },
+    "activity_id": "act-deln"
+  },
+  "expect_kind": "ok",
+  "end_activity": "act-deln",
+  "expect_reverse_ops": []
+}

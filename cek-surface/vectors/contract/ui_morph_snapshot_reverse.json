@@ -1,0 +1,30 @@
+{
+  "id": "ui-morph-snapshot-reverse",
+  "family": "ui_domain",
+  "description": "Activity end reverses ui.dom.morph via ui.dom.restore of the snapshot",
+  "now": 1000,
+  "intent": {
+    "action": "ui.morph",
+    "args": {
+      "target": "hdr",
+      "patch": { "t": "new" },
+      "snapshot": { "t": "old" }
+    },
+    "cap": { "id": "cap-ui-rev", "action": "ui.morph", "once": false },
+    "activity_id": "act-ui"
+  },
+  "expect_kind": "ok",
+  "peer_profile": "ui",
+  "peer_apply": true,
+  "report_receipt": true,
+  "expect_peer_ui": { "hdr": { "t": "new" } },
+  "end_activity": "act-ui",
+  "expect_used_landed": true,
+  "expect_reverse_ops": [
+    {
+      "ns": "ui.dom",
+      "name": "restore",
+      "payload": { "target": "hdr", "snapshot": { "t": "old" } }
+    }
+  ]
+}

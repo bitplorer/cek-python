@@ -8,7 +8,7 @@ mint Cap → submit Intent {action, args, cap} → verify → project Ops → Re
 
 ## One command (from this tree — this is the working path today)
 
-PyPI still has `0.1.0` (no `create-app`). Phase 1 lives in this repo as **tree 0.1.1** until the next publish.
+PyPI still has `0.1.0` (no `create-app`). Phase 2 lives in this repo as **tree 0.1.2** until the next publish.
 
 ```bash
 git clone https://github.com/bitplorer/cek-python
@@ -46,7 +46,7 @@ python -m cek_host explain "cap required"
 sh scripts/verify.sh
 ```
 
-Production: `Host.production(secret=secrets.token_bytes(32), once=FileOnceBackend("once.json"))`.
+Production: `Host.production(secret=secrets.token_bytes(32), once=FileOnceBackend("once.json"))` — also stands up FileIdem + FileLineage beside the once file. BoundAsk is not constructible. `end_activity` reverses landed-first.
 
 Shop (browser is the Peer): `python cek-surface/demo/http_host.py`
 

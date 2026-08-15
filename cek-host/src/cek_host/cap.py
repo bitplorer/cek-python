@@ -71,6 +71,10 @@ class CapService:
         scopes: list[str] | None = None,
         subject: str | None = None,
         jti: str | None = None,
+        law_generation: str | None = None,
+        ed25519: str | None = None,
+        ed25519_seed: bytes | None = None,
+        args_hash_value: str | None = None,
     ) -> str:
         if not action or not action.strip():
             raise ValueError("empty action")
@@ -86,10 +90,20 @@ class CapService:
             payload["not_after"] = float(self.now_fn()) + self.ttl_s
         if seal_args:
             payload["args_hash"] = args_hash(args)
+        if args_hash_value is not None and "args_hash" not in payload:
+            payload["args_hash"] = args_hash_value
         if scopes:
             payload["scopes"] = list(scopes)
         if subject is not None:
             payload["subject"] = subject
+        if law_generation is not None:
+            payload["law_generation"] = law_generation
+        if ed25519 is not None:
+            payload["ed25519"] = ed25519
+        elif ed25519_seed is not None:
+            from .ed25519 import sign as ed_sign
+
+            payload["ed25519"] = ed_sign(ed25519_seed, canon(payload)).hex()
         body = canon(payload)
         sig = hmac.new(self.secret, body, "sha256").hexdigest()
         return body.hex() + "." + sig
@@ -121,6 +135,7 @@ class CapService:
         args: dict[str, Any] | None = None,
         *,
         consume_once: bool = True,
+        check_once: bool = True,
         subject: str | None = None,
     ) -> dict[str, Any]:
         claims = self.decode(token)
@@ -137,7 +152,7 @@ class CapService:
             raise CapError("empty jti")
         self._check_subject(claims, args, subject)
         self._check_scopes(claims, action, args)
-        if claims.get("once"):
+        if claims.get("once") and check_once:
             try:
                 self.once.ensure_available(str(jti))
                 if consume_once:
@@ -208,6 +223,8 @@ class CapService:
             scopes=new_scopes or None,
             subject=new_subj,
             jti=None,  # new id; parent once-jti stays the parent's
+            law_generation=claims.get("law_generation"),
+            args_hash_value=claims.get("args_hash"),
         )
 
     def _check_subject(

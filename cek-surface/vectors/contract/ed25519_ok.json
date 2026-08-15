@@ -1,0 +1,17 @@
+{
+  "id": "ed25519-ok",
+  "family": "cap_verify",
+  "description": "Host Ed25519 policy: minted Cap projects (RFC 8032 seed)",
+  "now": 1000,
+  "ed25519_seed": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+  "sign_cap": true,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": { "id": "cap-ed-ok", "action": "kv.write", "once": false }
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    { "ns": "kv", "name": "set", "payload": { "key": "a", "value": 1 } }
+  ]
+}

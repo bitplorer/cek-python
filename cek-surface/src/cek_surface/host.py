@@ -15,6 +15,7 @@ class Intent:
     args: dict[str, Any] = field(default_factory=dict)
     cap: str | None = None
     activity_id: str | None = None
+    idempotency_key: str | None = None
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Intent:
@@ -23,6 +24,7 @@ class Intent:
             args=dict(d.get("args") or {}),
             cap=d.get("cap"),
             activity_id=d.get("activity_id"),
+            idempotency_key=d.get("idempotency_key"),
         )
 
 
