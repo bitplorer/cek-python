@@ -17,30 +17,31 @@
 13. **P0:** full `cek-surface` tree on GitHub + editable-install smoke + CI
 14. **P1:** browser E2E against real Surface.submit; live continuation Cap path
 15. **P2:** golden vectors + WS one-command demo
-16. **P3:** build + TestPyPI publish path (wheels green; Trusted Publishing workflow)
+16. **P3 path:** build scripts + split Trusted Publishing workflow (`testpypi-host` / `testpypi-surface`)
 
 ## Present (2026-08-15)
 
 | State | Detail |
 |-------|--------|
-| **GitHub** | `bitplorer/cek-python` holds complete host + surface |
+| **GitHub** | Complete host + surface (src, js, demo, tests, vectors) |
 | **Kernel** | `CekHostPyKernel` when `cek_host` on path |
-| **Tests** | core / roadmap / carrier_ir / host_kernel / continuation_live / http_host / vectors |
+| **Tests** | core · roadmap · carrier_ir · host_kernel · continuation_live · http_host · vectors |
 | **Install** | `pip install -e ./cek-host -e ./cek-surface` |
 | **WS** | `sh scripts/run_ws_demo.sh` |
-| **Packaging** | `sh scripts/build_release.sh` → dist/ 0.1.0 |
+| **Packaging** | `sh scripts/build_release.sh` → `dist/` 0.1.0 |
+| **Publish CI** | `publish-testpypi.yml` → envs `testpypi-host` + `testpypi-surface` |
 
-**Measured:** see [PERFORMANCE.md](./PERFORMANCE.md).
+**Measured:** [PERFORMANCE.md](./PERFORMANCE.md) (Host ~0.03 ms, Peer path ~0.3 ms, RTT-bound).
 
-**Happening now should be:** complete TestPyPI Trusted Publisher registration + first `workflow_dispatch` upload; optional deeper vector parity.
+**Open for P3 complete:** register TestPyPI pending publishers (matching env names) + first `workflow_dispatch`. See [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md).
 
-## Next (ship in order — do not skip)
+## Next (ship in order)
 
 | Priority | Item | Definition of done |
 |----------|------|--------------------|
-| **P2** | Contract name alignment | **SHIPPED** |
-| **P2** | WS demo scripted | **SHIPPED** |
-| **P3** | PyPI test publish | **READY** — build scripts + `publish-testpypi.yml`; needs TestPyPI Trusted Publisher once |
+| **P3** | Live TestPyPI upload | Both packages installable from test.pypi.org |
+| — | Optional vector parity | More cek-runtime families as notes/exec cases |
+| — | Production PyPI | Separate trusted publishers on pypi.org when stable |
 
 ## Later (explicitly deferred)
 
@@ -48,7 +49,7 @@
 |------|----------------|
 | Durable lineage / idem stores in Python | Prefer parity with Rust stores design |
 | Ed25519 product Caps | HMAC sufficient for host-local |
-| npm `@cek/peer` package | js/ under surface is enough until consumers demand |
+| npm `@cek/peer` package | `js/` under surface is enough until consumers demand |
 | Diff/patch Ops as Baseline | Wait until morph payload size is a real problem |
 | Multi-region Host | Policy/product, not surface core |
 | Merging with ux-channel | Permanently out of scope as dependency |
@@ -61,10 +62,12 @@
 - Replacing cek-framework law with surface docs
 - “Arbitrary function projection” as executable Peer code
 
-## Suggested next coding session
+## Suggested next session
 
 ```text
-1) Register TestPyPI Trusted Publisher for cek-host + cek-surface (see publish-testpypi.yml)
-2) workflow_dispatch → confirm pip install from test.pypi.org
-3) Optional: promote same artifacts to production PyPI when stable
+1) Confirm TestPyPI pending publishers:
+     cek-host     → Environment testpypi-host
+     cek-surface  → Environment testpypi-surface
+2) Actions → publish-testpypi → Run workflow
+3) pip install from test.pypi.org; mark P3 SHIPPED
 ```

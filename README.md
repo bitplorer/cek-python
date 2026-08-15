@@ -4,14 +4,12 @@ Python workspace for **CEK** (Cap-Effect Kernel).
 
 | Package | Install | Role |
 |---------|---------|------|
-| **[cek-host](./cek-host)** | `pip install cek-host` | Host kernel — Caps, refuse → empty ops |
-| **[cek-surface](./cek-surface)** | `pip install cek-surface` | Compose Ops, Peer IR, carriers (depends on cek-host) |
+| **[cek-host](./cek-host)** | `pip install cek-host` | Host kernel — Cap mint/verify, refuse → `ops: []` |
+| **[cek-surface](./cek-surface)** | `pip install cek-surface` | Compose Ops, Peer IR, carriers (depends on `cek-host`) |
 
 **Law:** [cek-framework](https://github.com/bitplorer/cek-framework) · **Rust:** [cek-runtime](https://github.com/bitplorer/cek-runtime)
 
-## Knowledge base
-
-**→ [docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)** · Packaging: [docs/PACKAGING.md](./docs/PACKAGING.md) · [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md)
+> Composition = Python + Caps · wire = `Result.ops` · Peer = closed drivers + perception IR
 
 ## Quick start
 
@@ -26,20 +24,37 @@ sh scripts/verify.sh
 ## Demos
 
 ```bash
-python cek-surface/demo/app.py
-python cek-surface/demo/http_host.py
-sh scripts/run_ws_demo.sh
+python cek-surface/demo/app.py              # shop, subprocess Peer
+python cek-surface/demo/http_host.py        # browser shop (real Host)
+sh scripts/run_ws_demo.sh                   # WebSocket carrier one-command
 ```
 
 ## Build / TestPyPI
 
-Packaging backends and **uv / Poetry migration guide:** [docs/PACKAGING.md](./docs/PACKAGING.md) · [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md).
-
 ```bash
-sh scripts/build_release.sh
-# Actions → publish-testpypi (Trusted Publishing) after TestPyPI setup
+sh scripts/build_release.sh                 # dist/*.whl + *.tar.gz
+# Trusted Publishing: see docs/TESTPYPI_SETUP.md
+# Actions → publish-testpypi → Run workflow
 ```
 
-## Doctrine
+Environments: **`testpypi-host`** (`cek-host`) · **`testpypi-surface`** (`cek-surface`).
 
-> Composition = Python + Caps; wire = Result.ops; Peer = closed drivers + perception IR; carriers are transport only.
+## Docs (start here)
+
+| Doc | Purpose |
+|-----|---------|
+| **[docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)** | Index of all knowledge |
+| [docs/SHIPPED.md](./docs/SHIPPED.md) | What exists and is verified |
+| [docs/ROADMAP.md](./docs/ROADMAP.md) | Past / present / next / later |
+| [docs/INVARIANTS.md](./docs/INVARIANTS.md) | Never-regress rules |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Layers, wire, Peer IR |
+| [docs/ORGANIZATION.md](./docs/ORGANIZATION.md) | Repos and install story |
+| [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md) | TestPyPI Trusted Publisher checklist |
+| [docs/PACKAGING.md](./docs/PACKAGING.md) | setuptools today; uv/Poetry migration |
+| [docs/PERFORMANCE.md](./docs/PERFORMANCE.md) | Measured real-world latency |
+
+## Status (2026-08-15)
+
+- **P0–P2 shipped** (full tree, live continuations, vectors, WS demo)
+- **P3 path ready** — wheels + split publish workflow; needs TestPyPI publisher registration + first upload
+- CI: [test.yml](./.github/workflows/test.yml) · Publish: [publish-testpypi.yml](./.github/workflows/publish-testpypi.yml)
