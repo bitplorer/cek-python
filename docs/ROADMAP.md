@@ -1,11 +1,11 @@
-# Roadmap — past, present, next, later
+# Roadmap
 
-## Past (done — do not re-litigate)
+## Shipped (do not re-open as “missing”)
 
-1. CEK law repo + Rust runtime baseline
-2. Reject sending arbitrary JS / plan IR on the wire
-3. Op constructor surface (`class Op`) practical catalog
-4. Python Host compose + JS Peer apply demos
+1. Intent / Result / Op vocabulary
+2. Surface action handlers compose `list[Op]`
+3. Host Cap mint/verify + refuse → empty ops
+4. Subprocess / memory / websocket carriers + JS Peer apply demos
 5. Cap once / sealed-args / refuse
 6. Peer IR v0 (coalesce, flush, shadow)
 7. Portable carriers (subprocess / memory / websocket opt-in)
@@ -26,6 +26,8 @@
 | **Tests** | core / roadmap / carrier_ir / host_kernel / continuation_live / http_host |
 | **Install** | `pip install -e ./cek-host -e ./cek-surface` |
 | **Browser** | `python cek-surface/demo/http_host.py` — no `?mock=1` required |
+
+**Measured:** see [PERFORMANCE.md](./PERFORMANCE.md) (Host ~0.03 ms, Peer path ~0.3 ms, RTT-bound).
 
 **Happening now should be:** P2 contract/vector alignment + scripted WS demo.
 
@@ -63,4 +65,3 @@
 2) One-command WS demo: ws_peer_server.mjs + Surface(websocket)
 3) Keep refuse → ops:[] / Peer no mint / fail closed
 ```
-

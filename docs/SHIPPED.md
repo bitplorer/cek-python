@@ -1,97 +1,47 @@
-# What was shipped (and why)
+# Shipped
 
-Status as of **2026-08-15**. Source of truth for “is this real?”.
+What is in tree and verified (not aspirational).
 
----
+## Packages
 
-## 1. Ecosystem context (pre-surface)
+| Package | Role |
+|---------|------|
+| `cek-host` | Cap mint/verify, Result packaging |
+| `cek-surface` | Compose, Peer IR, carriers, policy, continuations |
 
-| Item | Why it exists |
-|------|----------------|
-| **cek-framework** | Locked conceptual law so runtimes don’t invent authority semantics |
-| **cek-runtime (Rust)** | Reference Host/Peer, contract vectors, never-regress tests |
+## Demos
 
-Python work began because apps (uidom / ux-channel class problems) needed **Host composition in Python** and **JS Peer apply**, without sending arbitrary JS on the wire.
+| Demo | Path |
+|------|------|
+| Shop (subprocess Peer) | `cek-surface/demo/app.py` |
+| HTTP Host (browser Peer) | `cek-surface/demo/http_host.py` + `browser_shop.html` |
+| Load / chaos bench | `cek-surface/demo/bench_load_chaos.py` |
+| WS peer server | `cek-surface/demo/ws_peer_server.mjs` |
 
----
+## Tests (verify.sh)
 
-## 2. Packages in this monorepo
+- `test_core.py`
+- `test_roadmap.py`
+- `test_carrier_ir.py`
+- `test_host_kernel.py`
+- `test_continuation_live.py`
+- `test_http_host.py`
 
-### 2.1 `cek-host` (PyPI name: `cek-host`)
+## Invariants held
 
-| Shipped | Why |
-|---------|-----|
-| `CapService` — HMAC mint/verify, once-jti, sealed-args, expiry | Authority must be a single place; Peer must never mint |
-| `Host.submit` → `KernelResult(kind, ops, error)` | Refuse path packages **zero ops** |
-| Standalone install | API workers can use Caps without UI surface |
+- refuse → `ops: []`
+- Peer never mints Caps
+- once / sealed-args fail closed
+- wire shape = `Result.ops`
+- Surface loads Host via `load_host_kernel()` → `CekHostPyKernel`
 
-**Not shipped in host:** durable lineage stores, Ed25519 product keys, multi-tenant policy (those are “next” or Rust parity).
+## Timeline notes
 
-### 2.2 `cek-surface` (PyPI name: `cek-surface`)
+See [TIMELINE.md](./TIMELINE.md) and [ROADMAP.md](./ROADMAP.md).
 
-| Shipped | Why |
-|---------|-----|
-| `Surface` + `@action` / `@on` | App authors compose Ops in Python under Caps |
-| `Op` catalog (kv, ui.dom, ui, nav, http, timer, signal, log, sys) | Closed effect algebra ↔ Peer drivers |
-| `kernel.load_host_kernel()` → prefers `cek_host.Host` | Surface does not own Cap policy long-term |
-| Portable **carriers** (`subprocess` default, `memory`, `websocket` opt-in) | Transport is not a kernel; demos zero-config |
-| **Peer IR** (`js/peer_ir.mjs`) — coalesce, flush, shadow, pending, filter_cached, toast_fade | Human lag is RTT; perception must be local |
-| Continuations (`continuation.py`) | Pre-minted next Intent templates; Host still verifies |
-| Policy hooks (rate limit, action allow-list, nav prefixes) | Outer runtime guards, not Cap law |
-| Node `peer.mjs`, browser `browser_peer.mjs`, shop demos, load/chaos/net benches | Prove path end-to-end |
-| Tests: core, roadmap, carrier+IR, host kernel | Refuse/once/sealed/shadow/coalesce |
+### 2026-08-15 — Real-world performance report
 
-**Explicit non-ship:** ux-channel dependency, Peer recipes/eval, plan IR on the wire, Peer Cap mint.
-
----
-
-## 3. Demos and benches (why they matter)
-
-| Artifact | Proves |
-|----------|--------|
-| `demo/shop_app.py` + `demo/app.py` | Real flows: search debounce, cart, checkout, once-refuse |
-| `demo/bench_load_chaos.py` | Host-only ~0.03 ms; full Peer ~0.5 ms; net sim RTT-bound |
-| `demo/browser_shop.html` + `http_host.py` | Browser Peer IR + optional Host submit |
-| `demo/ws_peer_server.mjs` | Opt-in WebSocket Peer (same JSON shapes) |
-
-**Measured (order of magnitude, this machine):**
-
-| Path | p50 |
-|------|-----|
-| Host compose + Cap | ~0.03 ms |
-| Host → local Node Peer | ~0.4–0.6 ms |
-| + simulated ~20 ms RTT | ~20 ms |
-| + ~80 ms RTT | ~80 ms |
-| Search + async @ ~20 ms RTT | ~120 ms (multi-round) |
-
-Conclusion shipped with the benches: **mechanism is not the lag; RTT and round-trips are.**
-
----
-
-## 4. GitHub publish status
-
-| Component | On GitHub `bitplorer/cek-python` |
-|-----------|----------------------------------|
-| Docs ORGANIZATION + knowledge spine | **Yes** |
-| cek-host package sources | **Yes** |
-| cek-surface README / pyproject / ARCHITECTURE | **Yes** |
-| cek-surface `src/`, `js/`, `demo/`, `tests/`, `vectors/` | **Yes (P0)** |
-| `scripts/verify.sh` + GitHub Actions `test` | **Yes (P0)** |
-| PyPI 0.1.0 | **No** (P3) |
-
----
-
-## 5. What “done” means for this phase
-
-- [x] Law/runtime split respected
-- [x] Host authority separate package
-- [x] Surface compose + closed Peer + perception IR
-- [x] Carrier plug-and-play, default subprocess
-- [x] Chaos: once, sealed-args, refuse
-- [x] Org docs for install
-- [x] Full surface tree on GitHub remote
-- [x] Editable install smoke (`pip install -e ./cek-host -e ./cek-surface`)
-- [x] Browser E2E without `?mock=1` (P1)
-- [x] Continuation live path `timer.fired` → pre-minted Cap (P1)
-- [ ] Production durable stores / Ed25519 parity with Rust
-- [ ] PyPI publish of `cek-host` / `cek-surface`
+- Full shop journey, Cap security matrix, live continuation, HTTP Host: **PASS**
+- Numbers published: `docs/PERFORMANCE.md` + `docs/performance-report.json`
+- Host-only p50 ~0.03 ms; Host→Peer p50 ~0.32 ms; lag RTT-bound
+- Default policy rate-limit 50 intents/s documented as product guard

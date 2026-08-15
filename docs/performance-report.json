@@ -1,0 +1,183 @@
+{
+  "scenarios": {
+    "shop_journey": {
+      "steps": [
+        {
+          "name": "boot",
+          "kind": "ok",
+          "ops": 7,
+          "ms": 43.37
+        },
+        {
+          "name": "search.type",
+          "kind": "ok",
+          "ops": 4,
+          "ms": 17.01
+        },
+        {
+          "name": "cart.add sku-1",
+          "kind": "ok",
+          "ops": 4,
+          "ms": 0.76
+        },
+        {
+          "name": "cart.add sku-2",
+          "kind": "ok",
+          "ops": 4,
+          "ms": 0.68
+        },
+        {
+          "name": "checkout.start",
+          "kind": "ok",
+          "ops": 5,
+          "ms": 0.62
+        },
+        {
+          "name": "checkout.bad_email",
+          "kind": "ok",
+          "ops": 3,
+          "ms": 0.48
+        },
+        {
+          "name": "checkout.ok",
+          "kind": "ok",
+          "ops": 8,
+          "ms": 1.19
+        }
+      ],
+      "order_id": "ord-9524396",
+      "ok": true
+    },
+    "continuation": {
+      "ok": true,
+      "drain_ms": 11.49,
+      "followup_count": 1
+    },
+    "http_host": {
+      "ok": true,
+      "boot_ms": 1.8,
+      "commit_ms": 0.95,
+      "cart_ms": 1.0
+    }
+  },
+  "perf": [
+    {
+      "name": "host_only.cart.add",
+      "n": 200,
+      "p50_ms": 0.026,
+      "p95_ms": 0.048,
+      "p99_ms": 0.072,
+      "max_ms": 0.193,
+      "mean_ms": 0.03,
+      "ops_per_s": 32988.3
+    },
+    {
+      "name": "cap.mint",
+      "n": 500,
+      "p50_ms": 0.009,
+      "p95_ms": 0.014,
+      "p99_ms": 0.03,
+      "max_ms": 0.078,
+      "mean_ms": 0.01,
+      "ops_per_s": 101438.3
+    },
+    {
+      "name": "cap.verify",
+      "n": 500,
+      "p50_ms": 0.006,
+      "p95_ms": 0.008,
+      "p99_ms": 0.014,
+      "max_ms": 0.04,
+      "mean_ms": 0.006,
+      "ops_per_s": 164057.6
+    },
+    {
+      "name": "full.cart.add",
+      "n": 100,
+      "p50_ms": 0.321,
+      "p95_ms": 0.535,
+      "p99_ms": 0.901,
+      "max_ms": 0.914,
+      "mean_ms": 0.35,
+      "ops_per_s": 2853.4
+    },
+    {
+      "name": "full.refuse_no_cap",
+      "n": 100,
+      "p50_ms": 0.321,
+      "p95_ms": 0.959,
+      "p99_ms": 1.866,
+      "max_ms": 3.168,
+      "mean_ms": 0.436,
+      "ops_per_s": 2293.7
+    },
+    {
+      "name": "memory.cart.add",
+      "n": 200,
+      "p50_ms": 0.041,
+      "p95_ms": 0.139,
+      "p99_ms": 0.526,
+      "max_ms": 1.814,
+      "mean_ms": 0.072,
+      "ops_per_s": 13904.8
+    },
+    {
+      "name": "net.lan_~1ms",
+      "n": 30,
+      "p50_ms": 1.633,
+      "p95_ms": 2.109,
+      "p99_ms": 2.147,
+      "max_ms": 2.147,
+      "mean_ms": 1.614,
+      "ops_per_s": 619.4
+    },
+    {
+      "name": "net.metro_~20ms",
+      "n": 30,
+      "p50_ms": 22.149,
+      "p95_ms": 25.127,
+      "p99_ms": 38.607,
+      "max_ms": 38.607,
+      "mean_ms": 22.26,
+      "ops_per_s": 44.9
+    },
+    {
+      "name": "net.wan_~80ms",
+      "n": 30,
+      "p50_ms": 78.751,
+      "p95_ms": 102.059,
+      "p99_ms": 102.43,
+      "max_ms": 102.43,
+      "mean_ms": 82.334,
+      "ops_per_s": 12.1
+    },
+    {
+      "name": "search+continuation_drain",
+      "n": 15,
+      "p50_ms": 11.389,
+      "p95_ms": 16.258,
+      "p99_ms": 17.924,
+      "max_ms": 17.924,
+      "mean_ms": 12.147,
+      "ops_per_s": 82.3
+    }
+  ],
+  "chaos": {
+    "once_first_ok": true,
+    "once_replay_refused": true,
+    "sealed_args_refused": true,
+    "no_cap_refused": true,
+    "wrong_action_refused": true
+  },
+  "invariants": {
+    "refuse_ops_empty": true,
+    "peer_no_mint": true,
+    "once_fail_closed": true,
+    "sealed_fail_closed": true,
+    "wire_is_result_ops": true
+  },
+  "rate_limit_guard": {
+    "ok": 50,
+    "authority_refusal": 30
+  }
+}
