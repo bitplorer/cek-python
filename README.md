@@ -55,6 +55,6 @@ Environments: **`testpypi-host`** (`cek-host`) · **`testpypi-surface`** (`cek-s
 
 ## Status (2026-08-15)
 
-- **P0–P2 shipped** (full tree, live continuations, vectors, WS demo)
-- **P3 path ready** — wheels + split publish workflow; needs TestPyPI publisher registration + first upload
+- **P0–P3 shipped** — full tree, live continuations, vectors, WS demo, **TestPyPI 0.1.0**
 - CI: [test.yml](./.github/workflows/test.yml) · Publish: [publish-testpypi.yml](./.github/workflows/publish-testpypi.yml)
+- Install from TestPyPI: see [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md)
