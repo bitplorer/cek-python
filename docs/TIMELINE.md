@@ -40,3 +40,13 @@
 
 - SHIPPED / ARCHITECTURE / DECISIONS / INVARIANTS / ROADMAP / LATENCY / GITHUB_STATUS  
 - Goal: next human or agent can continue without chat archaeology  
+
+## Phase H — P0–P3 productization (2026-08-15)
+
+- **P0:** Full surface tree on GitHub; editable install smoke; CI `test.yml`
+- **P1:** Browser E2E + live continuation Cap path (timer.fired → pre-minted once Cap)
+- **P2:** Golden vectors (`surface_core.json` v2, 14 cases) + `run_ws_demo.sh`
+- **P3 path:** `build_release.sh`, split `publish-testpypi.yml`  
+  Environments: `testpypi-host` / `testpypi-surface`  
+  Live index upload still needs publisher registration (see TESTPYPI_SETUP.md)
+- Knowledge base expanded: PERFORMANCE, PACKAGING, TESTPYPI_SETUP

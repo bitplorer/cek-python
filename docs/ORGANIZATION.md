@@ -12,18 +12,18 @@ Do **not** put law into runtime repos. Do **not** put Cap mint into Peer package
 
 ```text
                     cek-framework (law)
-                           │
-           ┌───────────────┼───────────────┐
-           ▼               ▼               ▼
+                           |
+           +---------------+---------------+
+           v               v               v
      cek-runtime      cek-python      (future: cek-js npm
      (Rust kernels)   (this monorepo)   if Peer grows large)
-           │               │
-           │         ┌─────┴─────┐
-           │         ▼           ▼
-           │     cek-host    cek-surface
-           │    (authority)  (compose + Peer IR + carriers)
-           └─────────┬───────────┘
-                     ▼
+           |               |
+           |         +-----+-----+
+           |         v           v
+           |     cek-host    cek-surface
+           |    (authority)  (compose + Peer IR + carriers)
+           +---------+-----------+
+                     v
               contract / vectors (align over time)
 ```
 
@@ -99,13 +99,17 @@ New language Peers: same **contract messages** (`apply` / `chrome` / `events`), 
 
 ## Publish (TestPyPI)
 
-**One-time Trusted Publisher + checklist:** [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md)
+**Checklist:** [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md)
+
+GitHub Environments: **`testpypi-host`** (`cek-host`) · **`testpypi-surface`** (`cek-surface`).
 
 ```bash
 sh scripts/build_release.sh
-# Trusted Publishing: Actions → publish-testpypi → Run workflow
+# Actions → publish-testpypi → Run workflow
 # or token: TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-... sh scripts/publish_testpypi.sh
-pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ cek-host==0.1.0 cek-surface==0.1.0
+pip install -i https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ \
+  cek-host==0.1.0 cek-surface==0.1.0
 ```
 
 ## Packaging backends (current + future)
