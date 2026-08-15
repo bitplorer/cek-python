@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cek-host"
+version = "0.1.0"
+description = "CEK Python Host kernel — Cap mint/verify, Result packaging (authority only)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "bitplorer" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/bitplorer/cek-python"
+Law = "https://github.com/bitplorer/cek-framework"
+Rust = "https://github.com/bitplorer/cek-runtime"
+
+[tool.setuptools.packages.find]
+where = ["src"]
