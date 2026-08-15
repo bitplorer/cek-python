@@ -115,7 +115,8 @@ Loop 3 is the critic’s listed diffs only.
 | 4 | Loop 4 | 3 | CLI next-step `python app.py` | `verify ok` | L3 close condition met |
 | 5 | This loop | 7 | Phase 2: BoundAsk, Idem, Lineage, Ed25519, law-gen, 29 fixtures | `verify ok` + `test_phase2` | **ALMOST** — no live verify paste + missing I5 fixture |
 | 6 | Honesty | 2 | HANDOFF + surface README clone path; refuse no leftover Caps | — | — |
-| 7 | Critic diffs | 7 | Vendor `once-idempotent-retry`; drop dup README heading; TESTING/PERFORMANCE honesty | this turn | L5: SHIP if verify green |
+| 7 | Critic diffs | 7 | Vendor `once-idempotent-retry`; drop dup README heading; TESTING/PERFORMANCE honesty | `ae2460f` | L5: SHIP if verify green |
+| 8 | L5 close | 7 | Clean-clone re-run of `verify.sh` on `ae2460f` | **verify ok** (29 fixtures) | L5 close condition **met** |
 
 ## Critic pastes (loop 3 executed here)
 
@@ -170,19 +171,20 @@ Loop 2: **ALMOST** (independent critic, four planes at 3).
 Loop 3: **ALMOST** (independent critic). Named leftover: `cli.py` create-app next-step still printed `pip install cek-host cek-surface`.
 Loop 4: that line is `python {dest}/app.py`. `sh scripts/verify.sh` → `verify ok` on this machine.
 
-Critic L5: **ALMOST**. Named leftovers applied this loop (I5 fixture, README heading, TESTING/PERFORMANCE).  
+Critic L5: **ALMOST**. Named leftovers applied (`ae2460f`). Clean-clone re-run (2026-08-15):
 
 ```
+git clone --depth 1 https://github.com/bitplorer/cek-python
+cd cek-python && export PYTHONPATH=cek-host/src:cek-surface/src
 sh scripts/verify.sh
 verify ok
-# 29 aligned fixtures including once-idempotent-retry
+# HEAD ae2460f · 29 aligned fixtures including once-idempotent-retry · phase2 ok · A≡B · layer honesty ok
 ```
 
-CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 not started.
+L5 close condition (**SHIP if those diffs land and verify is green**) is **met**. Every plane still ≥ 4. No kill. CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 not started.
 
 ```
 created …/app.py
 next   : python …/app.py
 doctor : python -m cek_host doctor --fail
 ```
-
