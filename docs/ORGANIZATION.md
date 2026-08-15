@@ -99,6 +99,8 @@ New language Peers: same **contract messages** (`apply` / `chrome` / `events`), 
 
 ## Publish (TestPyPI)
 
+**One-time Trusted Publisher + checklist:** [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md)
+
 ```bash
 sh scripts/build_release.sh
 # Trusted Publishing: Actions → publish-testpypi → Run workflow
