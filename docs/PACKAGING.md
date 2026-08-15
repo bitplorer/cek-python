@@ -8,6 +8,7 @@ Related:
 | Doc | Role |
 |-----|------|
 | [ORGANIZATION.md](./ORGANIZATION.md) | Install story, TestPyPI one-liner |
+| [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md) | One-time Trusted Publisher + publish checklist |
 | [SHIPPED.md](./SHIPPED.md) | What is already verified |
 | [INVARIANTS.md](./INVARIANTS.md) | Never-regress (unrelated to backend; do not weaken) |
 | Scripts | `scripts/build_release.sh`, `scripts/publish_testpypi.sh` |
@@ -279,6 +280,8 @@ members = ["cek-host", "cek-surface"]
 ---
 
 ## 6. TestPyPI / PyPI rules (any backend)
+
+**Full one-time setup + checklist:** [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md).
 
 | Rule | Detail |
 |------|--------|
