@@ -13,6 +13,7 @@
 | [ROADMAP.md](./ROADMAP.md) | Past → present → next → later |
 | [LATENCY.md](./LATENCY.md) | Measured lag, human thresholds, Peer IR role |
 | [GITHUB_STATUS.md](./GITHUB_STATUS.md) | What is on GitHub vs local-only (honest inventory) |
+| [PACKAGING.md](./PACKAGING.md) | setuptools today; uv/Poetry migration recipes |
 
 **Related external repos**
 

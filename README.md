@@ -11,7 +11,7 @@ Python workspace for **CEK** (Cap-Effect Kernel).
 
 ## Knowledge base
 
-**→ [docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)**
+**→ [docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)** · Packaging: [docs/PACKAGING.md](./docs/PACKAGING.md)
 
 ## Quick start
 
@@ -33,10 +33,11 @@ sh scripts/run_ws_demo.sh
 
 ## Build / TestPyPI
 
+Packaging backends and **uv / Poetry migration guide:** [docs/PACKAGING.md](./docs/PACKAGING.md).
+
 ```bash
-sh scripts/build_release.sh          # dist/*.whl + *.tar.gz
-# After Trusted Publisher is registered on test.pypi.org:
-#   Actions → publish-testpypi → Run workflow
+sh scripts/build_release.sh
+# Actions → publish-testpypi (Trusted Publishing) after TestPyPI setup
 ```
 
 ## Doctrine
