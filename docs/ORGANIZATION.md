@@ -105,3 +105,9 @@ sh scripts/build_release.sh
 # or token: TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-... sh scripts/publish_testpypi.sh
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ cek-host==0.1.0 cek-surface==0.1.0
 ```
+
+## Packaging backends (current + future)
+
+**Current:** setuptools (`python -m build`, `scripts/build_release.sh`).
+
+**Later migrations (uv without backend change, hatchling, Poetry):** see **[PACKAGING.md](./PACKAGING.md)** — complete step-by-step, verify matrix, TestPyPI rules, rollback.
