@@ -29,15 +29,14 @@ python cek-surface/demo/http_host.py        # browser shop (real Host)
 sh scripts/run_ws_demo.sh                   # WebSocket carrier one-command
 ```
 
-## Build / TestPyPI
+## Build / publish
 
 ```bash
-sh scripts/build_release.sh                 # dist/*.whl + *.tar.gz
-# Trusted Publishing: see docs/TESTPYPI_SETUP.md
-# Actions → publish-testpypi → Run workflow
+sh scripts/build_release.sh
+# TestPyPI: docs/TESTPYPI_SETUP.md · Production: docs/PYPI_SETUP.md
 ```
 
-Environments: **`testpypi-host`** (`cek-host`) · **`testpypi-surface`** (`cek-surface`).
+`pip install cek-host==0.1.0 cek-surface==0.1.0`
 
 ## Docs (start here)
 
@@ -55,6 +54,6 @@ Environments: **`testpypi-host`** (`cek-host`) · **`testpypi-surface`** (`cek-s
 
 ## Status (2026-08-15)
 
-- **P0–P3 shipped** — full tree, live continuations, vectors, WS demo, **TestPyPI 0.1.0**
-- CI: [test.yml](./.github/workflows/test.yml) · Publish: [publish-testpypi.yml](./.github/workflows/publish-testpypi.yml)
-- Install from TestPyPI: see [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md)
+- **P0–P3 + production PyPI shipped** — TestPyPI and **pypi.org** `0.1.0`
+- Install: `pip install cek-host==0.1.0 cek-surface==0.1.0`
+- CI: [test.yml](./.github/workflows/test.yml) · [publish-testpypi.yml](./.github/workflows/publish-testpypi.yml) · [publish-pypi.yml](./.github/workflows/publish-pypi.yml)

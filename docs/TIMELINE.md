@@ -45,8 +45,12 @@
 
 - **P0:** Full surface tree on GitHub; editable install smoke; CI `test.yml`
 - **P1:** Browser E2E + live continuation Cap path (timer.fired → pre-minted once Cap)
-- **P2:** Golden vectors (`surface_core.json` v2, 14 cases) + `run_ws_demo.sh`
-- **P3 path:** `build_release.sh`, split `publish-testpypi.yml`  
-  Environments: `testpypi-host` / `testpypi-surface`  
-  Live index upload still needs publisher registration (see TESTPYPI_SETUP.md)
-- Knowledge base expanded: PERFORMANCE, PACKAGING, TESTPYPI_SETUP
+- **P2:** Golden vectors + `run_ws_demo.sh`
+- **P3:** TestPyPI live — envs `testpypi-host` / `testpypi-surface`
+- Knowledge base: PERFORMANCE, PACKAGING, TESTPYPI_SETUP
+
+## Phase I — Production PyPI (2026-08-15)
+
+- Environments `pypi-host` / `pypi-surface` + Trusted Publishers on pypi.org
+- publish-pypi #1 green → `cek-host` / `cek-surface` **0.1.0** on https://pypi.org
+- Install smoke: refuse → `ops: []`
