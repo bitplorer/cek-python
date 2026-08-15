@@ -64,4 +64,5 @@ See [TIMELINE.md](./TIMELINE.md) and [ROADMAP.md](./ROADMAP.md).
   - `publish-host` → environment **`testpypi-host`**
   - `publish-surface` → environment **`testpypi-surface`**
 - Setup guide: [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md)
-- **Not yet:** live upload (needs TestPyPI pending publishers + first `workflow_dispatch`)
+- **Live on TestPyPI:** `cek-host==0.1.0`, `cek-surface==0.1.0` (publish-testpypi #1, all jobs green)
+- Install smoke from test.pypi.org: Host refuse → `ops: []` **PASS**

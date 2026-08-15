@@ -17,7 +17,7 @@
 13. **P0:** full `cek-surface` tree on GitHub + editable-install smoke + CI
 14. **P1:** browser E2E against real Surface.submit; live continuation Cap path
 15. **P2:** golden vectors + WS one-command demo
-16. **P3 path:** build scripts + split Trusted Publishing workflow (`testpypi-host` / `testpypi-surface`)
+16. **P3:** TestPyPI live — `cek-host`/`cek-surface` 0.1.0 on test.pypi.org (publish-testpypi #1 green)
 
 ## Present (2026-08-15)
 
@@ -30,16 +30,17 @@
 | **WS** | `sh scripts/run_ws_demo.sh` |
 | **Packaging** | `sh scripts/build_release.sh` → `dist/` 0.1.0 |
 | **Publish CI** | `publish-testpypi.yml` → envs `testpypi-host` + `testpypi-surface` |
+| **TestPyPI** | `cek-host==0.1.0`, `cek-surface==0.1.0` |
 
 **Measured:** [PERFORMANCE.md](./PERFORMANCE.md) (Host ~0.03 ms, Peer path ~0.3 ms, RTT-bound).
 
-**Open for P3 complete:** register TestPyPI pending publishers (matching env names) + first `workflow_dispatch`. See [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md).
+**P3 complete:** both packages on TestPyPI; install verified (refuse → `ops: []`).
 
 ## Next (ship in order)
 
 | Priority | Item | Definition of done |
 |----------|------|--------------------|
-| **P3** | Live TestPyPI upload | Both packages installable from test.pypi.org |
+| **P3** | Live TestPyPI upload | **SHIPPED** — test.pypi.org `cek-host`/`cek-surface` 0.1.0 |
 | — | Optional vector parity | More cek-runtime families as notes/exec cases |
 | — | Production PyPI | Separate trusted publishers on pypi.org when stable |
 
@@ -65,9 +66,7 @@
 ## Suggested next session
 
 ```text
-1) Confirm TestPyPI pending publishers:
-     cek-host     → Environment testpypi-host
-     cek-surface  → Environment testpypi-surface
-2) Actions → publish-testpypi → Run workflow
-3) pip install from test.pypi.org; mark P3 SHIPPED
+1) Optional: deeper cek-runtime vector parity
+2) When stable: production PyPI (separate trusted publishers)
+3) Keep refuse → ops:[] / Peer no mint / fail closed
 ```

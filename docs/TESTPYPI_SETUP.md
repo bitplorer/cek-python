@@ -1,7 +1,7 @@
 # TestPyPI setup (one-time + publish)
 
 **Purpose:** future reference for publishing `cek-host` / `cek-surface` to [TestPyPI](https://test.pypi.org).  
-**Repo wiring is done.** Live upload still needs Trusted Publishers on TestPyPI (OIDC) or a token.
+**P3 complete (2026-08-15):** `cek-host` and `cek-surface` **0.1.0** are on [TestPyPI](https://test.pypi.org). Re-run workflow only after a version bump.
 
 Related: [ORGANIZATION.md](./ORGANIZATION.md) · [PACKAGING.md](./PACKAGING.md) · `.github/workflows/publish-testpypi.yml`
 
@@ -105,7 +105,7 @@ sh scripts/publish_testpypi.sh
 
 - [x] Build scripts + split workflow on `main`  
 - [x] GitHub Environments `testpypi-host` + `testpypi-surface`  
-- [ ] Pending publisher `cek-host` → env `testpypi-host`  
-- [ ] Pending publisher `cek-surface` → env `testpypi-surface`  
-- [ ] First successful `workflow_dispatch`  
-- [ ] Install smoke from TestPyPI confirmed  
+- [x] Pending publisher `cek-host` → env `testpypi-host`  
+- [x] Pending publisher `cek-surface` → env `testpypi-surface`  
+- [x] First successful `workflow_dispatch` (publish-testpypi #1)  
+- [x] Install smoke from TestPyPI confirmed  

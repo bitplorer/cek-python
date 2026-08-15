@@ -19,16 +19,20 @@ Honest inventory of what is on **bitplorer/cek-python** `main`.
 - Scripts: `verify.sh`, `build_release.sh`, `publish_testpypi.sh`, `run_ws_demo.sh`
 - Performance report + packaging + TestPyPI setup docs
 
-## Not yet on TestPyPI index
+## TestPyPI index
 
-Live `pip install` from test.pypi.org waits on:
+| Package | Version | Notes |
+|---------|---------|-------|
+| `cek-host` | 0.1.0 | publish-testpypi #1 |
+| `cek-surface` | 0.1.0 | publish-testpypi #1 |
 
-1. Pending Trusted Publishers (`cek-host` → `testpypi-host`, `cek-surface` → `testpypi-surface`)
-2. First successful Actions run
-
-See [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md).
+```bash
+pip install -i https://test.pypi.org/simple/ \
+  --extra-index-url https://pypi.org/simple/ \
+  cek-host==0.1.0 cek-surface==0.1.0
+```
 
 ## 2026-08-15 notes
 
-- P0–P2 content synced; P3 path (build + split workflow) on `main`
-- Env names standardized to `testpypi-host` / `testpypi-surface` (not bare `testpypi`)
+- P0–P3 complete on `main` + TestPyPI
+- Env names: `testpypi-host` / `testpypi-surface`
