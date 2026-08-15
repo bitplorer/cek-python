@@ -1,0 +1,59 @@
+# Publish cek-host + cek-surface 0.1.0 to TestPyPI via Trusted Publishing.
+#
+# One-time setup (PyPI / TestPyPI project pages):
+#   1. Create projects cek-host and cek-surface on https://test.pypi.org
+#   2. Add Trusted Publisher:
+#        Owner: bitplorer
+#        Repository: cek-python
+#        Workflow: publish-testpypi.yml
+#        Environment: testpypi
+#   3. Create GitHub Environment "testpypi" (Settings → Environments)
+#
+# Trigger: workflow_dispatch or push of tag v0.1.0*
+
+name: publish-testpypi
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v0.1.0*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install build tools
+        run: pip install build twine
+      - name: build
+        run: |
+          python -m build --outdir dist cek-host
+          python -m build --outdir dist cek-surface
+          python -m twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/
