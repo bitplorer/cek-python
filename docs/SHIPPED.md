@@ -25,7 +25,7 @@ python -m cek_host create-app ./hello && python ./hello/app.py
 - `doctor` / `explain` / `create-app` CLI (`python -m cek_host`).
 - A ≡ B (`test_host_parity`). D3 + D4 (`test_layer_honesty`).
 
-## Phase 2 (this tree)
+## Phase 2 (**SHIP**)
 
 - `BoundAsk` — no public constructor. Host binds only after verify + idem + once-ensure.
 - `IdemBackend` (memory + file/flock). Empty key refuse. Same digest replay. Different body refuse. Lookup **before** once-ensure.
