@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +22,6 @@ from cek_surface.carrier import MemoryCarrier  # noqa: E402
 from cek_surface.continuation import Continuation, resolve_args  # noqa: E402
 from cek_surface.ops import as_wire  # noqa: E402
 from cek_surface.session import PeerSession  # noqa: E402
-
 
 VECTORS = ROOT / "vectors" / "surface_core.json"
 
@@ -99,6 +99,45 @@ def run_case(case: dict) -> None:
         r = s.submit(case["action"], case["submit_args"], cap=cap, drain_async=False)
         assert r["result"]["kind"] == case["expect"]["kind"]
         assert r["result"]["ops"] == case["expect"]["ops"]
+        s.close()
+        return
+
+    if cid == "expired_cap_refuse":
+        from cek_host import Host
+
+        h = Host(secret=b"vector-secret-32-bytes!!!!!!!!")
+        tok = h.mint("kv.write", not_after=time.time() - 10)
+        r = h.submit(
+            action="kv.write",
+            args={"key": "a", "value": 1},
+            cap=tok,
+            project_ops=[{"ns": "kv", "name": "set", "payload": {"key": "a", "value": 1}}],
+        )
+        assert r.kind == "authority_refusal" and r.ops == [], r
+        return
+
+    if cid == "action_mismatch_refuse":
+        from cek_host import Host
+
+        h = Host(secret=b"vector-secret-32-bytes!!!!!!!!")
+        tok = h.mint("cart.add")
+        r = h.submit(
+            action="cart.remove",
+            args={},
+            cap=tok,
+            project_ops=[{"ns": "sys", "name": "noop", "payload": {}}],
+        )
+        assert r.kind == "authority_refusal" and r.ops == [], r
+        return
+
+    if cid == "peer_dispatch_error_no_mutate":
+        s = memory_surface()
+        h = s.peer.carrier.peer_handler
+        h._kv = {}
+        h({"type": "apply", "result": case["peer_result"]})
+        for k, v in (case.get("expect_peer_kv") or {}).items():
+            assert h._kv.get(k) == v
+        assert h._kv == {}
         s.close()
         return
 
