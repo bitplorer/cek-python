@@ -53,3 +53,11 @@ See [TIMELINE.md](./TIMELINE.md) and [ROADMAP.md](./ROADMAP.md).
 - `cek-surface/vectors/surface_core.json` v2 (14 cases, aligns hot Op ns.name with cek-runtime)
 - `tests/test_vectors.py` in `scripts/verify.sh`
 - One-command WS: `sh scripts/run_ws_demo.sh` → Peer apply over WebSocketCarrier
+
+### 2026-08-15 — P3 packaging / TestPyPI path
+
+- `python -m build` sdist+wheel for `cek-host` and `cek-surface` 0.1.0 — twine check PASS
+- Wheel install smoke: Host refuse → `ops: []`
+- Scripts: `scripts/build_release.sh`, `scripts/publish_testpypi.sh`
+- CI: `.github/workflows/publish-testpypi.yml` (Trusted Publishing, env `testpypi`)
+- Live TestPyPI upload requires one-time Trusted Publisher setup on test.pypi.org
