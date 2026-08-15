@@ -20,4 +20,5 @@ python3 cek-surface/tests/test_carrier_ir.py
 python3 cek-surface/tests/test_host_kernel.py
 python3 cek-surface/tests/test_continuation_live.py
 python3 cek-surface/tests/test_http_host.py
+python3 cek-surface/tests/test_vectors.py
 echo "verify ok"
