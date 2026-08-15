@@ -4,9 +4,12 @@ Compose `list[Op]`. Host authorizes. Peer applies. Peer IR is perception only.
 
 **Read [START.md](../START.md) first.** Requires `cek-host`. `EmbeddedHostKernel` is gone (D3).
 
+PyPI **0.1.0** is the last publish. Phase 2 lives in this tree (**0.1.2**). Clone path:
+
 ```bash
-pip install cek-surface          # pulls cek-host
-python ../cek-surface/demo/http_host.py   # from repo: browser shop
+git clone https://github.com/bitplorer/cek-python && cd cek-python
+pip install -e ./cek-host -e ./cek-surface
+python cek-surface/demo/http_host.py   # browser shop
 ```
 
 ```python

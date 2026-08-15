@@ -1,0 +1,36 @@
+{
+  "id": "once-idempotent-retry",
+  "family": "idempotent_submit",
+  "description": "Retry of a once-Cap with the same idempotency key returns the cached ok Result",
+  "now": 1000,
+  "prior_intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 1 },
+    "cap": {
+      "id": "cap-once-idem",
+      "action": "kv.write",
+      "once": true
+    },
+    "idempotency_key": "once-retry"
+  },
+  "prior_must_ok": true,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "k", "value": 1 },
+    "cap": {
+      "id": "cap-once-idem",
+      "action": "kv.write",
+      "once": true
+    },
+    "idempotency_key": "once-retry"
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    {
+      "ns": "kv",
+      "name": "set",
+      "payload": { "key": "k", "value": 1 }
+    }
+  ],
+  "expect_once_consumed": true
+}

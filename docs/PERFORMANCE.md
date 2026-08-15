@@ -5,7 +5,7 @@
 **Date:** 2026-08-15  
 **Repo:** [bitplorer/cek-python](https://github.com/bitplorer/cek-python)  
 **Machine:** Linux container, Python 3.12.3, Node v24.15.0  
-**Packages:** `cek-host` 0.1.0 (numbers below) · Phase 1 kernel (`0.1.1`) must not regress Host-only p95 > 10%  
+**Packages:** numbers below are **PyPI 0.1.0** benches. Tree is **0.1.2** (Phase 2). Host-only p95 must not regress > 10% vs those 0.1.0 numbers.  
 **Kernel under test:** `CekHostPyKernel` → `cek_host.Host`
 
 ---

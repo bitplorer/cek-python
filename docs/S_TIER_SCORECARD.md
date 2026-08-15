@@ -113,7 +113,9 @@ Loop 3 is the critic’s listed diffs only.
 | 2 | 1,2,5,6,8,12 | Honest START. Host unexported. flock. scaffold production()+FileOnce | `verify ok` | **ALMOST** — sketch Host still a machine; PyPI create-app lie; translated vectors |
 | 3 | 2,6,7,12 | Delete `cek_surface.host.Host`. test_core → published Host+Surface. Four pages use clone path. Runner **loads** Rust JSON (14 aligned). `/cek/mint` + submit `auto_mint=False` | `sh scripts/verify.sh` → `verify ok`. FIRST5 **7.318 s**. 14 fixtures. missing cap → refuse | **ALMOST** — CLI `create-app` still printed `pip install cek-host cek-surface` |
 | 4 | Loop 4 | 3 | CLI next-step `python app.py` | `verify ok` | L3 close condition met |
-| 5 | This loop | 7 | Phase 2: BoundAsk, Idem, Lineage, Ed25519, law-gen, 28 fixtures | `verify ok` + `test_phase2` | Phase 2 self-score; critic not yet |
+| 5 | This loop | 7 | Phase 2: BoundAsk, Idem, Lineage, Ed25519, law-gen, 29 fixtures | `verify ok` + `test_phase2` | **ALMOST** — no live verify paste + missing I5 fixture |
+| 6 | Honesty | 2 | HANDOFF + surface README clone path; refuse no leftover Caps | — | — |
+| 7 | Critic diffs | 7 | Vendor `once-idempotent-retry`; drop dup README heading; TESTING/PERFORMANCE honesty | this turn | L5: SHIP if verify green |
 
 ## Critic pastes (loop 3 executed here)
 
@@ -168,7 +170,15 @@ Loop 2: **ALMOST** (independent critic, four planes at 3).
 Loop 3: **ALMOST** (independent critic). Named leftover: `cli.py` create-app next-step still printed `pip install cek-host cek-surface`.
 Loop 4: that line is `python {dest}/app.py`. `sh scripts/verify.sh` → `verify ok` on this machine.
 
-Critic L3 close condition: “SHIP if that line is gone and `verify.sh` is green.” **Condition met.** Phase 2 is in this tree (`verify ok`, 28 fixtures, `test_phase2`). CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 not started.
+Critic L5: **ALMOST**. Named leftovers applied this loop (I5 fixture, README heading, TESTING/PERFORMANCE).  
+
+```
+sh scripts/verify.sh
+verify ok
+# 29 aligned fixtures including once-idempotent-retry
+```
+
+CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 not started.
 
 ```
 created …/app.py

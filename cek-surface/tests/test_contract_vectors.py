@@ -42,6 +42,7 @@ ALIGNED_IDS = {
     "empty-idempotency-key",
     "idempotency-replay",
     "idempotency-conflict",
+    "once-idempotent-retry",
     "lineage-reverse-on-end",
     "receipt-landed-first-reverse",
     "kv-delete-prior-reverse",
@@ -162,7 +163,12 @@ def _submit(host: Host, case: dict, intent: dict, expect_kind: str, tokens: dict
     tok = None
     if cap:
         jti = str(cap.get("id") or "")
-        if jti and jti in tokens and case["id"] in ("once-second-use", "idempotency-replay", "idempotency-conflict"):
+        if jti and jti in tokens and case["id"] in (
+            "once-second-use",
+            "idempotency-replay",
+            "idempotency-conflict",
+            "once-idempotent-retry",
+        ):
             tok = tokens[jti]
         else:
             tok = _mint(host, cap, args, expect_kind, case)
@@ -202,6 +208,16 @@ def run_case(case: dict) -> None:
         aid = intent.get("activity_id")
         assert aid
         host.report_receipt(str(aid), r.ops)
+
+    if case.get("expect_once_consumed") and r.kind == "ok":
+        jti = str((intent.get("cap") or {}).get("id") or "")
+        tok = tokens.get(jti)
+        bare = host.submit(
+            action=intent.get("action") or "",
+            args=dict(intent.get("args") or {}),
+            cap=tok,
+        )
+        assert bare.kind == "authority_refusal" and bare.ops == [], (case["id"], bare)
 
     if case.get("end_activity"):
         rev = host.end_activity(case["end_activity"])

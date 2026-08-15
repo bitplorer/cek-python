@@ -34,7 +34,7 @@ python -m cek_host create-app ./hello && python ./hello/app.py
 - Ed25519 Host policy (opt-in seed/trust). Unsigned or tampered refuse, zero Ops.
 - Law-generation window: blank/unknown refuse; unset = legacy accept; `accepted_generations` dual-speak.
 - `production()` refuses memory idem/lineage unless `allow_memory_stores`. FileOnce auto-creates FileIdem + FileLineage beside it.
-- Aligned contract family: 28 Rust JSON fixtures (`test_contract_vectors`) + `test_phase2`.
+- Aligned contract family: 29 Rust JSON fixtures (`test_contract_vectors`) + `test_phase2`.
 
 ## Demos
 

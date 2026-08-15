@@ -204,7 +204,8 @@ class Surface:
         reply = peer.apply_result(result)
         self.last_world = reply.get("world") or {}
         payload = result.to_dict()
-        conts = self.continuation_dicts()
+        # Refuse must not advertise leftover Caps (previous search debounce, etc.).
+        conts = self.continuation_dicts() if result.ok else []
         if conts:
             payload["continuations"] = conts
         out: dict[str, Any] = {
