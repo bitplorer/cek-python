@@ -14,6 +14,7 @@
 | [LATENCY.md](./LATENCY.md) | Measured lag, human thresholds, Peer IR role |
 | [GITHUB_STATUS.md](./GITHUB_STATUS.md) | What is on GitHub vs local-only (honest inventory) |
 | [PACKAGING.md](./PACKAGING.md) | setuptools today; uv/Poetry migration recipes |
+| [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md) | One-time Trusted Publisher + TestPyPI publish checklist |
 
 **Related external repos**
 

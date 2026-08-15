@@ -11,7 +11,7 @@ Python workspace for **CEK** (Cap-Effect Kernel).
 
 ## Knowledge base
 
-**→ [docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)** · Packaging: [docs/PACKAGING.md](./docs/PACKAGING.md)
+**→ [docs/KNOWLEDGE.md](./docs/KNOWLEDGE.md)** · Packaging: [docs/PACKAGING.md](./docs/PACKAGING.md) · [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md)
 
 ## Quick start
 
@@ -33,7 +33,7 @@ sh scripts/run_ws_demo.sh
 
 ## Build / TestPyPI
 
-Packaging backends and **uv / Poetry migration guide:** [docs/PACKAGING.md](./docs/PACKAGING.md).
+Packaging backends and **uv / Poetry migration guide:** [docs/PACKAGING.md](./docs/PACKAGING.md) · [docs/TESTPYPI_SETUP.md](./docs/TESTPYPI_SETUP.md).
 
 ```bash
 sh scripts/build_release.sh
