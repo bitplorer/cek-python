@@ -117,6 +117,7 @@ Loop 3 is the critic’s listed diffs only.
 | 6 | Honesty | 2 | HANDOFF + surface README clone path; refuse no leftover Caps | — | — |
 | 7 | Critic diffs | 7 | Vendor `once-idempotent-retry`; drop dup README heading; TESTING/PERFORMANCE honesty | `ae2460f` | L5: SHIP if verify green |
 | 8 | L5 close | 7 | Clean-clone re-run of `verify.sh` on `ae2460f` | **verify ok** (29 fixtures) | L5 close condition **met** |
+| 9 | **SHIP** | — | User **ship** · evidence held · every plane ≥ 4 · no kill | `verify ok` reconfirmed | **SHIP** (Phase 2) |
 
 ## Critic pastes (loop 3 executed here)
 
@@ -159,9 +160,9 @@ test_contract_vectors.py → 14 Rust JSON fixtures (aligned family)
 96e4f83e3793b646323a67f314b51044
 ```
 
-## Remaining (honest, not Phase-1 blockers)
+## Remaining (after Phase 2 SHIP)
 
-- Phase 3 (Redis, crates.io) **does not start** until Phase 2 critic SHIP.
+- Phase 3 (Redis, crates.io, PyPI 0.1.2) **does not start** without an explicit plan.
 - Tree 0.1.2 is not on pypi.org yet. START says so.
 - `ports/cek-host-py` **code** kept because `scripts/batteries.sh` + `demo/host-peer` still run it. Not published.
 
@@ -181,7 +182,20 @@ verify ok
 # HEAD ae2460f · 29 aligned fixtures including once-idempotent-retry · phase2 ok · A≡B · layer honesty ok
 ```
 
-L5 close condition (**SHIP if those diffs land and verify is green**) is **met**. Every plane still ≥ 4. No kill. CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 not started.
+L5 close condition (**SHIP if those diffs land and verify is green**) is **met**.
+
+## Verdict: **SHIP** (Phase 2)
+
+| Gate | Evidence |
+|------|----------|
+| Every plane ≥ 4 | Scorecard table |
+| No kill-criteria | Law freeze held; no second Cap; no ux-channel; refuse → `ops:[]` |
+| First-5 timed | START **7.318 s** |
+| `verify.sh` green | Clean clone @ `ae2460f` / docs @ `44952f9` → **verify ok** · 29 fixtures · `phase2 ok` |
+| A ≡ B · D3 · D4 | `test_host_parity` · `test_layer_honesty` |
+| Oracle | `96e4f83e3793b646323a67f314b51044` |
+
+CHARTER / KILL-CRITERIA / CORE untouched. Phase 3 (Redis, crates.io, PyPI 0.1.2 publish) **not** started — gated on explicit next plan.
 
 ```
 created …/app.py
