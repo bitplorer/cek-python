@@ -1,32 +1,93 @@
 {
   "pack": "cek-surface-core",
-  "version": 1,
+  "version": 2,
+  "aligns_with": "cek-runtime/crates/cek-contract/vectors (hot Op ns.name + refuse empty ops)",
   "cases": [
     {
       "id": "refuse_no_cap",
+      "family": "authority",
       "intent": { "action": "cart.add", "args": { "id": "sku-1" }, "cap": null },
       "expect": { "kind": "authority_refusal", "ops": [] }
     },
     {
+      "id": "once_second_use",
+      "family": "single_use",
+      "note": "mint once, submit twice → second authority_refusal with empty ops",
+      "action": "cart.add",
+      "args": { "id": "sku-1", "qty": 1 },
+      "once": true,
+      "expect_first": "ok",
+      "expect_second": { "kind": "authority_refusal", "ops": [] }
+    },
+    {
+      "id": "sealed_args_mismatch",
+      "family": "sealed_args",
+      "action": "cart.add",
+      "mint_args": { "id": "sku-1", "qty": 1 },
+      "submit_args": { "id": "sku-1", "qty": 99 },
+      "seal_args": true,
+      "expect": { "kind": "authority_refusal", "ops": [] }
+    },
+    {
       "id": "toast_op_shape",
+      "family": "op_shape",
       "op": { "ns": "ui", "name": "toast", "payload": { "message": "hi", "level": "info", "ms": 3000 } },
       "expect_wire_keys": ["ns", "name", "payload"]
     },
     {
       "id": "morph_op_shape",
+      "family": "op_shape",
       "op": { "ns": "ui.dom", "name": "morph", "payload": { "target": "shell", "patch": { "tag": "div" } } },
       "expect_ns_name": ["ui.dom", "morph"]
     },
     {
-      "id": "once_second_use",
-      "note": "mint once, submit twice → second authority_refusal"
+      "id": "kv_set_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "kv", "name": "set", "payload": { "key": "greeting", "value": "hello" } },
+      "expect_ns_name": ["kv", "set"]
+    },
+    {
+      "id": "log_append_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "log", "name": "append", "payload": { "message": "cart.add", "fields": { "sku": "sku-1" } } },
+      "expect_ns_name": ["log", "append"]
+    },
+    {
+      "id": "timer_set_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "timer", "name": "set", "payload": { "id": "search-debounce", "ms": 200 } },
+      "expect_ns_name": ["timer", "set"]
+    },
+    {
+      "id": "sys_noop_op_shape",
+      "family": "op_shape",
+      "op": { "ns": "sys", "name": "noop", "payload": {} },
+      "expect_ns_name": ["sys", "noop"]
+    },
+    {
+      "id": "peer_kv_set_lands",
+      "family": "baseline_apply",
+      "aligns_with": "cek-runtime peer_kv_set_lands",
+      "peer_result": {
+        "kind": "ok",
+        "ops": [{ "ns": "kv", "name": "set", "payload": { "key": "a", "value": 1 } }]
+      },
+      "expect_peer_kv": { "a": 1 }
+    },
+    {
+      "id": "peer_refusal_no_mutate",
+      "family": "baseline_apply",
+      "peer_result": { "kind": "authority_refusal", "ops": [] },
+      "expect_peer_kv": {}
     },
     {
       "id": "shadow_not_authority",
+      "family": "peer_ir",
       "note": "Peer IR shadow must not write authority kv; cleared on Result apply"
     },
     {
       "id": "continuation_slot_resolve",
+      "family": "continuation",
       "continuation": {
         "event": "timer.fired:d1",
         "action": "search.commit",
@@ -37,6 +98,29 @@
       "store": { "search.pending": "widget" },
       "event": { "type": "timer.fired", "id": "d1" },
       "expect_args": { "q": "widget", "ms": 0 }
+    },
+    {
+      "id": "hot_op_catalog",
+      "family": "contract_alignment",
+      "ops": [
+        ["kv", "set"],
+        ["kv", "delete"],
+        ["kv", "merge"],
+        ["ui.dom", "morph"],
+        ["ui.dom", "set_text"],
+        ["ui.dom", "remove"],
+        ["ui", "toast"],
+        ["ui", "busy"],
+        ["ui", "focus"],
+        ["nav", "push"],
+        ["nav", "replace"],
+        ["nav", "back"],
+        ["timer", "set"],
+        ["timer", "clear"],
+        ["http", "request"],
+        ["log", "append"],
+        ["sys", "noop"]
+      ]
     }
   ]
 }
