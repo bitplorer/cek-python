@@ -1,34 +1,29 @@
 # Roadmap
 
+**Read [START.md](../START.md) first.**
+
 ## Shipped
 
-P0 full tree · P1 live continuations · P2 vectors+WS · **P3 TestPyPI 0.1.0** · **Production PyPI 0.1.0**
+P0 full tree · P1 live continuations · P2 vectors+WS · **P3 TestPyPI + PyPI 0.1.0** · **Phase 1 Host** (one Cap machine, subject/scope, digest, OnceBackend, doctor/explain/create-app)
 
 ## Present
 
 | Item | Status |
 |------|--------|
-| TestPyPI | `cek-host` / `cek-surface` 0.1.0 live |
-| **PyPI** | `cek-host` / `cek-surface` **0.1.0** live (publish-pypi #1) |
-| Vectors | v3 — **20 cases** in `verify.sh` |
-| Consumer smoke | `scripts/consumer_smoke_testpypi.sh` PASS |
-| Production publish | `publish-pypi.yml` + envs `pypi-host` / `pypi-surface` |
+| Published Host | `cek-host` is the only Cap machine. `EmbeddedHostKernel` gone. |
+| production() | Refuses default secret + memory once-store |
+| Vectors | surface v3 (20) + aligned contract family on Host |
+| doctor / explain / create-app | `python -m cek_host` |
 
-## Next (optional)
+## Next (Phase 2 — gated on Phase 1 critic SHIP)
 
 | Item | Do |
 |------|----|
-| More vectors | Further cek-runtime family parity as needed |
-| Version bump | Only when shipping `0.1.1+` (0.1.0 locked on both indexes) |
+| BoundAsk | only project path |
+| IdemBackend · LineageBackend | end_activity reverse, receipts |
+| Ed25519 | opt-in Host policy |
+| `require` mode | production() cutover as default recommendation |
 
 ## Anti-roadmap
 
-Peer Cap mint · Peer plan IR · ux-channel dependency · Surface-owned Cap product
-
-## Suggested next
-
-```text
-1) Use packages: pip install cek-host cek-surface
-2) Keep refuse → ops:[] / Peer no mint / fail closed
-3) Bump version only for intentional releases
-```
+Peer Cap mint · Peer plan IR · ux-channel dependency · Surface-owned Cap product · publishing `ports/cek-host-py` as a second Host · `require_cap=False` in templates

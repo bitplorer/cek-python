@@ -2,7 +2,7 @@
 """HTTP Host for browser_shop.html — browser is the Peer.
 
   python3 demo/http_host.py [port]
-  open http://127.0.0.1:8765/   (no ?mock=1 required)
+  open http://127.0.0.1:8080/   (no ?mock=1 required)
 
 Host only composes + verifies Caps. Browser applies Result.ops and
 submits continuation Intents (timer.fired → pre-minted Cap).
@@ -89,6 +89,14 @@ class Handler(BaseHTTPRequestHandler):
                 "application/json",
             )
             return
+        if path.startswith("/cek/explain"):
+            from urllib.parse import parse_qs
+
+            q = parse_qs(urlparse(self.path).query).get("q", [""])[0]
+            from cek_host import explain
+
+            self._send(200, json.dumps(explain(q).to_dict()).encode(), "application/json")
+            return
         if path.startswith("/js/"):
             fp = ROOT / path.lstrip("/")
             if not fp.exists() or not fp.is_file():
@@ -108,12 +116,14 @@ class Handler(BaseHTTPRequestHandler):
         action = data.get("action") or ""
         args = data.get("args") or {}
         cap = data.get("cap") or None
+        once = bool(args.pop("_once", False)) if isinstance(args, dict) else False
         # Browser is the Peer: no subprocess apply, no drain.
         out = SURFACE.submit(
             action,
             args,
             cap=cap,
             auto_mint=not bool(cap),
+            once=once,
             drain_async=False,
         )
         body = json.dumps(
@@ -128,7 +138,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> int:
     host = os.environ.get("CEK_HOST", "0.0.0.0")
-    port = int(sys.argv[1] if len(sys.argv) > 1 else os.environ.get("CEK_PORT", "8765"))
+    port = int(sys.argv[1] if len(sys.argv) > 1 else os.environ.get("CEK_PORT", "8080"))
     httpd = ThreadingHTTPServer((host, port), Handler)
     print(f"cek-surface HTTP Host http://{host}:{port}/")
     print("  real Surface.submit (no ?mock=1 required)")

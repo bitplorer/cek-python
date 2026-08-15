@@ -1,5 +1,8 @@
 # Latency model (CEK surface)
 
+**Read [START.md](../START.md) first.**
+
+
 ## Doctrine
 
 **Lag ≈ RTT × (Host decisions).** Apply is free once `Result` is local.

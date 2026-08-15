@@ -9,7 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_surface import CapError, CapService, Host, Intent, Op
+from cek_host import CapError, CapService
+from cek_surface import Intent, Op
+from cek_surface.host import Host
 
 
 def test_op_wire():

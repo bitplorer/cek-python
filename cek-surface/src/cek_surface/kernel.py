@@ -1,23 +1,18 @@
 """Host-kernel boundary.
 
-cek-surface does **not** reimplement the Cap state machine long-term.
-It calls a Host kernel (cek-host / CEK Host) for authority.
-
-Until cek-host is installed, EmbeddedHostKernel is a local shim so demos run.
-Replace with CekHostPyKernel when available.
+cek-surface does not reimplement the Cap state machine.
+It calls cek-host. load_host_kernel fails closed if cek-host is missing.
+EmbeddedHostKernel is gone (D3 / G4).
 """
-
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
-try:
-    from cek_host import CapError, CapService, KernelResult as HostKernelResult
-except ImportError:
-    from .cap import CapError, CapService  # type: ignore
-    HostKernelResult = None
+from cek_host import Host as CekHost
+from cek_host import KernelResult as HostKernelResult
+from cek_host import CapError, CapService, explain
 from .ops import Op, as_wire
 
 
@@ -38,10 +33,13 @@ class KernelResult:
     def ok(self) -> bool:
         return self.kind == "ok"
 
+    def explain(self):
+        return explain(self.error)
+
 
 @runtime_checkable
 class HostKernel(Protocol):
-    """Minimal surface expected from cek-host (or embedded shim)."""
+    """Minimal surface expected from cek-host."""
 
     def mint(
         self,
@@ -53,45 +51,14 @@ class HostKernel(Protocol):
         **kw: Any,
     ) -> str: ...
 
-    def submit(
+    def check(
         self,
         action: str,
         args: dict[str, Any],
         cap: str | None,
         *,
         activity_id: str | None = None,
-        project_ops: list[dict[str, Any]] | None = None,
-    ) -> KernelResult:
-        """
-        Verify Cap for action+args, then either:
-          - project_ops is provided (surface already composed) → accept under Cap, or
-          - kernel dispatches internally (if it owns handlers).
-
-        cek-surface prefers: app composes list[Op], kernel only authorizes + packages Result.
-        """
-        ...
-
-
-class EmbeddedHostKernel:
-    """Shim: Cap verify + package ops. Not a full CEK Host (no lineage/idem/BoundAsk).
-
-    Swap for cek-host when packaging for production.
-    """
-
-    def __init__(self, secret: bytes = b"cek-surface-dev-secret-change-me", require_cap: bool = True):
-        self.caps = CapService(secret=secret)
-        self.require_cap = require_cap
-
-    def mint(
-        self,
-        action: str,
-        *,
-        once: bool = False,
-        args: dict[str, Any] | None = None,
-        seal_args: bool = False,
-        **kw: Any,
-    ) -> str:
-        return self.caps.mint(action, once=once, args=args, seal_args=seal_args, **kw)
+    ) -> KernelResult: ...
 
     def submit(
         self,
@@ -101,66 +68,89 @@ class EmbeddedHostKernel:
         *,
         activity_id: str | None = None,
         project_ops: list[dict[str, Any]] | None = None,
+    ) -> KernelResult: ...
+
+
+class CekHostPyKernel:
+    """Thin adapter. One Cap machine: cek_host.Host."""
+
+    def __init__(self, inner: CekHost | None = None) -> None:
+        self._inner = inner if inner is not None else CekHost()
+        self.name = getattr(self._inner, "name", "cek_host.Host")
+
+    def mint(self, action: str, **kw: Any) -> str:
+        return self._inner.mint(action, **kw)
+
+    def check(
+        self,
+        action: str,
+        args: dict[str, Any],
+        cap: str | None,
+        *,
+        activity_id: str | None = None,
     ) -> KernelResult:
-        action = (action or "").strip()
-        if not action:
-            return KernelResult("authority_refusal", [], "empty action")
-        if self.require_cap or cap:
-            if not cap:
-                return KernelResult("authority_refusal", [], "cap required")
-            try:
-                self.caps.verify(cap, action, args)
-            except CapError as e:
-                return KernelResult("authority_refusal", [], str(e))
-        ops = project_ops if project_ops is not None else []
-        return KernelResult("ok", list(ops))
+        if hasattr(self._inner, "check"):
+            r = self._inner.check(action, args, cap, activity_id=activity_id)
+            return _as_kernel_result(r)
+        # older Host: verify via submit with empty ops, then we must not burn —
+        # current Host.check exists. Fall back is refuse-closed, not a shim.
+        r = self._inner.submit(action=action, args=args, cap=cap, project_ops=[])
+        return _as_kernel_result(r)
+
+    def submit(
+        self,
+        action: str,
+        args: dict[str, Any],
+        cap: str | None,
+        *,
+        activity_id: str | None = None,
+        project_ops: list[dict[str, Any]] | None = None,
+    ) -> KernelResult:
+        if project_ops is not None and hasattr(self._inner, "submit_ops"):
+            r = self._inner.submit_ops(project_ops, cap=cap, action=action, args=args)
+        else:
+            r = self._inner.submit(
+                {"action": action, "args": args, "cap": cap, "activity_id": activity_id}
+            )
+        return _as_kernel_result(r)
+
+    def explain(self, error: str | None = None):
+        return explain(error)
+
+    def doctor(self, **kw: Any):
+        return self._inner.doctor(**kw)
 
 
-def load_host_kernel() -> HostKernel:
-    """Prefer cek-host; fall back to embedded shim."""
+def _as_kernel_result(r: Any) -> KernelResult:
+    if isinstance(r, dict):
+        return KernelResult(
+            kind=r.get("kind") or ("ok" if r.get("ok") else "authority_refusal"),
+            ops=list(r.get("ops") or []),
+            error=r.get("error"),
+            digest=r.get("digest"),
+        )
+    return KernelResult(
+        kind=getattr(r, "kind", "ok"),
+        ops=list(getattr(r, "ops", []) or []),
+        error=getattr(r, "error", None),
+        digest=getattr(r, "digest", None),
+    )
+
+
+def load_host_kernel(host: CekHost | None = None) -> HostKernel:
+    """Fail closed if cek-host is missing. No EmbeddedHostKernel."""
     try:
-        from cek_host import Host as CekHost  # type: ignore
-
-        # Adapter shape may differ — normalize when cek-host API is fixed.
-        class CekHostPyKernel:
-            def __init__(self) -> None:
-                self._inner = CekHost()
-                self.name = getattr(self._inner, "name", "cek_host.Host")
+        inner = host if host is not None else CekHost()
+    except Exception as e:  # constructor bugs are not a second Cap machine
+        raise RuntimeError("cek-host Host() failed closed") from e
+    return CekHostPyKernel(inner)
 
 
-            def mint(self, action: str, **kw: Any) -> str:
-                return self._inner.mint(action, **kw)
-
-            def submit(
-                self,
-                action: str,
-                args: dict[str, Any],
-                cap: str | None,
-                *,
-                activity_id: str | None = None,
-                project_ops: list[dict[str, Any]] | None = None,
-            ) -> KernelResult:
-                # Prefer explicit ops projection from surface
-                if project_ops is not None and hasattr(self._inner, "submit_ops"):
-                    r = self._inner.submit_ops(project_ops, cap=cap, action=action, args=args)
-                else:
-                    r = self._inner.submit(
-                        {"action": action, "args": args, "cap": cap, "activity_id": activity_id}
-                    )
-                if isinstance(r, dict):
-                    return KernelResult(
-                        kind=r.get("kind") or ("ok" if r.get("ok") else "authority_refusal"),
-                        ops=list(r.get("ops") or []),
-                        error=r.get("error"),
-                        digest=r.get("digest"),
-                    )
-                return KernelResult(
-                    kind=getattr(r, "kind", "ok"),
-                    ops=list(getattr(r, "ops", []) or []),
-                    error=getattr(r, "error", None),
-                    digest=getattr(r, "digest", None),
-                )
-
-        return CekHostPyKernel()
-    except Exception:
-        return EmbeddedHostKernel()
+# Kept as a name so `from cek_surface.kernel import EmbeddedHostKernel` raises
+# a clear error instead of succeeding with a shim.
+def __getattr__(name: str):
+    if name == "EmbeddedHostKernel":
+        raise ImportError(
+            "EmbeddedHostKernel is gone (D3). pip install cek-host and use load_host_kernel()."
+        )
+    raise AttributeError(name)

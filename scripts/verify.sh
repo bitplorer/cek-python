@@ -2,7 +2,6 @@
 # Clone-path verify: import smoke + test files.
 # Usage (from repo root):
 #   sh scripts/verify.sh
-#   # or after editable install, same command (PYTHONPATH not required)
 
 set -eu
 cd "$(dirname "$0")/.."
@@ -14,6 +13,7 @@ else
 fi
 
 python3 -c "from cek_host import Host; from cek_surface import Surface, Op; print('import ok')"
+python3 -c "from cek_host.cap import args_hash; assert args_hash({'sku':'abc-123','qty':2})=='96e4f83e3793b646323a67f314b51044'; print('oracle ok')"
 python3 cek-surface/tests/test_core.py
 python3 cek-surface/tests/test_roadmap.py
 python3 cek-surface/tests/test_carrier_ir.py
@@ -21,4 +21,9 @@ python3 cek-surface/tests/test_host_kernel.py
 python3 cek-surface/tests/test_continuation_live.py
 python3 cek-surface/tests/test_http_host.py
 python3 cek-surface/tests/test_vectors.py
+python3 cek-surface/tests/test_host_parity.py
+python3 cek-surface/tests/test_layer_honesty.py
+python3 cek-surface/tests/test_hardening.py
+python3 cek-surface/tests/test_contract_vectors.py
+python3 cek-surface/tests/test_explain_doctor.py
 echo "verify ok"

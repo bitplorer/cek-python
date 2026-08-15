@@ -1,10 +1,13 @@
 # cek-surface architecture
 
+**Read [../START.md](../START.md) first.**
+
+
 ## Product boundary (frozen)
 
 | Layer | Package | Owns |
 |-------|---------|------|
-| **Host kernel** | `cek-host` (prod) / `EmbeddedHostKernel` (dev only) | mint, verify, once, sealed-args, package Result |
+| **Host kernel** | `cek-host` only | mint, verify, once, sealed-args, package Result |
 | **Surface** | **cek-surface** | Op catalog, actions, events, Peer drivers, chrome IR, coalesce, policy hooks |
 | **Law / contract** | cek-framework + cek-contract | schemas, vectors, Baseline Ops |
 | **ux-channel** | — | **not a dependency** |
@@ -22,7 +25,7 @@ Peer         = closed apply + perception IR (shadow, coalesce, reducers)
 - No Peer recipe registry / eval
 - No second plan IR on the wire
 - No ux-channel import
-- No product growth of surface `CapService` (dev shim only)
+- No product growth of surface `CapService` (D3 — `cek-host` owns Caps)
 
 ## Peer IR (perception only)
 

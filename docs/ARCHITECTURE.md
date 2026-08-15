@@ -1,5 +1,8 @@
 # Architecture (cek-python)
 
+**Read [START.md](../START.md) first.**
+
+
 ## Layer diagram
 
 ```text

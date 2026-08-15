@@ -85,8 +85,15 @@ class MemoryCarrier:
             for r in replies[:-1]:
                 self._to_host.put(r)
             return replies[-1]
-        self._to_peer.put(msg)
-        return self._to_host.get(timeout=30)
+        # Default echo: no Node required. Tests that need a world set peer_handler.
+        if msg.get("type") == "apply":
+            ops = (msg.get("result") or {}).get("ops") or []
+            return {
+                "type": "applied",
+                "receipt": {"landed": ops, "failed": []},
+                "world": {},
+            }
+        return {"type": "chrome_applied", "world": {}}
 
 
 # ── Subprocess NDJSON (default) ─────────────────────────────────────────────

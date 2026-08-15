@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_surface.kernel import EmbeddedHostKernel, KernelResult
+from cek_surface.kernel import KernelResult
 from cek_surface.ops import as_wire
 from shop_app import build_shop
 

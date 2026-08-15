@@ -1,9 +1,11 @@
 # CEK Python — Real-World Test & Performance Report
 
+**Read [START.md](../START.md) first.**
+
 **Date:** 2026-08-15  
-**Repo:** [bitplorer/cek-python](https://github.com/bitplorer/cek-python) @ `main`  
+**Repo:** [bitplorer/cek-python](https://github.com/bitplorer/cek-python)  
 **Machine:** Linux container, Python 3.12.3, Node v24.15.0  
-**Packages:** `cek-host` 0.1.0 · `cek-surface` 0.1.0  
+**Packages:** `cek-host` 0.1.0 (numbers below) · Phase 1 kernel (`0.1.1`) must not regress Host-only p95 > 10%  
 **Kernel under test:** `CekHostPyKernel` → `cek_host.Host`
 
 ---
@@ -12,7 +14,7 @@
 
 | Gate | Result |
 |------|--------|
-| Unit / integration suite (`scripts/verify.sh`) | **PASS** (6 files) |
+| Unit / integration suite (`scripts/verify.sh`) | **PASS** |
 | Shop end-to-end journey (boot → search → cart → checkout) | **PASS** |
 | Cap security (once / sealed-args / refuse / wrong action) | **PASS** |
 | Live continuation (`timer.fired` → pre-minted Cap → `search.commit`) | **PASS** |
@@ -20,6 +22,8 @@
 | Invariants (refuse → `ops:[]`, Peer no mint, fail closed) | **PASS** |
 
 **Performance takeaway:** Host compose + Cap is ~**0.03 ms** (p50). Full Host → local JS Peer is ~**0.3–0.5 ms**. End-user lag is **RTT-bound**, not mechanism-bound. Default policy rate-limits at **50 intents/s** (product guard, intentional).
+
+No CXB / p95 claim without a checked-in number. Numbers below are the checked-in numbers.
 
 ---
 
@@ -84,6 +88,8 @@ All times in **milliseconds**. Rate limit raised to ∞ for pure load series (de
 | **Full path** Host → Node Peer apply | 100 | **0.321** | 0.535 | 0.901 | 0.914 | 0.350 | ~2.9k |
 | **Refuse** (no Cap) full path | 100 | 0.321 | 0.959 | 1.866 | 3.168 | 0.436 | ~2.3k |
 
+Kernel-parity budget: Host-only p95 must not regress **> 10%** vs 0.048 ms (ceiling **0.053 ms**).
+
 ### 3.2 Multi-round / async
 
 | Path | n | p50 | p95 | mean | notes |
@@ -124,31 +130,26 @@ This is intentional outer policy, not Cap law.
 
 ## 5. How Caps should be used in production
 
-`cek-host` is the **authority** package (not a test stub). PyPI/import name is `cek-host` / `cek_host` — not `cek-host-py`.
+`cek-host` is the **authority** package. PyPI/import name is `cek-host` / `cek_host` — not `cek-host-py`.
 
 ```python
-from cek_host import Host
-from cek_surface import Surface, Op
+from cek_host import Host, FileOnceBackend
+import secrets
 
-# Authority-only worker
-host = Host(secret=b"...")  # real secret in prod
+host = Host.production(secrets.token_bytes(32), FileOnceBackend("once.json"))
 cap = host.mint("Cart.add", once=True, args={...}, seal_args=True)
 result = host.submit(action="Cart.add", args={...}, cap=cap, project_ops=[...])
 # refuse ⇒ result.ops == []
-
-# App path: Surface loads cek_host.Host via load_host_kernel()
-s = Surface()
-cap = s.mint("cart.add", once=True, args={"id": "sku-1"}, seal_args=True)
-out = s.submit("cart.add", {"id": "sku-1"}, cap=cap)
 ```
 
 | Rule | Behavior |
 |------|----------|
 | Mint | Host only (Peer never) |
-| once | `jti` burned after successful verify |
-| seal_args | args hash must match |
-| refuse | always empty `ops` |
+| once | `jti` burned after successful project (`OnceBackend`) |
+| seal_args | args hash must match (oracle 32-hex) |
+| refuse | always empty `ops` + `cek1:` digest |
 | Continuations | pre-mint next Intent Cap; Peer fills slots only |
+| subject / scopes | **enforced** (Phase 1) |
 
 ---
 
@@ -158,9 +159,10 @@ out = s.submit("cart.add", {"id": "sku-1"}, cap=cap)
 |------|--------|
 | Default rate limit 50/s | Breaks naive tight load loops; raise in benches, keep in prod |
 | Cold subprocess Peer | First `boot` ~40 ms (Node spawn); steady-state ~0.3 ms |
-| Durable lineage / Ed25519 | Deferred (Rust parity / later host backends) |
-| P2 | Contract vector alignment with `cek-runtime`; scripted WS demo |
-| P3 | PyPI 0.1.0 when P2 green |
+| Phase 2 | BoundAsk · IdemBackend · LineageBackend · Ed25519 Host policy — **gated** on Phase 1 critic SHIP |
+| Memory OnceBackend | Demo only. `production()` refuses it unless `allow_memory_stores=True` |
+
+P0–P3 (vectors v3, WS demo, TestPyPI + pypi.org 0.1.0) **already shipped** 2026-08-15. This section no longer pretends they are future work.
 
 ---
 
@@ -171,11 +173,6 @@ git clone https://github.com/bitplorer/cek-python
 cd cek-python
 pip install -e ./cek-host -e ./cek-surface
 sh scripts/verify.sh
-
-# Shop demo (subprocess Peer)
-PYTHONPATH=cek-host/src:cek-surface/src python3 cek-surface/demo/app.py
-
-# HTTP Host for browser shop (no ?mock=1)
 PYTHONPATH=cek-host/src:cek-surface/src python3 cek-surface/demo/http_host.py
 ```
 
@@ -185,4 +182,4 @@ Machine JSON dump: `docs/performance-report.json`.
 
 ## 8. Verdict
 
-CEK Python is **demo- and CI-ready** for Host Caps + Surface compose + closed Peer apply + live continuations. Mechanism latency is noise vs RTT. Security fail-closed paths (once, sealed-args, refuse → empty ops) hold under real shop, HTTP Host, and load series. Ship focus should move to **P2 contract/vectors and WS demo**, not further Host micro-optimization.
+CEK Python is **demo- and CI-ready** for Host Caps + Surface compose + closed Peer apply + live continuations. Mechanism latency is noise vs RTT. Security fail-closed paths (once, sealed-args, refuse → empty ops) hold under real shop, HTTP Host, and load series. Phase 1 adds one Host, subject/scope, digest, OnceBackend, doctor. Do not spend cycles on Host micro-optimization under the p95 budget above.

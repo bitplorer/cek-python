@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cek-host"
-version = "0.1.0"
+version = "0.1.1"
 description = "CEK Python Host kernel — Cap mint/verify, Result packaging (authority only)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,10 +12,14 @@ license = "MIT"
 authors = [{ name = "bitplorer" }]
 dependencies = []
 
+[project.scripts]
+cek = "cek_host.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/bitplorer/cek-python"
 Law = "https://github.com/bitplorer/cek-framework"
 Rust = "https://github.com/bitplorer/cek-runtime"
+Start = "https://github.com/bitplorer/cek-python/blob/main/START.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]

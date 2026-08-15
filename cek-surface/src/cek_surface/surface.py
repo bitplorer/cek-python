@@ -61,6 +61,11 @@ class Surface:
     def mint(self, action: str, **kw: Any) -> str:
         return self.kernel.mint(action, **kw)
 
+    def explain(self, error: str | None = None):
+        from cek_host import explain as host_explain
+
+        return host_explain(error)
+
     def submit(
         self,
         action: str,
@@ -135,6 +140,12 @@ class Surface:
         pol = self.policy.check_action(action)
         if not pol.allow:
             return KernelResult("authority_refusal", [], pol.reason), None
+
+        # Verify Cap BEFORE compose (store writes / continuation mint). I1 / I2-lite.
+        if hasattr(self.kernel, "check"):
+            pre = self.kernel.check(action, args, cap, activity_id=activity_id)
+            if not getattr(pre, "ok", False):
+                return pre, None
 
         handler = self._handlers.get(action)
         if handler is None:

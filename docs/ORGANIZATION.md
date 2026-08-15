@@ -1,5 +1,8 @@
 # CEK organization on GitHub & install
 
+**Read [START.md](../START.md) first.**
+
+
 ## Repos (bitplorer)
 
 | Repo | Role | Install |

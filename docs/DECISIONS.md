@@ -1,6 +1,7 @@
 # Decisions (non-obvious)
 
-Each entry: **Context → Decision → Why → Rejected**.
+**Read [START.md](../START.md) first.** Each entry: **Context → Decision → Why → Rejected**.
+
 
 ---
 
