@@ -3,11 +3,13 @@
 **Read [START.md](./START.md) first.** Then [docs/S_TIER_SCORECARD.md](./docs/S_TIER_SCORECARD.md).
 
 **Date:** 2026-08-15  
-**Repo:** https://github.com/bitplorer/cek-python `@ ae2460f` (tree **0.1.2**)  
+**Repo:** https://github.com/bitplorer/cek-python (tree **0.1.2**)  
 **Law:** https://github.com/bitplorer/cek-framework `@ 90d48fd`  
 **Rust:** https://github.com/bitplorer/cek-runtime `@ cce98b6`
 
-Phase 1 SHIP condition met (loop 4). Phase 2 is in this tree: BoundAsk, Idem/Lineage, Ed25519, law-generation, **29** aligned fixtures (includes `once-idempotent-retry`). Critic L5 **ALMOST** leftovers applied; clean-clone `sh scripts/verify.sh` → **verify ok** (2026-08-15). L5 close condition met. Phase 3 (Redis / crates.io) stays gated until an explicit Phase 3 plan — do not start it from this handoff.
+**Phase 2 verdict: SHIP.** BoundAsk · Idem/Lineage · Ed25519 · law-generation · **29** aligned fixtures · clean-clone `verify ok`. Every plane ≥ 4. No kill. CHARTER/KILL/CORE untouched.
+
+Phase 3 (Redis / crates.io / PyPI 0.1.2 publish) is **not** started — wait for an explicit Phase 3 plan.
 
 ```bash
 export PYTHONPATH=cek-host/src:cek-surface/src
