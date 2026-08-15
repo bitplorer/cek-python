@@ -1,0 +1,18 @@
+{
+  "id": "scope-denies-key",
+  "family": "attenuation",
+  "description": "Cap scoped to kv:greeting cannot write another key",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "other", "value": 1 },
+    "cap": {
+      "id": "cap-sc-no",
+      "action": "kv.write",
+      "once": false,
+      "scopes": ["kv:greeting"]
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

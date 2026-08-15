@@ -1,0 +1,20 @@
+{
+  "id": "scope-allows-key",
+  "family": "attenuation",
+  "description": "Cap scoped to kv:greeting may write that key",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "greeting", "value": 1 },
+    "cap": {
+      "id": "cap-sc-ok",
+      "action": "kv.write",
+      "once": false,
+      "scopes": ["kv:greeting"]
+    }
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    { "ns": "kv", "name": "set", "payload": { "key": "greeting", "value": 1 } }
+  ]
+}

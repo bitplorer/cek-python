@@ -1,4 +1,4 @@
-"""D3 + D4 + one Cap machine. No Embedded. No ux_channel.
+"""D3 + D4 + one Cap machine. No Embedded. No sketch Host. No ux_channel.
 
 W4 / G4 / G12. KILL: reverse import or second Cap machine.
 """
@@ -67,6 +67,18 @@ def test_embedded_not_in_all():
         pass
 
 
+def test_sketch_host_gone():
+    import cek_surface.host as hmod
+
+    assert not hasattr(hmod, "Host")
+    try:
+        from cek_surface.host import Host  # noqa: F401
+
+        raise AssertionError("cek_surface.host.Host must not import")
+    except ImportError:
+        pass
+
+
 def test_peer_modules_have_no_mint():
     js = (ROOT / "js").glob("*.mjs")
     for p in js:
@@ -80,5 +92,6 @@ if __name__ == "__main__":
     test_d3_surface_cap_reexports_host()
     test_one_published_host()
     test_embedded_not_in_all()
+    test_sketch_host_gone()
     test_peer_modules_have_no_mint()
     print("layer honesty ok")

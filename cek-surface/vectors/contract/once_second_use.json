@@ -1,0 +1,28 @@
+{
+  "id": "once-second-use",
+  "family": "single_use",
+  "description": "Second use of once-Cap refuses with zero Ops",
+  "now": 1000,
+  "prior_intent": {
+    "action": "kv.write",
+    "args": { "key": "x", "value": 1 },
+    "cap": {
+      "id": "cap-once-1",
+      "action": "kv.write",
+      "once": true
+    }
+  },
+  "prior_must_ok": true,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "x", "value": 1 },
+    "cap": {
+      "id": "cap-once-1",
+      "action": "kv.write",
+      "once": true
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true,
+  "expect_once_consumed": true
+}

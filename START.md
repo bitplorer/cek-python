@@ -17,7 +17,7 @@ pip install -e ./cek-host -e ./cek-surface
 python -m cek_host create-app ./hello-cek && python ./hello-cek/app.py
 ```
 
-Timed (clean venv, editable install → first morph): **7.9 s**. Budget is 5 minutes.
+Timed (clean venv, editable install → first morph): **7.3 s**. Budget is 5 minutes.
 
 That prints a `ui.dom.morph` Result, then a once-replay refuse with `ops: []`.
 

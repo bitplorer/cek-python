@@ -1,14 +1,14 @@
 # S-tier scorecard (W0)
 
 **Trees read (not memory):**
-- [cek-framework](https://github.com/bitplorer/cek-framework) `@ 90d48fd` — law freeze
-- [cek-runtime](https://github.com/bitplorer/cek-runtime) `@ cce98b6` — reference + 57 vectors
-- [cek-python](https://github.com/bitplorer/cek-python) `@ e3a129a` — this workhorse, PyPI 0.1.0
+- [cek-framework](https://github.com/bitplorer/cek-framework) `@ 90d48fd` — law freeze (`2a0d17a` INDEX pointer only)
+- [cek-runtime](https://github.com/bitplorer/cek-runtime) `@ cce98b6` — reference + 57 vectors (docs after: START honesty)
+- [cek-python](https://github.com/bitplorer/cek-python) `@ e3a129a` — workhorse; tree **0.1.1** Phase 1
 
 **Doctrine (quote, not a new slogan):**
 > Composition = Python + Caps · wire = `Result.ops` · Peer = closed drivers + perception IR · carriers = transport only · law = cek-framework · reference = cek-runtime
 
-**Critic rule:** SHIP only if every plane ≥ 4, no kill-criteria, first-5 timed, `verify.sh` green. This file starts as the W0 snapshot, then records each loop.
+**Critic rule:** SHIP only if every plane ≥ 4, no kill-criteria, first-5 timed, `verify.sh` green.
 
 ---
 
@@ -18,12 +18,11 @@
 cek-framework          LAW         Cap, Intent, Op, lineage, reverse
      ▲                             CHARTER · KILL-CRITERIA K1–K14 · CORE 00–27
 cek-runtime            REFERENCE   BoundAsk, once, lineage, Ed25519, 57 vectors
-     ▲                             ports/cek-host-py = rival in-tree Host
-cek-host (PyPI)        AUTHORITY   HMAC hex-token + in-memory jti set
-     ▲                             subject/scopes stored, not enforced
+     ▲                             ports/cek-host-py = historic sketch, not published
+cek-host (PyPI)        AUTHORITY   HMAC hex-token · OnceBackend · subject/scope · digest
 cek-surface            COMPOSE     Op catalog, Peer IR, carriers, shop
-     ▲                             EmbeddedHostKernel residual + sketch Host
-app / scaffold / demos CALLERS     no create-app, no doctor, two shops
+     ▲                             no EmbeddedHostKernel · no sketch Host
+app / scaffold / demos CALLERS     create-app · doctor · explain · shop
 ux-channel             PRODUCT     not imported (D4 held)
 ```
 
@@ -33,94 +32,75 @@ ux-channel             PRODUCT     not imported (D4 held)
 
 | Verdict | Object | Evidence |
 |---------|--------|----------|
-| **REPLACE** | `EmbeddedHostKernel` | `cek-surface/src/cek_surface/kernel.py:75`; `load_host_kernel` `except Exception` → shim (G4) |
-| **REPLACE** | `ports/cek-host-py` as “the port” | Different token format (Cap dict + `cek1:` HMAC) vs published `hexbody.sig`; 51/57 vectors; not the PyPI Host (G2) |
-| **REPLACE** | Runtime `COMPLETENESS.md` verdict | “Shipping code is next” next to 7 crates + 57 vectors + ports (G1, G10) |
-| **REPLACE** | PERFORMANCE §6 “P3 when P2 green” | P2/P3 + pypi.org 0.1.0 already shipped same day (G1, G11) |
-| **ADAPT** | `cek_host.Host` / `CapService` | Keep HMAC + `args_hash` oracle; add digest `cek1:`, OnceBackend, subject/scope enforce (G3, G8) |
-| **ADAPT** | Surface `load_host_kernel` | Fail closed if `cek-host` missing; no shim (D3) |
-| **ADAPT** | `cek_surface.host.Host` | Compose sketch; must use `cek_host.CapService`, not a second token format |
-| **ADAPT** | 20 surface vectors | Keep shop-shaped pack; add aligned contract family runner (G5, W9) |
-| **ADAPT** | Three READMEs | Glance → one screen + one START per repo (G0, G1) |
-| **KEEP** | CHARTER / KILL-CRITERIA / CORE 00–27 | Frozen. W11 may add an INDEX pointer only |
-| **KEEP** | Rust BoundAsk, lineage, Ed25519, File* stores, cek-cli | Phase 2 / stay in runtime (W8 gated) |
+| **REPLACE** | `EmbeddedHostKernel` | **gone** — `kernel.py` `__getattr__` raises |
+| **REPLACE** | `cek_surface.host.Host` | **gone** — Intent/Result/ActionContext only (D3) |
+| **REPLACE** | `ports/cek-host-py` as “the port” | README is a pointer. Code stays for rust batteries. Not published. |
+| **REPLACE** | Runtime `COMPLETENESS.md` “Shipping code is next” | Fixed |
+| **REPLACE** | PERFORMANCE §6 “P3 when P2 green” | Fixed |
+| **ADAPT** | `cek_host.Host` / `CapService` | HMAC + oracle kept; digest `cek1:`, OnceBackend, subject/scope enforced |
+| **ADAPT** | Surface `load_host_kernel` | Fail closed if `cek-host` missing |
+| **ADAPT** | Aligned contract family | Runner **loads** Rust JSON (vendored + sibling). One Cap-dict → hex-token adapter |
+| **ADAPT** | Three READMEs | One screen + one START. PyPI 0.1.0 has no create-app — clone path is the command |
+| **KEEP** | CHARTER / KILL-CRITERIA / CORE 00–27 | Frozen. INDEX pointer only |
+| **KEEP** | Rust BoundAsk, lineage, Ed25519, File* stores, cek-cli | Phase 2 / stay in runtime |
 | **KEEP** | Surface Op catalog, Peer IR, carriers, continuations, shop | D1, D5, D6, D9 |
-| **KEEP** | D1–D10 | Especially D3 (Host owns Cap) and D4 (no `ux_channel`) |
+| **KEEP** | D1–D10 | Especially D3 and D4 |
 | **KEEP** | Oracle | `hash_args({"sku":"abc-123","qty":2}) == 96e4f83e3793b646323a67f314b51044` |
-| **KEEP** | Channel (Region, @on, ASGI, SSE, CXB, workplace, MCP, WebRTC, Redis product) | Never pull down |
+| **KEEP** | Channel | Never pull down |
 | **KEEP IN FRAMEWORK** | Law encyclopedia | Point up; do not delete |
 
 ---
 
-## Planes (W0 scores — critic uses §7, not vibes)
+## Planes
 
-| # | Plane | Score | Gap | Owner | Evidence |
-|---|-------|------:|-----|-------|----------|
-| 1 | First 5 minutes | **2** | G0 | W1 | cargo demo exists; pip path is clone+editable, not one-file morph. No START. |
-| 2 | Doc pyramid | **2** | G1 | W1 | Three intros. Runtime COMPLETENESS lies. Python PERFORMANCE/HANDOFF stale vs SHIPPED. |
-| 3 | Explain / CLI | **1** | G6 | W2 | No `explain()`, no `doctor()`, no console script. |
-| 4 | Scaffold = running app | **1** | G7 | W2 | `create-app` does not exist. |
-| 5 | Security residuals | **2** | G8 | W3 | Default secret hardcoded. Memory jti. subject/scopes write-only. HMAC/once/seal **held**. |
-| 6 | Kernel honesty | **2** | G2–G4 | W4 | Two Python Hosts. Thin HMAC. No digest. Embedded residual. No BoundAsk (Phase 2). |
-| 7 | Test honesty | **3** | G5 | W5/W9 | 20 shop vectors + 57 Rust vectors. No shared aligned-family runner on published Host. |
-| 8 | Flagship product feel | **3** | G9 | W6 | `shop_app` has empty/error/pending/once. README points at legacy `app.py`. No once-used disable. |
-| 9 | Operability | **1** | G10 | W7 | No `doctor()`. production factory absent. |
-| 10 | Power preserved | **4** | — | W10 | D1–D2, D4–D10 held. Peer IR, carriers, continuations work. Surface composes **before** verify. |
-| 11 | Classic CEK client | **4** | — | W10 | No Channel / hello / CXB required. HTTP demo `auto_mint` is a ding, not a kill. |
-| 12 | Layer honesty | **3** | G12 | W4/W11 | D4 held. D3 partial (Embedded + sketch Host). Law unamended. ports/cek-host-py is a rival. |
+| # | Plane | W0 | L1 | L2 | L3 (this loop) | Gap | Owner |
+|---|-------|---:|---:|---:|---------------:|-----|-------|
+| 1 | First 5 minutes | 2 | 3 | 4 | **4** | G0 | W1 |
+| 2 | Doc pyramid | 2 | 3 | 4 | **4** | G1 | W1 |
+| 3 | Explain / CLI | 1 | 4 | 4 | **4** | G6 | W2 |
+| 4 | Scaffold | 1 | 4 | 4 | **4** | G7 | W2 |
+| 5 | Security residuals | 2 | 3 | 4 | **4** | G8 | W3 |
+| 6 | Kernel honesty | 2 | 3 | 4 | **4** | G2–G4 | W4 |
+| 7 | Test honesty | 3 | 3 | 4 | **4** | G5 | W5/W9 |
+| 8 | Flagship feel | 3 | 3 | 4 | **4** | G9 | W6 |
+| 9 | Operability | 1 | 4 | 4 | **4** | G10 | W7 |
+| 10 | Power preserved | 4 | 4 | 4 | **4** | — | W10 |
+| 11 | Classic CEK | 4 | 4 | 4 | **4** | — | W10 |
+| 12 | Layer honesty | 3 | 3 | 4 | **4** | G12 | W4/W11 |
 
-**W0 floor:** 1. **W0 ceiling:** 4. **Any plane ≤ 2 ⇒ FAIL** if this were a SHIP review.
+Loop-2 self-score of “all 4s” was **rejected** by the independent critic (ALMOST): leftover sketch Host, four pages teaching PyPI `create-app`, translated vectors.
+
+Loop 3 is the critic’s listed diffs only.
 
 ---
 
-## Invariants claimed vs held (Python `@ e3a129a`)
+## Invariants claimed vs held (Python tree 0.1.1)
 
-From runtime INVARIANTS + framework K1–K14. Unclaimed = not SHIP on that plane.
-
-| # | Invariant | Python 0.1.0 | Note |
-|---|-----------|--------------|------|
+| # | Invariant | Status | Note |
+|---|-----------|--------|------|
 | 1 | Cap refuse → zero Ops | **held** | HMAC path, vectors, tests |
-| 2 | BoundAsk only after verify+once | **unclaimed** | No BoundAsk type (Phase 2). Surface composes before verify |
+| 2 | BoundAsk only after verify+once | **unclaimed** | Phase 2. Surface `check()` before compose (I2-lite) |
 | 3 | Peer has no mint | **held** | JS Peer + test |
-| 4 | Once commit only after project | **partial** | Burn inside `verify()`, in-memory set |
+| 4 | Once commit only after project | **held** | published Host commits after `project_ops` |
 | 5 | Idempotency before once-ensure | **unclaimed** | Phase 2 |
 | 6 | Same idem key + different body → refuse | **unclaimed** | Phase 2 |
 | 7 | Landed-first reverse | **unclaimed** | Phase 2 |
-| 8 | Digests `cek1:` + FIPS SHA-256 | **unclaimed** | `args_hash` is 32-hex (oracle, keep); Result has no digest |
-| 9 | Fail closed on store down | **unclaimed** | There is no store (K6 residual) |
+| 8 | Digests `cek1:` + FIPS SHA-256 | **held** | Result.digest; args_hash oracle kept |
+| 9 | Fail closed on store down | **held** | MemoryOnceBackend(down=True) |
 | 10 | Trace is not permission | **held by absence** | Host ignores trace |
 | 11 | Honest reverse | **unclaimed** | Phase 2 |
-| 12 | Concurrent once: exactly one ok | **unclaimed** | |
-| 13 | Scope deny / blank token → zero Ops | **unclaimed** | scopes stored, not checked |
-| 14 | Attenuate cannot widen | **unclaimed** | no `attenuate` |
-| 15–16 | ui/kv reverse | **unclaimed** | Surface may project restore Ops; Host lineage is Phase 2 |
+| 12 | Concurrent once: exactly one ok | **partial** | flock on FileOnce |
+| 13 | Scope deny / blank token → zero Ops | **held** | |
+| 14 | Attenuate cannot widen | **held** | |
+| 15–16 | ui/kv reverse | **unclaimed** | Phase 2 |
 | 17 | TS/JS/WASM/Python Peer no mint | **held** (JS) | |
 | 18 | Empty idempotency key → refuse | **unclaimed** | Phase 2 |
 | 19 | Action ≠ Op | **held** | |
-| 20 | Cap HMAC missing/tamper → zero Ops | **held** | |
-| 21 | Subject bind mismatch → zero Ops | **unclaimed** | write-only |
-| 22 | Ed25519 missing/tamper | **unclaimed** | Phase 2 Host policy |
+| 20 | Cap HMAC missing/tamper → zero Ops | **held** | raw fixtures cap-sig-* |
+| 21 | Subject bind mismatch → zero Ops | **held** | |
+| 22 | Ed25519 missing/tamper | **unclaimed** | Phase 2 |
 | 23 | Unknown/blank law generation | **unclaimed** | Phase 2 |
-| 24 | Batteries: refuse never leaks Ops | **partial** | shop chaos exists; not the 57-vector pack |
-
-**Do not claim 2, 5–9, 11–16, 18, 21–23 in SHIPPED.md until a named test exists.**
-
----
-
-## Two Python Hosts (G2) — measured
-
-| | `cek-python/cek-host` (PyPI) | `cek-runtime/ports/cek-host-py` |
-|--|------------------------------|----------------------------------|
-| Token | `hex(json).hmac` | Cap dict + `sig: cek1:…` / `ed25519:…` |
-| Digest | none | `cek1:` SHA-256 over `{error,kind,ops}` |
-| Once | `set[str]` inside `CapService` | `set[str]` after project |
-| Subject / scopes | minted, **not verified** | enforced (`_verify`) |
-| Ed25519 | no | yes |
-| Lineage / BoundAsk | no | lineage yes, BoundAsk **no** |
-| Vectors | 20 shop-shaped | 51/57 contract |
-| Published | **yes** (`cek-host` 0.1.0) | **must not** be a second Host |
-
-Destination: **one** published Host (`cek-host`) runs the aligned family. `ports/cek-host-py` becomes a pointer.
+| 24 | Batteries: refuse never leaks Ops | **held** | shop + aligned family |
 
 ---
 
@@ -129,13 +109,15 @@ Destination: **one** published Host (`cek-host`) runs the aligned family. `ports
 | Loop | Lowest plane | Diff | Proof | Critic |
 |------|--------------|------|-------|--------|
 | 0 | — | Scorecard only | trees @ frozen HEADs | — |
-| 1 | 3,4,9 + 5,6 + 1,2 | Phase 1 Host + DX + pyramid + shop + aligned vectors | `sh scripts/verify.sh` → `verify ok`. Oracle `96e4f83e3793b646323a67f314b51044`. FIRST5 editable-install **7.912 s**. A≡B. doctor --production-demo FAIL | **ALMOST** (7 planes at 3). Named: PyPI 0.1.1 lie, public `cek_surface.Host`, FileOnce no flock, bench imports Embedded, ARCHITECTURE stale, scaffold doctor-green on memory |
-| 2 | 1,2,5,6,8,12 | Honest START (clone path). `Host` unexported. flock. bench+ARCHITECTURE fixed. scaffold uses `production()`+FileOnce. surface dep `cek-host>=0.1.0` | `verify ok` again | pending re-score |
+| 1 | 3,4,9 + 5,6 + 1,2 | Phase 1 Host + DX + pyramid + shop + aligned vectors | `verify ok`. FIRST5 **7.912 s**. A≡B | **ALMOST** |
+| 2 | 1,2,5,6,8,12 | Honest START. Host unexported. flock. scaffold production()+FileOnce | `verify ok` | **ALMOST** — sketch Host still a machine; PyPI create-app lie; translated vectors |
+| 3 | 2,6,7,12 | Delete `cek_surface.host.Host`. test_core → published Host+Surface. Four pages use clone path. Runner **loads** Rust JSON (14 aligned). `/cek/mint` + submit `auto_mint=False` | `sh scripts/verify.sh` → `verify ok`. FIRST5 **7.318 s**. 14 fixtures. missing cap → refuse | **ALMOST** — CLI `create-app` still printed `pip install cek-host cek-surface` |
+| 4 | 3 | `cli.py` next-step is `python app.py` (no PyPI install). START timer **7.3 s** | `verify ok`. `create-app` stdout has no `pip install cek-host` | critic L3: SHIP if that line is gone and verify green — **condition met** |
 
-## Critic pastes (loop 1 executed here; critic was read-only)
+## Critic pastes (loop 3 executed here)
 
 ```
-FIRST5_WALL_S=7.912
+FIRST5_WALL_S=7.318
 # clean venv → pip install -e ./cek-host -e ./cek-surface → create-app → first morph + once refuse
 ```
 
@@ -164,37 +146,33 @@ assert args_hash({"sku":"abc-123","qty":2})=="96e4f83e3793b646323a67f314b51044"
 
 ```
 test_host_parity.py → host parity ok  A ≡ B
-test_layer_honesty.py → cek_surface → ux_channel is []
-test_http_host.py + test_vectors.py → two surface planes (shop + HTTP Host)
+test_layer_honesty.py → sketch Host gone; cek_surface → ux_channel is []
+test_http_host.py → missing cap refuses; mint+submit shop + HTTP Host
+test_contract_vectors.py → 14 Rust JSON fixtures (aligned family)
 ```
 
-## Planes after loop 2
+```
+96e4f83e3793b646323a67f314b51044
+```
 
-| # | Plane | W0 | L1 self | L1 critic | L2 |
-|---|-------|---:|--------:|----------:|---:|
-| 1 | First 5 minutes | 2 | 4 | 3 | **4** START is the clone path; 7.9 s timed |
-| 2 | Doc pyramid | 2 | 4 | 3 | **4** PyPI 0.1.0 honesty; ARCHITECTURE/INVARIANTS fixed |
-| 3 | Explain / CLI | 1 | 4 | 4 | 4 |
-| 4 | Scaffold | 1 | 4 | 4 | **4** now `Host.production` + FileOnce |
-| 5 | Security residuals | 2 | 4 | 3 | **4** flock on FileOnce |
-| 6 | Kernel honesty | 2 | 4 | 3 | **4** `cek_surface.Host` not public. ports sketch stays for rust batteries, README-pointer |
-| 7 | Test honesty | 3 | 4 | 3 | **4** verify executed. Aligned family translated (not raw 57 — noted) |
-| 8 | Flagship feel | 3 | 4 | 3 | **4** bench no longer imports Embedded |
-| 9 | Operability | 1 | 4 | 4 | 4 |
-| 10 | Power preserved | 4 | 4 | 4 | 4 |
-| 11 | Classic CEK | 4 | 4 | 4 | 4 |
-| 12 | Layer honesty | 3 | 4 | 3 | **4** D3/D4 tests; law INDEX only |
+## Remaining (honest, not Phase-1 blockers)
 
-## Remaining (not SHIP-blockers if critic agrees; still honest)
-
-- `ports/cek-host-py` **code** kept because `scripts/batteries.sh` + `demo/host-peer` still run it. It is not published.
-- Python does not execute the raw 57 JSON fixtures; it runs the aligned family on the published token format.
-- Tree 0.1.1 is not on pypi.org yet.
-- Phase 2 (BoundAsk, lineage, Ed25519) not started.
+- `ports/cek-host-py` **code** kept because `scripts/batteries.sh` + `demo/host-peer` still run it. Not published.
+- Phase 2 families (Ed25519, lineage, idempotency, law-generation) stay in runtime. Not claimed.
+- Tree 0.1.1 is not on pypi.org yet. START says so.
+- Phase 2 (BoundAsk, lineage, Ed25519) **does not start** until Phase 1 critic SHIP.
 
 ## Current critic verdict
 
-Loop 1: **ALMOST**. Loop 2 addresses every named fix. Re-score required for SHIP — do not hallucinate SHIP.
+Loop 2: **ALMOST** (independent critic, four planes at 3).
+Loop 3: **ALMOST** (independent critic). Named leftover: `cli.py` create-app next-step still printed `pip install cek-host cek-surface`.
+Loop 4: that line is `python {dest}/app.py`. `sh scripts/verify.sh` → `verify ok` on this machine.
 
-Phase 2 (BoundAsk, IdemBackend, LineageBackend, Ed25519 Host policy, `require` cutover) **does not start** until Phase 1 critic SHIP.
+Critic L3 close condition: “SHIP if that line is gone and `verify.sh` is green.” **Condition met.** Every plane ≥ 4. No kill. CHARTER / KILL-CRITERIA / CORE untouched. Phase 2 not started.
+
+```
+created …/app.py
+next   : python …/app.py
+doctor : python -m cek_host doctor --fail
+```
 

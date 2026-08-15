@@ -119,6 +119,7 @@
     const searchEl = document.getElementById('search-input');
     const buyOnce = document.getElementById('buy-once');
     let onceSpent = false;
+    let searched = false;
 
     function showEmpty(on) { emptyEl.classList.toggle('is-on', on); }
     function showError(msg) {
@@ -136,8 +137,22 @@
       }
     }
 
+    async function mintCap(action, args, once) {
+      const res = await fetch('/cek/mint', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action, args: args || {}, once: Boolean(once) }),
+      });
+      const data = await res.json();
+      if (!data.cap) throw new Error(data.error || 'mint failed');
+      return data.cap;
+    }
+
     async function hostSubmit(action, args, cap) {
       showError('');
+      args = { ...(args || {}) };
+      const once = Boolean(args._once);
+      delete args._once;
       if (mock) {
         if (action === 'search.type' || action === 'search.commit') {
           const q = (args.q || '').toLowerCase();
@@ -163,10 +178,11 @@
         }
         return;
       }
+      if (!cap) cap = await mintCap(action, args, once);
       const res = await fetch('/cek/submit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action, args, cap: cap || null }),
+        body: JSON.stringify({ action, args, cap }),
       });
       const data = await res.json();
       peer.onMessage({
@@ -177,7 +193,7 @@
       const ops = data.result?.ops || [];
       const morph = ops.find((o) => o.ns === 'ui.dom' && o.name === 'morph' && o.payload?.target === 'results');
       const n = morph?.payload?.patch?.children?.length;
-      if (typeof n === 'number') {
+      if (typeof n === 'number' && searched) {
         statusEl.textContent = n + ' hits';
         searchEl.classList.remove('pending');
         showEmpty(n === 0);
@@ -206,6 +222,7 @@
       action: 'search.type',
       submitIntent: (action, args, cap) => {
         const q = String((args && args.q) || '').trim();
+        searched = true;
         if (!q) {
           searchEl.classList.remove('pending');
           statusEl.textContent = 'Type to search.';
@@ -226,18 +243,15 @@
     buyOnce.onclick = async () => {
       if (onceSpent) return;
       buyOnce.disabled = true;
-      const minted = await fetch('/cek/submit', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          action: 'cart.add',
-          args: { id: 'sku-2', title: 'Widget Pro', price: 29.99, _once: true },
-        }),
-      });
-      const data = await minted.json();
-      peer.onMessage({ type: 'apply', result: data.result, continuations: data.continuations || [] });
-      onceSpent = true;
-      buyOnce.textContent = 'Once used';
+      try {
+        const cap = await mintCap('cart.add', { id: 'sku-2', title: 'Widget Pro', price: 29.99 }, true);
+        await hostSubmit('cart.add', { id: 'sku-2', title: 'Widget Pro', price: 29.99 }, cap);
+        onceSpent = true;
+        buyOnce.textContent = 'Once used';
+      } catch (err) {
+        buyOnce.disabled = false;
+        showError(String(err.message || err));
+      }
     };
 
     document.getElementById('checkout').onclick = () =>

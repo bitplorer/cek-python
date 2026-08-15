@@ -9,19 +9,22 @@
 | `cek-host` | Cap mint/verify, Result packaging, OnceBackend, doctor | TestPyPI + **PyPI** 0.1.0; tree is **0.1.1** Phase 1 |
 | `cek-surface` | Compose, Peer IR, carriers, policy, continuations | TestPyPI + **PyPI** 0.1.0; tree is **0.1.1** |
 
+PyPI **0.1.0** has no `create-app`. Use the tree:
+
 ```bash
-pip install cek-host cek-surface
+git clone https://github.com/bitplorer/cek-python && cd cek-python
+pip install -e ./cek-host -e ./cek-surface
 python -m cek_host create-app ./hello && python ./hello/app.py
 ```
 
 ## Phase 1 (this tree)
 
-- One published Host (`cek_host.Host`). `EmbeddedHostKernel` gone.
+- One published Host (`cek_host.Host`). `EmbeddedHostKernel` gone. `cek_surface.host.Host` gone.
 - subject + scopes **enforced**. Result `digest` is `cek1:` + SHA-256.
 - `OnceBackend`: memory (demo) + file. `production()` refuses default secret + memory once-store.
 - `doctor` / `explain` / `create-app` CLI (`python -m cek_host`).
 - A ≡ B (`test_host_parity`). D3 + D4 (`test_layer_honesty`).
-- Aligned contract family (`test_contract_vectors`) + surface pack v3 (20).
+- Aligned contract family loads Rust JSON (`test_contract_vectors`) + surface pack v3 (20).
 
 ## Demos
 
@@ -34,6 +37,6 @@ python -m cek_host create-app ./hello && python ./hello/app.py
 
 ## Invariants held (named tests exist)
 
-- refuse → `ops: []` · Peer never mints · once/sealed fail closed · subject/scope deny → `ops: []` · HMAC tamper → `ops: []` · digest `cek1:` · store-down fail closed · attenuate cannot widen · wire = `Result.ops` · no ux-channel · no EmbeddedHostKernel
+- refuse → `ops: []` · Peer never mints · once/sealed fail closed · subject/scope deny → `ops: []` · HMAC tamper → `ops: []` · digest `cek1:` · store-down fail closed · attenuate cannot widen · wire = `Result.ops` · no ux-channel · no EmbeddedHostKernel · no sketch Host
 
 Not claimed: BoundAsk, lineage reverse, Ed25519, idempotency (Phase 2).

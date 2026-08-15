@@ -2,10 +2,11 @@
 
 Python **Host kernel** — the published Cap machine. Peers never mint.
 
-**Read [START.md](../START.md) first.**
+**Read [START.md](../START.md) first.** Tree is **0.1.1**. Indexes are still **0.1.0** (no `create-app` on PyPI yet).
 
 ```bash
-pip install cek-host
+git clone https://github.com/bitplorer/cek-python && cd cek-python
+pip install -e ./cek-host -e ./cek-surface
 python -m cek_host create-app ./hello && python ./hello/app.py
 python -m cek_host doctor --fail
 python -m cek_host explain "once cap already used"

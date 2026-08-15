@@ -1,0 +1,18 @@
+{
+  "id": "cap-refuse-expired",
+  "family": "cap_verify",
+  "description": "Expired Cap refuses with zero Ops",
+  "now": 2000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-2",
+      "action": "kv.write",
+      "not_after": 1500,
+      "once": false
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

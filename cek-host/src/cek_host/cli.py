@@ -51,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
 
         dest = create_app(args.dest)
         print(f"created {dest.resolve() / 'app.py'}")
-        print(f"next   : pip install cek-host cek-surface && python {dest / 'app.py'}")
+        print(f"next   : python {dest / 'app.py'}")
         print(f"doctor : python -m cek_host doctor --fail")
         return 0
 

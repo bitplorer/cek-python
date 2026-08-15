@@ -1,0 +1,15 @@
+{
+  "id": "subject-bind-ok",
+  "family": "cap_verify",
+  "description": "Cap.subject matches args.subject → project",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1, "subject": "alice" },
+    "cap": { "id": "cap-sub-ok", "action": "kv.write", "once": false, "subject": "alice" }
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    { "ns": "kv", "name": "set", "payload": { "key": "a", "value": 1 } }
+  ]
+}

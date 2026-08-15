@@ -1,0 +1,14 @@
+{
+  "id": "cap-sig-missing",
+  "family": "cap_verify",
+  "description": "Host HMAC policy: unsigned Cap is refuse, zero Ops",
+  "now": 1000,
+  "hmac_key": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": { "id": "cap-sig-miss", "action": "kv.write", "once": false }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

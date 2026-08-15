@@ -1,0 +1,24 @@
+{
+  "id": "sealed-args-match",
+  "family": "cap_verify",
+  "description": "Sealed-args bind match authorizes and projects kv.set",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "fixed", "value": 1 },
+    "cap": {
+      "id": "cap-seal-ok",
+      "action": "kv.write",
+      "once": false,
+      "sealed_args_bind": "cek1:77e050ab863b5551a383d6df487710da2bcd5e44d0da04453575105961763d29"
+    }
+  },
+  "expect_kind": "ok",
+  "expect_ops": [
+    {
+      "ns": "kv",
+      "name": "set",
+      "payload": { "key": "fixed", "value": 1 }
+    }
+  ]
+}

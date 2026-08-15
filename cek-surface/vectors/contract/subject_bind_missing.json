@@ -1,0 +1,13 @@
+{
+  "id": "subject-bind-missing",
+  "family": "cap_verify",
+  "description": "Cap.subject set but no presenter → refuse, zero Ops",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": { "id": "cap-sub-miss", "action": "kv.write", "once": false, "subject": "alice" }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

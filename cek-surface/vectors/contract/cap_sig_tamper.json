@@ -1,0 +1,19 @@
+{
+  "id": "cap-sig-tamper",
+  "family": "cap_verify",
+  "description": "Host HMAC policy: forged sig is refuse, zero Ops",
+  "now": 1000,
+  "hmac_key": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-sig-bad",
+      "action": "kv.write",
+      "once": false,
+      "sig": "cek1:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

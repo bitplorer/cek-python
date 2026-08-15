@@ -1,0 +1,17 @@
+{
+  "id": "empty-action-refuse",
+  "family": "cap_verify",
+  "description": "Empty action is never valid authority",
+  "now": 1000,
+  "intent": {
+    "action": "",
+    "args": {},
+    "cap": {
+      "id": "cap-empty-action",
+      "action": "",
+      "once": false
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

@@ -1,0 +1,18 @@
+{
+  "id": "empty-scope-token",
+  "family": "attenuation",
+  "description": "Blank scope token is refuse (unclear allow-list)",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-est",
+      "action": "kv.write",
+      "once": false,
+      "scopes": [""]
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}

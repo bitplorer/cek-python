@@ -1,4 +1,4 @@
-"""Core unit tests — no Peer required."""
+"""Core unit tests — published Host + Surface. No sketch Cap machine."""
 
 from __future__ import annotations
 
@@ -9,9 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_host import CapError, CapService
-from cek_surface import Intent, Op
-from cek_surface.host import Host
+from cek_host import CapError, CapService, Host
+from cek_surface import Intent, Op, Surface
+
+SECRET = b"test-secret-key-32bytes-long!!!"
 
 
 def test_op_wire():
@@ -21,7 +22,7 @@ def test_op_wire():
 
 
 def test_cap_once():
-    caps = CapService(secret=b"test-secret-key-32bytes-long!!!")
+    caps = CapService(secret=SECRET)
     tok = caps.mint("x", once=True)
     caps.verify(tok, "x")
     try:
@@ -32,7 +33,7 @@ def test_cap_once():
 
 
 def test_cap_seal_args():
-    caps = CapService(secret=b"test-secret-key-32bytes-long!!!")
+    caps = CapService(secret=SECRET)
     args = {"sku": "a", "qty": 2}
     tok = caps.mint("Cart.add", args=args, seal_args=True)
     caps.verify(tok, "Cart.add", args)
@@ -44,29 +45,44 @@ def test_cap_seal_args():
 
 
 def test_host_refuse_no_cap():
-    h = Host(caps=CapService(secret=b"test-secret-key-32bytes-long!!!"), require_cap=True)
+    host = Host(secret=SECRET)
+    s = Surface(kernel=host, carrier_kind="memory")
 
-    @h.action("ping")
+    @s.action("ping")
     def ping(ctx):
         return [Op.log_append("pong")]
 
-    r = h.submit(Intent(action="ping", args={}))
-    assert r.kind == "authority_refusal"
-    assert r.ops == []
+    out = s.submit("ping", {}, drain_async=False)
+    assert out["result"]["kind"] == "authority_refusal"
+    assert out["result"]["ops"] == []
+    s.close()
 
 
 def test_host_ok():
-    h = Host(caps=CapService(secret=b"test-secret-key-32bytes-long!!!"))
+    host = Host(secret=SECRET)
+    s = Surface(kernel=host, carrier_kind="memory")
 
-    @h.action("ping")
+    @s.action("ping")
     def ping(ctx):
         return [Op.kv_set("x", 1), Op.ui_toast("hi")]
 
-    tok = h.mint("ping")
-    r = h.submit(Intent(action="ping", args={}, cap=tok))
-    assert r.kind == "ok"
-    assert len(r.ops) == 2
-    assert r.ops[0]["ns"] == "kv"
+    tok = host.mint("ping")
+    out = s.submit("ping", {}, cap=tok, drain_async=False)
+    assert out["result"]["kind"] == "ok"
+    assert len(out["result"]["ops"]) == 2
+    assert out["result"]["ops"][0]["ns"] == "kv"
+    s.close()
+
+
+def test_intent_type_still_exported():
+    i = Intent(action="ping", args={}, cap=None)
+    assert i.action == "ping"
+    try:
+        from cek_surface.host import Host as Sketch  # noqa: F401
+
+        raise AssertionError("cek_surface.host.Host must be gone")
+    except ImportError:
+        pass
 
 
 if __name__ == "__main__":
@@ -75,4 +91,5 @@ if __name__ == "__main__":
     test_cap_seal_args()
     test_host_refuse_no_cap()
     test_host_ok()
+    test_intent_type_still_exported()
     print("ok")

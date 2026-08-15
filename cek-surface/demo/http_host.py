@@ -6,6 +6,8 @@
 
 Host only composes + verifies Caps. Browser applies Result.ops and
 submits continuation Intents (timer.fired → pre-minted Cap).
+
+Mint is a Host endpoint. Submit requires a Cap (auto_mint=False).
 """
 
 from __future__ import annotations
@@ -68,6 +70,11 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _read_json(self) -> dict:
+        n = int(self.headers.get("content-length") or 0)
+        raw = self.rfile.read(n)
+        return json.loads(raw.decode("utf-8") or "{}")
+
     def do_OPTIONS(self):
         self.send_response(204)
         self._cors()
@@ -107,23 +114,44 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
     def do_POST(self):
-        if urlparse(self.path).path != "/cek/submit":
+        path = urlparse(self.path).path
+        if path == "/cek/mint":
+            data = self._read_json()
+            action = data.get("action") or ""
+            args = data.get("args") or {}
+            try:
+                cap = SURFACE.mint(
+                    action,
+                    once=bool(data.get("once")),
+                    args=args if isinstance(args, dict) else {},
+                    seal_args=bool(data.get("seal_args")),
+                )
+            except Exception as e:
+                from cek_host import explain
+
+                self._send(
+                    400,
+                    json.dumps({"error": str(e), "explain": explain(str(e)).to_dict()}).encode(),
+                    "application/json",
+                )
+                return
+            self._send(200, json.dumps({"cap": cap}).encode(), "application/json")
+            return
+        if path != "/cek/submit":
             self.send_error(404)
             return
-        n = int(self.headers.get("content-length") or 0)
-        raw = self.rfile.read(n)
-        data = json.loads(raw.decode("utf-8") or "{}")
+        data = self._read_json()
         action = data.get("action") or ""
         args = data.get("args") or {}
         cap = data.get("cap") or None
-        once = bool(args.pop("_once", False)) if isinstance(args, dict) else False
-        # Browser is the Peer: no subprocess apply, no drain.
+        if isinstance(args, dict):
+            args.pop("_once", None)
+        # Browser is the Peer. Missing cap refuses (ops: []). Mint lives on /cek/mint.
         out = SURFACE.submit(
             action,
             args,
             cap=cap,
-            auto_mint=not bool(cap),
-            once=once,
+            auto_mint=False,
             drain_async=False,
         )
         body = json.dumps(
@@ -141,7 +169,7 @@ def main() -> int:
     port = int(sys.argv[1] if len(sys.argv) > 1 else os.environ.get("CEK_PORT", "8080"))
     httpd = ThreadingHTTPServer((host, port), Handler)
     print(f"cek-surface HTTP Host http://{host}:{port}/")
-    print("  real Surface.submit (no ?mock=1 required)")
+    print("  real Surface.submit (no ?mock=1 required); submit requires a Cap")
     print(f"  mock UI only: http://{host}:{port}/?mock=1")
     httpd.serve_forever()
     return 0

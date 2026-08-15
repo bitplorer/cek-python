@@ -1,0 +1,17 @@
+{
+  "id": "cap-refuse-action-mismatch",
+  "family": "cap_verify",
+  "description": "Intent action must match Cap.action; refuse with zero Ops",
+  "now": 1000,
+  "intent": {
+    "action": "kv.write",
+    "args": { "key": "a", "value": 1 },
+    "cap": {
+      "id": "cap-1",
+      "action": "kv.read",
+      "once": false
+    }
+  },
+  "expect_kind": "authority_refusal",
+  "expect_ops_empty": true
+}
