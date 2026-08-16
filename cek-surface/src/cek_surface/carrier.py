@@ -59,7 +59,7 @@ class MemoryCarrier:
     def apply(self, result: dict[str, Any]) -> dict[str, Any]:
         return self._roundtrip({"type": "apply", "result": result})
 
-    async def aapply(self, result: dict[str, Any]) -> dict[str, Any]:
+    async def async_apply(self, result: dict[str, Any]) -> dict[str, Any]:
         return self.apply(result)
 
     def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:

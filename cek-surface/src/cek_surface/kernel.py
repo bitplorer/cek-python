@@ -117,7 +117,7 @@ class CekHostPyKernel:
         )
         return _as_kernel_result(r)
 
-    async def acheck(
+    async def async_check(
         self,
         action: str,
         args: dict[str, Any],
@@ -128,7 +128,7 @@ class CekHostPyKernel:
     ) -> KernelResult:
         import asyncio
 
-        inner = getattr(self._inner, "acheck", None)
+        inner = getattr(self._inner, "async_check", None)
         if inner is not None:
             r = await inner(
                 action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
@@ -144,7 +144,7 @@ class CekHostPyKernel:
             )
         return _as_kernel_result(r)
 
-    async def asubmit(
+    async def async_submit(
         self,
         action: str,
         args: dict[str, Any],
@@ -156,7 +156,7 @@ class CekHostPyKernel:
     ) -> KernelResult:
         import asyncio
 
-        inner = getattr(self._inner, "asubmit", None)
+        inner = getattr(self._inner, "async_submit", None)
         if inner is not None:
             r = await inner(
                 action=action,

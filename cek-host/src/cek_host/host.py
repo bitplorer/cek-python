@@ -314,7 +314,7 @@ class Host:
         bound = BoundAsk._bind(action, args, claims, self.caps.now_fn())
         return self._finish(bound, project_ops, activity_id, idempotency_key)
 
-    async def acheck(
+    async def async_check(
         self,
         action: str,
         args: dict[str, Any] | None = None,
@@ -326,7 +326,7 @@ class Host:
 
         return await asyncio.to_thread(self.check, action, args, cap, **kw)
 
-    async def asubmit(
+    async def async_submit(
         self,
         intent: dict[str, Any] | str | None = None,
         args: dict[str, Any] | None = None,
@@ -353,7 +353,7 @@ class Host:
             **_kw,
         )
 
-    async def asubmit_ops(
+    async def async_submit_ops(
         self,
         project_ops: list[dict[str, Any]],
         *,
@@ -363,7 +363,7 @@ class Host:
         activity_id: str | None = None,
         idempotency_key: str | None = None,
     ) -> KernelResult:
-        return await self.asubmit(
+        return await self.async_submit(
             action=action,
             args=args or {},
             cap=cap,

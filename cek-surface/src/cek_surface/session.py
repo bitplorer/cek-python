@@ -39,11 +39,11 @@ class PeerSession:
         payload = result.to_dict() if hasattr(result, "to_dict") else result
         return self.carrier.apply(payload)
 
-    async def aapply_result(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
+    async def async_apply_result(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
         payload = result.to_dict() if hasattr(result, "to_dict") else result
-        aapply = getattr(self.carrier, "aapply", None)
-        if aapply is not None:
-            return await aapply(payload)
+        async_apply = getattr(self.carrier, "async_apply", None)
+        if async_apply is not None:
+            return await async_apply(payload)
         import asyncio
 
         return await asyncio.to_thread(self.carrier.apply, payload)
@@ -51,8 +51,8 @@ class PeerSession:
     def apply(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
         return self.apply_result(result)
 
-    async def aapply(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
-        return await self.aapply_result(result)
+    async def async_apply(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
+        return await self.async_apply_result(result)
 
     def install_stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
         stamp = getattr(self.carrier, "stamp", None)
@@ -60,10 +60,10 @@ class PeerSession:
             return {"type": "stamp_ack", "pairs": pairs}
         return stamp(pairs)
 
-    async def ainstall_stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
-        astamp = getattr(self.carrier, "astamp", None)
-        if astamp is not None:
-            return await astamp(pairs)
+    async def async_install_stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        async_stamp = getattr(self.carrier, "async_stamp", None)
+        if async_stamp is not None:
+            return await async_stamp(pairs)
         import asyncio
 
         stamp = getattr(self.carrier, "stamp", None)
@@ -74,8 +74,8 @@ class PeerSession:
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         return self.carrier.chrome(chrome)
 
-    async def achrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        fn = getattr(self.carrier, "achrome", None)
+    async def async_chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
+        fn = getattr(self.carrier, "async_chrome", None)
         if fn is not None:
             return await fn(chrome)
         import asyncio
@@ -88,8 +88,8 @@ class PeerSession:
             raise RuntimeError("peer died or timeout")
         return msg
 
-    async def aread(self) -> dict[str, Any]:
-        fn = getattr(self.carrier, "aread_event", None)
+    async def async_read(self) -> dict[str, Any]:
+        fn = getattr(self.carrier, "async_read_event", None)
         if fn is not None:
             msg = await fn()
         else:

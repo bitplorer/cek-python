@@ -153,7 +153,7 @@ class Surface:
         )
         return self._deliver(result, drain_async=drain_async, continuations=armed)
 
-    async def asubmit(
+    async def async_submit(
         self,
         action: str,
         args: dict[str, Any] | None = None,
@@ -166,15 +166,15 @@ class Surface:
         seal_args: bool = False,
         drain_async: bool = True,
     ) -> dict[str, Any]:
-        """Same law as submit. Awaits async handlers and Host.asubmit."""
+        """Same law as submit. Awaits async handlers and Host.async_submit."""
         args = dict(args or {})
         if auto_mint and not cap:
             cap = self.mint(action, once=once, args=args, seal_args=seal_args)
 
-        result, armed = await self._acompose_and_authorize(
+        result, armed = await self._async_compose_and_authorize(
             action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
         )
-        return await self._adeliver(result, drain_async=drain_async, continuations=armed)
+        return await self._async_deliver(result, drain_async=drain_async, continuations=armed)
 
     def handle_event(self, event: dict[str, Any]) -> KernelResult | None:
         """Peer event → Host. Continuations (pre-minted Caps) win; else @on.
@@ -200,7 +200,7 @@ class Surface:
             return None
         if inspect.iscoroutinefunction(fn):
             raise TypeError(
-                f"event {et!r} is async; use await surface.ahandle_event(...) "
+                f"event {et!r} is async; use await surface.async_handle_event(...) "
                 "(sync handle_event does not run an event loop)"
             )
         ops = fn(event, self)
@@ -209,7 +209,7 @@ class Surface:
         # Un-capped @on is a fallback (http.response). Prefer continuations.
         return KernelResult("ok", as_wire(ops))
 
-    async def ahandle_event(self, event: dict[str, Any]) -> KernelResult | None:
+    async def async_handle_event(self, event: dict[str, Any]) -> KernelResult | None:
         et = event.get("type")
         if not et:
             return None
@@ -217,7 +217,7 @@ class Surface:
         cont = self._take_continuation(event)
         if cont is not None:
             args = resolve_args(cont, store=self.store, event=event)
-            result, armed = await self._acompose_and_authorize(cont.action, args, cont.cap)
+            result, armed = await self._async_compose_and_authorize(cont.action, args, cont.cap)
             if armed:
                 self.last_continuations = list(armed)
             return result
@@ -285,7 +285,7 @@ class Surface:
             return KernelResult("dispatch_error", [], f"unknown action: {action}"), None
         if inspect.iscoroutinefunction(handler):
             raise TypeError(
-                f"action {action!r} is async; use await surface.asubmit(...) "
+                f"action {action!r} is async; use await surface.async_submit(...) "
                 "(sync submit does not run an event loop)"
             )
 
@@ -313,7 +313,7 @@ class Surface:
         )
         return result, getattr(ctx, "continuations", None)
 
-    async def _acompose_and_authorize(
+    async def _async_compose_and_authorize(
         self,
         action: str,
         args: dict[str, Any],
@@ -331,8 +331,8 @@ class Surface:
         if hasattr(host, "stamp"):
             host.stamp = self.stamp
 
-        if hasattr(self.kernel, "acheck"):
-            pre = await self.kernel.acheck(
+        if hasattr(self.kernel, "async_check"):
+            pre = await self.kernel.async_check(
                 action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
             )
             if not getattr(pre, "ok", False):
@@ -371,8 +371,8 @@ class Surface:
         if not pol2.allow:
             return KernelResult("authority_refusal", [], pol2.reason), None
 
-        if hasattr(self.kernel, "asubmit"):
-            result = await self.kernel.asubmit(
+        if hasattr(self.kernel, "async_submit"):
+            result = await self.kernel.async_submit(
                 action,
                 args,
                 cap,
@@ -433,14 +433,14 @@ class Surface:
             out["followups"] = self.drain_events()
         return out
 
-    async def _adeliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
+    async def _async_deliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
         if continuations:
             self.last_continuations = [
                 c if isinstance(c, Continuation) else Continuation.from_dict(c)
                 for c in continuations
             ]
         peer = self.ensure_peer()
-        reply = await peer.aapply_result(result)
+        reply = await peer.async_apply_result(result)
         self.last_world = reply.get("world") or {}
         payload = result.to_dict()
         conts = self.continuation_dicts() if result.ok else []
@@ -453,7 +453,7 @@ class Surface:
             "continuations": conts,
         }
         if drain_async and result.ok and _has_async(result.ops):
-            out["followups"] = await self.adrain_events()
+            out["followups"] = await self.async_drain_events()
         return out
 
     def drain_events(self, max_rounds: int = 12) -> list[dict[str, Any]]:
@@ -494,12 +494,12 @@ class Surface:
                 break
         return followups
 
-    async def adrain_events(self, max_rounds: int = 12) -> list[dict[str, Any]]:
+    async def async_drain_events(self, max_rounds: int = 12) -> list[dict[str, Any]]:
         peer = self.ensure_peer()
         followups: list[dict[str, Any]] = []
         for _ in range(max_rounds):
             try:
-                msg = await peer.aread()
+                msg = await peer.async_read()
             except RuntimeError:
                 break
             events = msg.get("events") or []
@@ -509,10 +509,10 @@ class Surface:
                 break
             chained = False
             for ev in events:
-                nxt = await self.ahandle_event(ev)
+                nxt = await self.async_handle_event(ev)
                 entry: dict[str, Any] = {"event": ev, "result": None}
                 if nxt is not None:
-                    reply = await peer.aapply_result(nxt)
+                    reply = await peer.async_apply_result(nxt)
                     self.last_world = reply.get("world") or {}
                     payload = nxt.to_dict()
                     if nxt.ok:
