@@ -14,7 +14,7 @@
 #
 # See docs/TESTPYPI_SETUP.md
 #
-# Trigger: workflow_dispatch or push of tag v0.1.0*
+# Trigger: workflow_dispatch or push of tag v*
 
 name: publish-testpypi
 
@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - "v0.1.0*"
+      - "v*"
 
 permissions:
   contents: read
