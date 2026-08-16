@@ -181,11 +181,11 @@ def run_chaos(n: int) -> dict:
     r3 = s.submit("cart.add", {"id": "sku-1", "qty": 99}, cap=cap2, drain_async=False)
     report["sealed_args_refused"] = r3["result"]["kind"] == "authority_refusal"
 
-    # empty cart checkout toast path
+    # empty cart checkout — no toast Op; log.append is the S signal
     s.store["cart"] = {}
     r4 = s.submit("checkout.start", {}, auto_mint=True, drain_async=False)
     report["empty_cart_checkout"] = r4["result"]["kind"] == "ok" and any(
-        o.get("name") == "toast" for o in r4["result"]["ops"]
+        o.get("ns") == "log" and o.get("name") == "append" for o in r4["result"]["ops"]
     )
 
     # rapid fire cart

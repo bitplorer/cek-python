@@ -125,7 +125,7 @@ def run_case(case: dict) -> None:
             action="cart.remove",
             args={},
             cap=tok,
-            project_ops=[{"ns": "sys", "name": "noop", "payload": {}}],
+            project_ops=[{"ns": "log", "name": "append", "payload": {"message": "x"}}],
         )
         assert r.kind == "authority_refusal" and r.ops == [], r
         return
@@ -175,25 +175,41 @@ def run_case(case: dict) -> None:
         assert args == case["expect_args"]
         return
 
+    if cid == "illegal_pair_rejected":
+        from cek_host.legal import IllegalOp, is_legal, project_wire
+
+        for ns, name in case["illegal"]:
+            try:
+                Op(ns, name, {})
+                raise AssertionError(f"Op({ns},{name}) must raise")
+            except ValueError as e:
+                assert "illegal" in str(e)
+            assert not is_legal(ns, name)
+        wire = [{"ns": ns, "name": name, "payload": {}} for ns, name in case["illegal"]]
+        try:
+            project_wire(wire, unknown="strict")
+            raise AssertionError("strict illegal batch must raise")
+        except IllegalOp:
+            pass
+        assert project_wire(wire, unknown="tolerant") == []
+        mixed = [
+            {"ns": "kv", "name": "set", "payload": {"key": "a", "value": 1}},
+            {"ns": "ui", "name": "dom.morph", "payload": {"target": "x", "patch": {}}},
+        ]
+        try:
+            project_wire(mixed, unknown="strict")
+            raise AssertionError("split-alias mixed batch must raise")
+        except IllegalOp:
+            pass
+        return
+
     if cid == "hot_op_catalog":
         catalog = {
             ("kv", "set"): Op.kv_set("k", 1),
             ("kv", "delete"): Op.kv_delete("k"),
-            ("kv", "merge"): Op.kv_merge("k", {"a": 1}),
             ("ui.dom", "morph"): Op.ui_morph("t", {"tag": "div"}),
-            ("ui.dom", "set_text"): Op.ui_set_text("t", "x"),
-            ("ui.dom", "remove"): Op.ui_remove("t"),
-            ("ui", "toast"): Op.ui_toast("hi"),
-            ("ui", "busy"): Op.ui_busy("t", True),
-            ("ui", "focus"): Op.ui_focus("t"),
-            ("nav", "push"): Op.nav_push("/x"),
-            ("nav", "replace"): Op.nav_replace("/x"),
-            ("nav", "back"): Op.nav_back(),
-            ("timer", "set"): Op.timer_set("t1", 10),
-            ("timer", "clear"): Op.timer_clear("t1"),
-            ("http", "request"): Op.http_request("r1", "GET", "https://example.com"),
+            ("ui.dom", "restore"): Op.ui_restore("t", {"tag": "div"}),
             ("log", "append"): Op.log_append("m"),
-            ("sys", "noop"): Op.noop(),
         }
         for ns, name in case["ops"]:
             op = catalog[(ns, name)]

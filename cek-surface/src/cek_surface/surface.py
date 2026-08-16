@@ -14,6 +14,8 @@ from .kernel import HostKernel, KernelResult, load_host_kernel
 from .ops import Op, as_wire
 from .policy import SurfacePolicy
 from .session import PeerSession
+from .stamp import pairs_as_wire
+from cek_host.legal import default_stamp_pairs
 
 
 Handler = Callable[["Ctx"], list[Op]]
@@ -43,6 +45,68 @@ class Surface:
     carrier_opts: dict = field(default_factory=dict)
     last_world: dict[str, Any] = field(default_factory=dict)
     last_continuations: list[Continuation] = field(default_factory=list)
+    stamp: frozenset = field(default_factory=default_stamp_pairs)
+    _stamp_installed: bool = False
+
+    # -- Stamp / stdlibs -----------------------------------------------------
+
+    def use_stdlibs(
+        self,
+        host_offers: list[str],
+        peer_accepts: list[str] | None = None,
+    ) -> frozenset:
+        """Recompute the session stamp from Host↔Peer agreement."""
+        from .agreement import negotiate
+
+        agr = negotiate(host_offers, peer_accepts or host_offers)
+        self.stamp = agr.stamp
+        self._stamp_installed = False
+        return self.stamp
+
+    def load_stdlib_dir(self, directory: str) -> list[str]:
+        from .domain_loader import load_dir
+
+        loaded = load_dir(directory)
+        return [d.name for d in loaded]
+
+    # -- Chrome (perception) -------------------------------------------------
+
+    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
+        """Perception-only. Does not mint, does not enter lineage."""
+        return self.ensure_peer().chrome(chrome)
+
+    def chrome_pending(self, target: str, on: bool = True) -> dict[str, Any]:
+        return self.chrome({"op": "pending", "target": target, "on": on})
+
+    def chrome_shadow(self, target: str, patch: Any) -> dict[str, Any]:
+        return self.chrome({"op": "shadowMorph", "target": target, "patch": patch})
+
+    def chrome_filter(self, kv_key: str, query: str, out_target: str) -> dict[str, Any]:
+        return self.chrome(
+            {"op": "filterCached", "kvKey": kv_key, "query": query, "outTarget": out_target}
+        )
+
+    def arm(
+        self,
+        event: str,
+        action: str,
+        *,
+        once: bool = True,
+        args_from: dict[str, str] | None = None,
+        static_args: dict[str, Any] | None = None,
+        args: dict[str, Any] | None = None,
+    ) -> Continuation:
+        """Pre-mint a continuation Cap. Peer fills slots; Host still verifies."""
+        cap = self.mint(action, once=once, args=args or {})
+        return Continuation(
+            event=event,
+            action=action,
+            cap=cap,
+            args_from=args_from,
+            static_args=static_args,
+        )
+
+    # -- Compose -------------------------------------------------------------
 
     def action(self, name: str) -> Callable[[Handler], Handler]:
         def deco(fn: Handler) -> Handler:
@@ -113,12 +177,20 @@ class Surface:
         ops = fn(event, self)
         if ops is None:
             return None
-        # Un-capped @on is a compatibility path (http.response). Prefer continuations.
+        # Un-capped @on is a fallback (http.response). Prefer continuations.
         return KernelResult("ok", as_wire(ops))
 
     def ensure_peer(self) -> PeerSession:
         if self.peer is None:
             self.peer = PeerSession(carrier_kind=self.carrier_kind, **self.carrier_opts)
+            self._stamp_installed = False
+        if not self._stamp_installed:
+            inner = getattr(self.kernel, "_inner", None)
+            host = inner if inner is not None else self.kernel
+            if hasattr(host, "stamp"):
+                host.stamp = self.stamp
+            self.peer.install_stamp(pairs_as_wire(self.stamp))
+            self._stamp_installed = True
         return self.peer
 
     def continuation_dicts(self) -> list[dict[str, Any]]:
@@ -142,6 +214,11 @@ class Surface:
         pol = self.policy.check_action(action)
         if not pol.allow:
             return KernelResult("authority_refusal", [], pol.reason), None
+
+        inner = getattr(self.kernel, "_inner", None)
+        host = inner if inner is not None else self.kernel
+        if hasattr(host, "stamp"):
+            host.stamp = self.stamp
 
         # Verify Cap BEFORE compose (store writes / continuation mint). I1 / I2-lite.
         if hasattr(self.kernel, "check"):
@@ -263,4 +340,5 @@ class Surface:
 
 
 def _has_async(ops: list[dict[str, Any]]) -> bool:
-    return any(o.get("ns") in ("timer", "http") for o in ops)
+    # S has no timer/http wire Ops. Continuations are Host-injected.
+    return False

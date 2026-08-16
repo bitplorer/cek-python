@@ -34,12 +34,14 @@ sh scripts/verify.sh
 python -m cek_host doctor --fail
 ```
 
-## Docs (pyramid)
+## Docs
 
-| Layer | Doc |
-|-------|-----|
-| 0 | **This README** + **[START.md](./START.md)** |
-| 1 | [docs/INVARIANTS.md](./docs/INVARIANTS.md) · [docs/S_TIER_SCORECARD.md](./docs/S_TIER_SCORECARD.md) |
-| 2 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) · [docs/DECISIONS.md](./docs/DECISIONS.md) · [docs/PERFORMANCE.md](./docs/PERFORMANCE.md) — each says “read START first” |
+| Doc | Role |
+|-----|------|
+| **[START.md](./START.md)** | First morph |
+| [docs/CATALOG_AUTHORITY_TARGET.md](./docs/CATALOG_AUTHORITY_TARGET.md) | Glossary (pair / S / stamp) |
+| [docs/COMPOSITION.md](./docs/COMPOSITION.md) | Host compose + Peer IR |
+| [docs/INVARIANTS.md](./docs/INVARIANTS.md) | NEVER REGRESS |
+| [docs/ORGANIZATION.md](./docs/ORGANIZATION.md) | Repos and packages |
 
-Status: tree **0.1.2** Phase 2 (BoundAsk, Idem/Lineage, Ed25519, law-generation). PyPI indexes still **0.1.0** until publish. Phase 3 (Redis / crates.io) is gated.
+History and publish runbooks: `docs/archive/`.

@@ -13,12 +13,11 @@ sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 from cek_surface import Op, Surface
 from cek_surface.ops import (
     clear_form_errors,
-    fetch_json,
     form_errors,
     navigate_to,
     plan,
-    restart_timer,
     set_loading,
+    signal_set,
 )
 
 
@@ -41,7 +40,7 @@ def build() -> Surface:
                     ],
                 },
             ),
-            Op.signal_set("ui.theme", "light"),
+            signal_set("ui.theme", "light"),
             Op.log_append("boot"),
         )
 
@@ -51,8 +50,8 @@ def build() -> Surface:
         ctx.store["search.pending"] = q
         return plan(
             Op.kv_set("search.pending", q),
-            Op.ui_set_text("search-input", q),
-            *restart_timer("search-debounce", int(ctx.args.get("ms") or 50)),
+            Op.ui_morph("search-input", {"tag": "input", "attrs": {"id": "search-input"}, "text": q}),
+            Op.log_append("search.type", fields={"q": q}),
         )
 
     @s.action("cart.add")
@@ -61,7 +60,7 @@ def build() -> Surface:
         title = str(ctx.args.get("title") or item_id)
         price = float(ctx.args.get("price") or 0)
         if not item_id:
-            return plan(Op.ui_toast("Missing item", level="error"))
+            return plan(Op.log_append("Missing item", level="error"))
         cart = dict(ctx.store.get("cart") or {})
         line = dict(cart.get(item_id) or {"id": item_id, "title": title, "price": price, "qty": 0})
         line["qty"] = int(line["qty"]) + 1
@@ -71,18 +70,18 @@ def build() -> Surface:
         total = sum(int(x["qty"]) * float(x["price"]) for x in cart.values())
         return plan(
             Op.kv_set("cart", cart),
-            Op.ui_set_text("cart", f"Cart: {n} · ${total:.2f}"),
-            Op.ui_toast(f"Added {title}", level="success"),
+            Op.ui_morph("cart", {"tag": "div", "attrs": {"id": "cart"}, "text": f"Cart: {n} · ${total:.2f}"}),
+            Op.log_append(f"Added {title}"),
         )
 
     @s.action("checkout.start")
     def checkout_start(ctx):
         if not (ctx.store.get("cart") or {}):
-            return plan(Op.ui_toast("Cart empty", level="error"))
+            return plan(Op.log_append("Cart empty", level="error"))
         return plan(
             *navigate_to("/checkout", title="Checkout"),
             *clear_form_errors("checkout", ["email"]),
-            Op.ui_focus("checkout.email"),
+            Op.kv_set("ui:focus", "checkout.email"),
         )
 
     @s.action("checkout.submit")
@@ -97,9 +96,9 @@ def build() -> Surface:
         return plan(
             Op.kv_set("cart", {}),
             Op.kv_set("last_order", ctx.store["last_order"]),
-            Op.ui_set_text("cart", "Cart: 0"),
+            Op.ui_morph("cart", {"tag": "div", "attrs": {"id": "cart"}, "text": "Cart: 0"}),
             *navigate_to("/thanks", title="Thanks", replace=True),
-            Op.ui_toast("Order placed", level="success"),
+            Op.log_append("Order placed"),
         )
 
     @s.on("timer.fired")
@@ -109,7 +108,7 @@ def build() -> Surface:
         q = surface.store.get("search.pending") or ""
         if not str(q).strip():
             return plan(Op.ui_morph("results", {"tag": "ul", "children": []}))
-        return fetch_json("search-1", f"https://api.local/search?q={q}", busy_region="search")
+        return plan(Op.log_append("search.debounce", fields={"q": q}))
 
     @s.on("http.response")
     def on_http(ev, surface: Surface):
@@ -125,14 +124,14 @@ def build() -> Surface:
         return plan(
             *set_loading("search", False, f"{len(children)} results"),
             Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": children}),
-            Op.ui_toast(f"Found {len(children)}", level="success"),
+            Op.log_append(f"Found {len(children)}"),
         )
 
     @s.on("http.error")
     def on_err(ev, surface: Surface):
         return plan(
             *set_loading("search", False, "Error"),
-            Op.ui_toast(ev.get("message") or "error", level="error"),
+            Op.log_append(ev.get("message") or "error", level="error"),
         )
 
     return s

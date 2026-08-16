@@ -27,12 +27,16 @@ class Carrier(Protocol):
         """Send Result for Peer apply; return receipt/world message."""
         ...
 
+    def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        """Install session stamp on Peer. Optional on older carriers."""
+        ...
+
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         """Perception-only chrome; not lineage."""
         ...
 
     def read_event(self, timeout: float | None = None) -> dict[str, Any] | None:
-        """Block for Peer-emitted events (timer/http). None on timeout/EOF."""
+        """Block for Peer-emitted events. None on timeout/EOF. Phase-1 S has none."""
         ...
 
     def close(self) -> None: ...
@@ -54,6 +58,9 @@ class MemoryCarrier:
 
     def apply(self, result: dict[str, Any]) -> dict[str, Any]:
         return self._roundtrip({"type": "apply", "result": result})
+
+    def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        return self._roundtrip({"type": "stamp", "pairs": pairs})
 
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         return self._roundtrip({"type": "chrome", "chrome": chrome})
@@ -86,6 +93,8 @@ class MemoryCarrier:
                 self._to_host.put(r)
             return replies[-1]
         # Default echo: no Node required. Tests that need a world set peer_handler.
+        if msg.get("type") == "stamp":
+            return {"type": "stamp_ack", "pairs": msg.get("pairs") or []}
         if msg.get("type") == "apply":
             ops = (msg.get("result") or {}).get("ops") or []
             return {
@@ -105,8 +114,10 @@ class SubprocessNdjsonCarrier:
     name = "subprocess_ndjson"
 
     def __init__(self, peer_js: Path | None = None):
-        root = Path(__file__).resolve().parents[2]
-        self.peer_js = peer_js or (root / "js" / "peer.mjs")
+        pkg = Path(__file__).resolve().parent
+        bundled = pkg / "js" / "peer.mjs"
+        repo = pkg.parents[1] / "js" / "peer.mjs"
+        self.peer_js = peer_js or (bundled if bundled.is_file() else repo)
         self.proc = subprocess.Popen(
             ["node", str(self.peer_js)],
             stdin=subprocess.PIPE,
@@ -118,6 +129,9 @@ class SubprocessNdjsonCarrier:
 
     def apply(self, result: dict[str, Any]) -> dict[str, Any]:
         return self._rpc({"type": "apply", "result": result})
+
+    def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        return self._rpc({"type": "stamp", "pairs": pairs})
 
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         return self._rpc({"type": "chrome", "chrome": chrome})
@@ -205,6 +219,9 @@ class WebSocketCarrier:
     def apply(self, result: dict[str, Any]) -> dict[str, Any]:
         return self._rpc({"type": "apply", "result": result})
 
+    def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        return self._rpc({"type": "stamp", "pairs": pairs})
+
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         return self._rpc({"type": "chrome", "chrome": chrome})
 
@@ -256,4 +273,12 @@ def open_carrier(kind: str = "subprocess", **opts: Any) -> Carrier:
         return MemoryCarrier()
     if k in ("websocket", "ws"):
         return WebSocketCarrier(**opts)
-    raise ValueError(f"unknown carrier kind: {kind!r} (use subprocess|memory|websocket)")
+    if k in ("kernel", "peer-kernel", "rust-peer"):
+        from .kernel_peer import KernelPeerCarrier
+
+        return KernelPeerCarrier(
+            **{kk: opts[kk] for kk in ("profile", "bin_path") if kk in opts}
+        )
+    raise ValueError(
+        f"unknown carrier kind: {kind!r} (use subprocess|memory|websocket|kernel)"
+    )

@@ -16,7 +16,7 @@ from cek_host import Host, MemoryOnceBackend, args_hash
 
 SECRET = b"parity-secret-32-bytes-long!!!!!"
 ORACLE = "96e4f83e3793b646323a67f314b51044"
-OPS = [{"ns": "sys", "name": "noop", "payload": {}}]
+OPS = [{"ns": "log", "name": "append", "payload": {"message": "x"}}]
 
 
 def _pair():

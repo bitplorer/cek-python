@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cek-surface"
 version = "0.1.2"
-description = "CEK surface runtime: Python compose, Result.ops wire, Peer IR, portable carriers"
+description = "CEK surface: compose Ops, Peer IR, carriers. Depends on cek-host."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "bitplorer" }]
 dependencies = [
-  "cek-host>=0.1.0",
+  "cek-host>=0.1.2",
 ]
 
 [project.optional-dependencies]
@@ -28,4 +28,4 @@ Start = "https://github.com/bitplorer/cek-python/blob/main/START.md"
 where = ["src"]
 
 [tool.setuptools.package-data]
-cek_surface = ["py.typed"]
+cek_surface = ["py.typed", "js/*.mjs", "stdlibs/*.json"]

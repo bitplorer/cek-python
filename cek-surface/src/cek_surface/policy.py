@@ -46,8 +46,11 @@ class SurfacePolicy:
         if len(ops) > self.max_ops_per_result:
             return PolicyDecision(False, f"too many ops: {len(ops)}")
         for o in ops:
-            if o.get("ns") == "nav" and o.get("name") in ("push", "replace"):
-                path = str((o.get("payload") or {}).get("path") or "")
-                if not any(path.startswith(p) for p in self.navigate_prefixes):
-                    return PolicyDecision(False, f"nav path denied: {path}")
+            if o.get("ns") == "kv" and o.get("name") == "set":
+                key = str((o.get("payload") or {}).get("key") or "")
+                if key == "ui:nav":
+                    val = (o.get("payload") or {}).get("value") or {}
+                    path = str(val.get("path") if isinstance(val, dict) else "")
+                    if not any(path.startswith(p) for p in self.navigate_prefixes):
+                        return PolicyDecision(False, f"nav path denied: {path}")
         return PolicyDecision(True)

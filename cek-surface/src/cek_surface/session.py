@@ -42,6 +42,12 @@ class PeerSession:
     def apply(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
         return self.apply_result(result)
 
+    def install_stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        stamp = getattr(self.carrier, "stamp", None)
+        if stamp is None:
+            return {"type": "stamp_ack", "pairs": pairs}
+        return stamp(pairs)
+
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         return self.carrier.chrome(chrome)
 

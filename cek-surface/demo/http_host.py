@@ -5,7 +5,7 @@
   open http://127.0.0.1:8080/   (no ?mock=1 required)
 
 Host only composes + verifies Caps. Browser applies Result.ops and
-submits continuation Intents (timer.fired → pre-minted Cap).
+submits continuation Intents (Host-injected events → pre-minted Cap).
 
 Mint is a Host endpoint. Submit requires a Cap (auto_mint=False).
 """

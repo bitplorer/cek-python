@@ -60,7 +60,7 @@ def test_live_continuation_commit():
             "search.commit",
             {"q": "Widget", "ms": 0},
             cap,
-            project_ops=[{"ns": "sys", "name": "noop", "payload": {}}],
+            project_ops=[{"ns": "log", "name": "append", "payload": {"message": "replay"}}],
         )
         assert r2.kind == "authority_refusal"
         assert r2.ops == []
@@ -72,21 +72,34 @@ def test_live_continuation_commit():
         s.close()
 
 
-def test_live_continuation_via_subprocess_drain():
+def test_live_continuation_via_injected_event():
+    """Peer no longer fires timers. Host injects timer.fired to consume the armed continuation."""
     s = build_shop()
     try:
         s.submit("shop.boot", {}, auto_mint=True, drain_async=False)
-        out = s.submit("search.type", {"q": "Gadget", "ms": 15}, auto_mint=True, drain_async=True)
+        out = s.submit("search.type", {"q": "Gadget", "ms": 15}, auto_mint=True, drain_async=False)
         assert out["result"]["kind"] == "ok"
-        followups = out.get("followups") or []
-        assert followups, "timer.fired must drain into search.commit"
-        kinds = [(f.get("result") or {}).get("kind") for f in followups]
-        assert "ok" in kinds
-        assert any((f.get("event") or {}).get("id") == "search-debounce" for f in followups) or any(
-            (f.get("event") or {}).get("type") == "timer.fired" for f in followups
-        )
+        fqs = [f"{o['ns']}.{o['name']}" for o in out["result"]["ops"]]
+        assert all(fq in {"kv.set", "kv.delete", "log.append", "ui.dom.morph", "ui.dom.restore"} for fq in fqs)
+        assert "timer.set" not in fqs
+        assert out.get("continuations")
+        r = s.handle_event({"type": "timer.fired", "id": "search-debounce"})
+        assert r is not None and r.kind == "ok"
         hits = s.store.get("search.results") or []
         assert any(it.get("id") == "sku-3" for it in hits)
+    finally:
+        s.close()
+
+
+def test_peer_does_not_emit_timer_on_search_type():
+    s = build_shop()
+    try:
+        s.submit("shop.boot", {}, auto_mint=True, drain_async=False)
+        out = s.submit("search.type", {"q": "Gadget"}, auto_mint=True, drain_async=True)
+        assert out["result"]["kind"] == "ok"
+        assert not out.get("followups")
+        fqs = [f"{o['ns']}.{o['name']}" for o in out["result"]["ops"]]
+        assert all(fq in {"kv.set", "log.append", "ui.dom.morph"} for fq in fqs)
     finally:
         s.close()
 
@@ -112,7 +125,8 @@ def test_peer_does_not_mint():
 
 if __name__ == "__main__":
     test_live_continuation_commit()
-    test_live_continuation_via_subprocess_drain()
+    test_live_continuation_via_injected_event()
+    test_peer_does_not_emit_timer_on_search_type()
     test_refuse_without_cap_still_empty_ops()
     test_peer_does_not_mint()
     print("continuation live ok")

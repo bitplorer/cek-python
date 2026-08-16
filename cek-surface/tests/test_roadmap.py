@@ -22,11 +22,11 @@ def test_vectors_pack():
     cont = Continuation.from_dict(c["continuation"])
     args = resolve_args(cont, store=c["store"], event=c["event"])
     assert args == c["expect_args"]
-    # toast shape
-    t = next(x for x in pack["cases"] if x["id"] == "toast_op_shape")
-    op = Op.ui_toast("hi")
+    # morph shape (S)
+    t = next(x for x in pack["cases"] if x["id"] == "morph_op_shape")
+    op = Op.ui_morph("shell", {"tag": "div"})
     d = op.to_dict()
-    assert set(t["expect_wire_keys"]).issubset(d.keys())
+    assert [d["ns"], d["name"]] == t["expect_ns_name"]
 
 
 def test_policy_rate_and_nav():
@@ -35,9 +35,10 @@ def test_policy_rate_and_nav():
     assert p.check_action("a").allow
     assert p.check_action("a").allow
     assert not p.check_action("a").allow
-    ops = as_wire([Op.nav_push("/evil")])
+    from cek_surface.ops import navigate_to
+    ops = as_wire(navigate_to("/evil"))
     assert not p.check_ops(ops).allow
-    ops2 = as_wire([Op.nav_push("/shop/x")])
+    ops2 = as_wire(navigate_to("/shop/x"))
     assert p.check_ops(ops2).allow
 
 
@@ -62,7 +63,7 @@ def test_chrome_pending():
     s = Surface()
     @s.action("noop_act")
     def noop_act(ctx):
-        return [Op.noop()]
+        return [Op.log_append("noop")]
     s.submit("noop_act", {}, auto_mint=True, drain_async=False)
     reply = s.ensure_peer().chrome({"op": "pending", "target": "btn", "on": True})
     assert reply.get("type") == "chrome_applied"

@@ -1,0 +1,9 @@
+{
+  "name": "search",
+  "version": "1.0.0",
+  "driver_hint": "search",
+  "seed_pairs": [
+    { "ns": "search", "name": "hits" },
+    { "ns": "search", "name": "clear" }
+  ]
+}

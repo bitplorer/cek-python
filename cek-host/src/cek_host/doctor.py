@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 DEMO_SECRET = b"cek-host-dev-secret-change-me!!!"
 MIN_SECRET_LEN = 32
-VECTOR_PACK_VERSION = 3
+VECTOR_PACK_VERSION = 4
 
 
 @dataclass

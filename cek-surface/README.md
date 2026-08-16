@@ -2,29 +2,30 @@
 
 Compose `list[Op]`. Host authorizes. Peer applies. Peer IR is perception only.
 
-**Read [START.md](../START.md) first.** Requires `cek-host`. `EmbeddedHostKernel` is gone (D3).
-
-PyPI **0.1.0** is the last publish. Phase 2 lives in this tree (**0.1.2**). Clone path:
-
-```bash
-git clone https://github.com/bitplorer/cek-python && cd cek-python
-pip install -e ./cek-host -e ./cek-surface
-python cek-surface/demo/http_host.py   # browser shop
-```
-
 ```python
 from cek_host import Host
-from cek_surface import Surface, Op
+from cek_surface import Surface, Op, search_hits
+from cek_surface.domain_loader import load_bundled
 
+load_bundled()
 s = Surface(kernel=Host(secret=b"dev-only-not-for-production-32!!"), carrier_kind="memory")
+s.use_stdlibs(["baseline", "ui", "search"])
 
 @s.action("hello")
 def hello(ctx):
     return [Op.ui_morph("shell", {"tag": "main", "text": "hi"})]
 
-print(s.submit("hello", {}, auto_mint=True, drain_async=False)["result"])
+@s.action("find")
+def find(ctx):
+    return [search_hits("results", [{"title": "a"}], q="a", stamp=ctx.surface.stamp)]
 ```
 
-Carriers: `subprocess` (default) · `memory` · `websocket` (opt-in). Continuations are Caps, not scripts (D9).
+S is frozen in core. `search.hits` is a **runtime** stdlib pair — legal only after Host↔Peer agree and the stamp includes it.
 
-`sh scripts/verify.sh` from the monorepo root.
+Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel` (`cek apply`).
+
+Chrome (perception): `s.chrome_pending("btn")` · `s.arm("timer.fired:x", "find")`.
+
+```bash
+pip install cek-surface          # pulls cek-host>=0.1.2
+```

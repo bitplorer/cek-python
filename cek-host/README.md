@@ -1,27 +1,33 @@
 # cek-host
 
-Python **Host kernel** — the published Cap machine. Peers never mint.
+Python **Host runtime** — mint, verify, project. Peers never mint.
 
-**Read [START.md](../START.md) first.** Tree is **0.1.2**. Indexes are still **0.1.0** (no `create-app` on PyPI yet).
+Not a wrap of the Rust kernel unless you use `RustHostKernel`.
+
+```python
+from cek_host import Host
+
+host = Host(secret=b"dev-only-not-for-production-32!!")
+cap = host.mint("hello", once=True)
+r = host.submit(
+    action="hello",
+    args={},
+    cap=cap,
+    project_ops=[{"ns": "log", "name": "append", "payload": {"message": "hi"}}],
+)
+assert r.kind == "ok" and r.digest.startswith("cek1:")
+```
+
+Refuse → `r.ops == []`. Illegal pair → `dispatch_error`, never silent `ok`.
+
+S (core) = `kv.set` `kv.delete` `log.append` `ui.dom.morph` `ui.dom.restore`.  
+Pair = `(ns, name)`. Stamp = this session. FQ is display only.
+
+`Host()` is demo. `Host.production(secret, FileOnceBackend(...))` refuses the demo secret and memory stores.
 
 ```bash
-git clone https://github.com/bitplorer/cek-python && cd cek-python
-pip install -e ./cek-host -e ./cek-surface
-python -m cek_host create-app ./hello && python ./hello/app.py
-python -m cek_host doctor --fail
+pip install cek-host
 python -m cek_host explain "once cap already used"
 ```
 
-```python
-from cek_host import Host, FileOnceBackend
-import secrets
-
-host = Host.production(secrets.token_bytes(32), FileOnceBackend("once.json"))
-cap = host.mint("Cart.add", once=True, args={"sku": "abc-123", "qty": 2}, seal_args=True)
-r = host.submit(action="Cart.add", args={"sku": "abc-123", "qty": 2}, cap=cap, project_ops=[])
-# refuse ⇒ r.ops == [] and r.digest.startswith("cek1:")
-```
-
-`Host()` is **demo** (memory stores, default secret allowed). `Host.production()` refuses the demo secret and memory once/idem/lineage unless `allow_memory_stores=True`. BoundAsk has no public constructor. Idempotency lookup runs before once-ensure. `end_activity` prefers landed receipts.
-
-Oracle: `args_hash({"sku":"abc-123","qty":2}) == 96e4f83e3793b646323a67f314b51044`
+Law: [cek-framework](https://github.com/bitplorer/cek-framework) · Kernels: [cek-runtime](https://github.com/bitplorer/cek-runtime) · Surface: `pip install cek-surface`

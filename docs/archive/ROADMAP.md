@@ -15,7 +15,8 @@ P0 full tree · P1 live continuations · P2 vectors+WS · **P3 TestPyPI + PyPI 0
 | BoundAsk | No public constructor. Bind after verify + idem + once-ensure |
 | Idem / Lineage | File+memory backends. `end_activity` landed-first reverse |
 | Ed25519 / law-gen | Opt-in Host policy. Blank/unknown generation refuse |
-| Vectors | surface v3 (20) + **29** aligned Rust JSON fixtures |
+| Vectors | surface v4 (17) + 29 aligned Rust JSON fixtures |
+| S (wire) | Pair-closed: kv.set/delete, log.append, ui.dom.morph/restore |
 | doctor / explain / create-app | `python -m cek_host` |
 | Phase 2 critic | **SHIP** (2026-08-15) |
 

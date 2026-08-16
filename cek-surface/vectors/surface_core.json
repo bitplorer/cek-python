@@ -1,7 +1,7 @@
 {
   "pack": "cek-surface-core",
-  "version": 3,
-  "aligns_with": "cek-runtime/crates/cek-contract/vectors (hot Op ns.name + refuse empty ops)",
+  "version": 4,
+  "aligns_with": "cek-runtime/crates/cek-contract (S = Baseline ∪ ui.dom; pair identity)",
   "cases": [
     {
       "id": "refuse_no_cap",
@@ -29,10 +29,10 @@
       "expect": { "kind": "authority_refusal", "ops": [] }
     },
     {
-      "id": "toast_op_shape",
+      "id": "restore_op_shape",
       "family": "op_shape",
-      "op": { "ns": "ui", "name": "toast", "payload": { "message": "hi", "level": "info", "ms": 3000 } },
-      "expect_wire_keys": ["ns", "name", "payload"]
+      "op": { "ns": "ui.dom", "name": "restore", "payload": { "target": "hdr", "snapshot": { "tag": "div" } } },
+      "expect_ns_name": ["ui.dom", "restore"]
     },
     {
       "id": "morph_op_shape",
@@ -53,16 +53,10 @@
       "expect_ns_name": ["log", "append"]
     },
     {
-      "id": "timer_set_op_shape",
+      "id": "kv_delete_op_shape",
       "family": "op_shape",
-      "op": { "ns": "timer", "name": "set", "payload": { "id": "search-debounce", "ms": 200 } },
-      "expect_ns_name": ["timer", "set"]
-    },
-    {
-      "id": "sys_noop_op_shape",
-      "family": "op_shape",
-      "op": { "ns": "sys", "name": "noop", "payload": {} },
-      "expect_ns_name": ["sys", "noop"]
+      "op": { "ns": "kv", "name": "delete", "payload": { "key": "a" } },
+      "expect_ns_name": ["kv", "delete"]
     },
     {
       "id": "peer_kv_set_lands",
@@ -103,12 +97,23 @@
       "id": "hot_op_catalog",
       "family": "contract_alignment",
       "ops": [
-        ["kv", "set"], ["kv", "delete"], ["kv", "merge"],
-        ["ui.dom", "morph"], ["ui.dom", "set_text"], ["ui.dom", "remove"],
-        ["ui", "toast"], ["ui", "busy"], ["ui", "focus"],
-        ["nav", "push"], ["nav", "replace"], ["nav", "back"],
-        ["timer", "set"], ["timer", "clear"],
-        ["http", "request"], ["log", "append"], ["sys", "noop"]
+        ["kv", "set"], ["kv", "delete"],
+        ["ui.dom", "morph"], ["ui.dom", "restore"],
+        ["log", "append"]
+      ]
+    },
+    {
+      "id": "illegal_pair_rejected",
+      "family": "via_negativa",
+      "note": "undeclared pairs and split-aliases must not construct or project",
+      "illegal": [
+        ["nav", "push"],
+        ["ui", "toast"],
+        ["timer", "set"],
+        ["sys", "noop"],
+        ["http", "request"],
+        ["ui", "dom.morph"],
+        ["signal", "set"]
       ]
     },
     {
@@ -129,24 +134,6 @@
       "aligns_with": "cek-runtime peer_dispatch_error_no_mutate",
       "peer_result": { "kind": "dispatch_error", "ops": [], "error": "miss" },
       "expect_peer_kv": {}
-    },
-    {
-      "id": "kv_delete_op_shape",
-      "family": "op_shape",
-      "op": { "ns": "kv", "name": "delete", "payload": { "key": "a" } },
-      "expect_ns_name": ["kv", "delete"]
-    },
-    {
-      "id": "nav_push_op_shape",
-      "family": "op_shape",
-      "op": { "ns": "nav", "name": "push", "payload": { "path": "/cart" } },
-      "expect_ns_name": ["nav", "push"]
-    },
-    {
-      "id": "http_request_op_shape",
-      "family": "op_shape",
-      "op": { "ns": "http", "name": "request", "payload": { "method": "GET", "url": "https://example.com" } },
-      "expect_ns_name": ["http", "request"]
     }
   ]
 }

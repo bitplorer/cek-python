@@ -97,7 +97,7 @@ def _project_ops(case: dict, intent: dict) -> list[dict] | None:
         return None  # BoundAsk-only: Host._project
     if case.get("expect_ops"):
         return list(case["expect_ops"])
-    return [{"ns": "sys", "name": "noop", "payload": {}}]
+    return None
 
 
 def _mint(host: Host, cap: dict, intent_args: dict, expect_kind: str, case: dict) -> str:

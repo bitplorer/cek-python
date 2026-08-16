@@ -257,6 +257,16 @@ _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
         ),
     ),
     (
+        ("illegal pair",),
+        Explanation(
+            "illegal_op",
+            "illegal pair",
+            "Pair is not session-legal (not in S, or absent from the session stamp).",
+            "Emit S, or agree a domain-stdlib and put the pair on the stamp. Pair identity is (ns, name).",
+            "via negativa",
+        ),
+    ),
+    (
         ("rate", "intents_per_sec"),
         Explanation(
             "rate_limited",

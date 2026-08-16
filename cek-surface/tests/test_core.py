@@ -64,7 +64,7 @@ def test_host_ok():
 
     @s.action("ping")
     def ping(ctx):
-        return [Op.kv_set("x", 1), Op.ui_toast("hi")]
+        return [Op.kv_set("x", 1), Op.log_append("hi")]
 
     tok = host.mint("ping")
     out = s.submit("ping", {}, cap=tok, drain_async=False)

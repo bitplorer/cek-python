@@ -1,21 +1,20 @@
 # HANDOFF — next agent
 
-**Read [START.md](./START.md) first.** Then [docs/S_TIER_SCORECARD.md](./docs/S_TIER_SCORECARD.md).
+**Read [START.md](./START.md) first.** Glossary: [docs/CATALOG_AUTHORITY_TARGET.md](docs/CATALOG_AUTHORITY_TARGET.md). Compose: [docs/COMPOSITION.md](docs/COMPOSITION.md). Invariants: [docs/INVARIANTS.md](docs/INVARIANTS.md).
 
-**Date:** 2026-08-15  
+**Date:** 2026-08-16  
 **Repo:** https://github.com/bitplorer/cek-python (tree **0.1.2**)  
-**Law:** https://github.com/bitplorer/cek-framework `@ 90d48fd`  
-**Rust:** https://github.com/bitplorer/cek-runtime `@ cce98b6`
+**Law:** https://github.com/bitplorer/cek-framework  
+**Rust:** https://github.com/bitplorer/cek-runtime
 
-**Phase 2 verdict: SHIP.** BoundAsk · Idem/Lineage · Ed25519 · law-generation · **29** aligned fixtures · clean-clone `verify ok`. Every plane ≥ 4. No kill. CHARTER/KILL/CORE untouched.
-
-Phase 3 (Redis / crates.io / PyPI 0.1.2 publish) is **not** started — wait for an explicit Phase 3 plan.
+S = frozen core (5 pairs). Stamp = session set. FQ is display only. Peer kernel applies S; extensions need a runtime driver.
 
 ```bash
 export PYTHONPATH=cek-host/src:cek-surface/src
 sh scripts/verify.sh
-python -m cek_host doctor --fail     # demo Host is expected FAIL
-python -m cek_host doctor --production-demo   # expected FAIL (memory + default secret)
+# optional wrap binary
+cargo build -p cek-cli --manifest-path ../cek-runtime/Cargo.toml
+CEK_BIN=../cek-runtime/target/debug/cek python3 cek-surface/tests/test_phase3_wrap.py
 ```
 
-NEVER REGRESS: refuse → `ops: []` · Peer no mint · once/sealed fail closed · no ux-channel · no EmbeddedHostKernel · no `cek_surface.host.Host` · subject/scope enforced · digest `cek1:` · submit without Cap refuses · BoundAsk() raises · empty idem key refuse · idem before once · landed-first reverse · Ed25519 missing/tamper refuse · blank/unknown law-gen refuse.
+NEVER REGRESS: refuse → `ops: []` · Peer no mint · once/sealed fail closed · no EmbeddedHostKernel · digest `cek1:` · undeclared pair → `IllegalOp` · stamp membership is pair identity · loaded stdlibs cannot claim `core=true` · wrap path does not reimplement apply/decide.

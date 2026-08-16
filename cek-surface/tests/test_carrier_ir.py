@@ -35,7 +35,7 @@ def test_memory_carrier_roundtrip():
         return [{"type": "events", "events": []}]
 
     mem.peer_handler = handler
-    r = mem.apply({"kind": "ok", "ops": [{"ns": "sys", "name": "noop", "payload": {}}]})
+    r = mem.apply({"kind": "ok", "ops": [{"ns": "log", "name": "append", "payload": {"message": "x"}}]})
     assert r["type"] == "applied"
     assert r["world"]["ok"] is True
     ch = mem.chrome({"op": "pending", "target": "b"})
@@ -58,7 +58,7 @@ def test_surface_memory_carrier():
 
     @s.action("x")
     def x(ctx):
-        return [Op.log_append("hi"), Op.ui_toast("t")]
+        return [Op.log_append("hi"), Op.ui_morph("t", {"tag": "div", "text": "t"})]
 
     out = s.submit("x", {}, auto_mint=True, drain_async=False)
     assert out["result"]["kind"] == "ok"
@@ -70,7 +70,7 @@ def test_shadow_cleared_on_apply():
     s = Surface()
     @s.action("boot")
     def boot(ctx):
-        return [Op.noop()]
+        return [Op.log_append("boot")]
     s.submit("boot", {}, auto_mint=True, drain_async=False)
     s.ensure_peer().chrome({"op": "pending", "target": "btn", "on": True})
     # authority apply clears shadows

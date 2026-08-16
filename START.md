@@ -1,14 +1,16 @@
 # START — zero → first morph in one file
 
-**Read this first.** Encyclopedia lives under `docs/`. Law is [cek-framework](https://github.com/bitplorer/cek-framework). Rust reference is [cek-runtime](https://github.com/bitplorer/cek-runtime).
+**Read this first.** Encyclopedia: `docs/`. Glossary: [`docs/CATALOG_AUTHORITY_TARGET.md`](docs/CATALOG_AUTHORITY_TARGET.md). Law: [cek-framework](https://github.com/bitplorer/cek-framework). Kernels: [cek-runtime](https://github.com/bitplorer/cek-runtime).
 
 ```text
 mint Cap → submit Intent {action, args, cap} → verify → project Ops → Result {kind, ops[]}
+
+S (core wire) = kv.set · kv.delete · log.append · ui.dom.morph · ui.dom.restore
+pair = (ns, name)   stamp = this session   FQ = display only
+Undeclared pair → dispatch_error, never kind=ok with a silent empty batch.
 ```
 
-## One command (from this tree — this is the working path today)
-
-PyPI still has `0.1.0` (no `create-app`). Phase 2 lives in this repo as **tree 0.1.2** until the next publish.
+## One command (from this tree)
 
 ```bash
 git clone https://github.com/bitplorer/cek-python
@@ -50,4 +52,4 @@ Production: `Host.production(secret=secrets.token_bytes(32), once=FileOnceBacken
 
 Shop (browser is the Peer): `python cek-surface/demo/http_host.py`
 
-Next: [docs/INVARIANTS.md](docs/INVARIANTS.md) · [docs/DECISIONS.md](docs/DECISIONS.md) · [docs/S_TIER_SCORECARD.md](docs/S_TIER_SCORECARD.md)
+Next: [docs/CATALOG_AUTHORITY_TARGET.md](docs/CATALOG_AUTHORITY_TARGET.md) · [docs/COMPOSITION.md](docs/COMPOSITION.md) · [docs/INVARIANTS.md](docs/INVARIANTS.md) · [docs/ORGANIZATION.md](docs/ORGANIZATION.md)

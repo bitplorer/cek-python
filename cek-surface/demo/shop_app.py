@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Real-world shop surface: catalog, cart, checkout, search debounce."""
+"""Shop surface: catalog, cart, checkout — wire Ops ⊆ S only."""
 
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ from cek_surface.ops import (
     form_errors,
     navigate_to,
     plan,
-    restart_timer,
     set_loading,
+    signal_set,
 )
 
 CATALOG = {
@@ -32,6 +32,10 @@ def _hits_for(q: str) -> list[dict]:
     if not needle:
         return []
     return [it for it in CATALOG.values() if needle in it["title"].lower()]
+
+
+def _text(target: str, text: str) -> Op:
+    return Op.ui_morph(target, {"tag": "span", "attrs": {"id": target}, "text": text})
 
 
 def _results_ops(q: str, items: list[dict]) -> list[Op]:
@@ -49,8 +53,7 @@ def _results_ops(q: str, items: list[dict]) -> list[Op]:
             "results",
             {"tag": "ul", "attrs": {"id": "results"}, "children": children},
         ),
-        Op.ui_toast(f"Found {len(children)}", level="success", ms=1500),
-        Op.log_append("search.commit", fields={"q": q, "n": len(children)}),
+        Op.log_append(f"Found {len(children)}", fields={"q": q, "n": len(children)}),
     )
 
 
@@ -80,8 +83,8 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
                 },
             ),
             Op.kv_set("catalog", CATALOG),
-            Op.ui_set_text("cart", "Cart: 0"),
-            Op.signal_set("ui.theme", "light"),
+            _text("cart", "Cart: 0"),
+            signal_set("ui.theme", "light"),
             Op.log_append("shop.boot"),
         )
 
@@ -89,8 +92,6 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
     def search_type(ctx):
         q = str(ctx.args.get("q") or "")
         ctx.store["search.pending"] = q
-        ms = int(ctx.args.get("ms") or 40)
-        # Pre-authorize next hop: timer.fired → search.commit under once Cap
         cap = ctx.surface.mint(
             "search.commit",
             once=True,
@@ -108,8 +109,8 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
         ]
         return plan(
             Op.kv_set("search.pending", q),
-            Op.ui_set_text("search-input", q),
-            *restart_timer("search-debounce", ms),
+            _text("search-input", q),
+            Op.log_append("search.type", fields={"q": q}),
         )
 
     @s.action("search.commit")
@@ -135,7 +136,7 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
             "price": float(ctx.args.get("price") or 0),
         }
         if not sku:
-            return plan(Op.ui_toast("Missing sku", level="error"))
+            return plan(Op.log_append("Missing sku", level="error"))
         cart = dict(ctx.store.get("cart") or {})
         line = dict(cart.get(sku) or {**item, "qty": 0})
         line["qty"] = int(line["qty"]) + int(ctx.args.get("qty") or 1)
@@ -145,8 +146,7 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
         total = sum(int(x["qty"]) * float(x["price"]) for x in cart.values())
         return plan(
             Op.kv_set("cart", cart),
-            Op.ui_set_text("cart", f"Cart: {n} · ${total:.2f}"),
-            Op.ui_toast(f"Added {line['title']}", level="success", ms=1500),
+            _text("cart", f"Cart: {n} · ${total:.2f}"),
             Op.log_append("cart.add", fields={"sku": sku, "qty": line["qty"]}),
         )
 
@@ -155,18 +155,18 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
         ctx.store["cart"] = {}
         return plan(
             Op.kv_set("cart", {}),
-            Op.ui_set_text("cart", "Cart: 0"),
-            Op.ui_toast("Cart cleared"),
+            _text("cart", "Cart: 0"),
+            Op.log_append("Cart cleared"),
         )
 
     @s.action("checkout.start")
     def checkout_start(ctx):
         if not (ctx.store.get("cart") or {}):
-            return plan(Op.ui_toast("Cart empty", level="error"))
+            return plan(Op.log_append("Cart empty", level="error"))
         return plan(
             *navigate_to("/checkout", title="Checkout"),
             *clear_form_errors("checkout", ["email"]),
-            Op.ui_focus("checkout.email"),
+            Op.kv_set("ui:focus", "checkout.email"),
         )
 
     @s.action("checkout.submit")
@@ -176,7 +176,7 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
             return plan(*form_errors("checkout", {"email": "Valid email required"}))
         cart = ctx.store.get("cart") or {}
         if not cart:
-            return plan(Op.ui_toast("Cart empty", level="error"))
+            return plan(Op.log_append("Cart empty", level="error"))
         order_id = "ord-" + str(abs(hash(email + str(sorted(cart))) ) % 10_000_000)
         order = {"id": order_id, "email": email, "cart": cart}
         ctx.store["last_order"] = order
@@ -184,20 +184,17 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
         return plan(
             Op.kv_set("cart", {}),
             Op.kv_set("last_order", order),
-            Op.ui_set_text("cart", "Cart: 0"),
+            _text("cart", "Cart: 0"),
             *navigate_to("/thanks", title="Thanks", replace=True),
             Op.ui_morph(
                 "shell",
                 {"tag": "main", "attrs": {"id": "shell"}, "text": f"Order {order_id} for {email}"},
             ),
-            Op.ui_toast("Order placed", level="success"),
             Op.log_append("checkout.ok", fields={"order": order_id}),
         )
 
     @s.on("timer.fired")
     def on_timer(ev, surface: Surface):
-        # Live path is the pre-minted continuation (Surface.handle_event).
-        # No un-capped compose — fail closed if nothing was armed.
         return None
 
     @s.on("http.response")
@@ -221,14 +218,14 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
         return plan(
             *set_loading("search", False, f"{len(children)} hits"),
             Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": children}),
-            Op.ui_toast(f"Found {len(children)}", level="success"),
+            Op.log_append(f"Found {len(children)}"),
         )
 
     @s.on("http.error")
     def on_err(ev, surface: Surface):
         return plan(
             *set_loading("search", False, "Error"),
-            Op.ui_toast(ev.get("message") or "error", level="error"),
+            Op.log_append(ev.get("message") or "error", level="error"),
         )
 
     return s

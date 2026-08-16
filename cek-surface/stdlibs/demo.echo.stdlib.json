@@ -1,0 +1,6 @@
+{
+  "name": "demo.echo",
+  "version": "1.0.0",
+  "driver_hint": "echo",
+  "seed_pairs": [{ "ns": "demo.echo", "name": "ping" }]
+}

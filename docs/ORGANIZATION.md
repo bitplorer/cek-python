@@ -76,8 +76,15 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 | Concern | Package |
 |---------|---------|
 | Cap mint / verify / once | **cek-host** |
-| Action handlers, Op catalog | **cek-surface** |
-| Peer apply drivers, Peer IR | **cek-surface/js** |
+| Legal name set S (Python bind) | **cek-host.legal** (re-exported by cek-surface.catalog) |
+| Isolated Domain decls | **cek-contract** `domain.rs` |
+| Domain+driver structure gate | **cek-host.structure** / **cek-contract** `structure.rs` |
+| Bundled runtime stdlibs | `cek_surface/stdlibs/*.stdlib.json` (`search`, `demo.echo`) |
+| Stdlib loader + agreement | **cek-surface.domain_loader** + `agreement.negotiate` |
+| Peer wrap (opt-in) | `carrier_kind="kernel"` → `cek apply` (cek-peer-kernel) |
+| Host wrap (opt-in) | **cek_host.rust_wrap.RustHostKernel** → `cek host-json` |
+| Action handlers, Op constructors | **cek-surface** |
+| Peer apply drivers, Peer IR | **cek-surface/js** (`apply_s.mjs` honors stamp) |
 | Carrier transport | **cek-surface** (`open_carrier`) |
 | Durable lineage stores (full) | cek-runtime Rust / future cek-host backends |
 | Law text | **cek-framework** |
@@ -86,8 +93,11 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 
 | Name | Meaning |
 |------|---------|
-| `cek-host` | PyPI + import `cek_host` |
+| `cek-host` | PyPI + import `cek_host` — Python **Host runtime** (language port of decide; not a wrap unless `RustHostKernel`) |
 | `cek-surface` | PyPI + import `cek_surface` |
+| stamp | closed session `PairSet` Host and Peer both honor |
+| domain stdlib | runtime-level domain expansion module |
+| pair identity | legality key is `(ns, name)`, never concatenated FQ |
 | Not `cek-host-py` on PyPI | Prefer short `cek-host`; “py” is implied by the ecosystem repo |
 
 ## Peer languages
@@ -119,4 +129,4 @@ pip install -i https://test.pypi.org/simple/ \
 
 **Current:** setuptools (`python -m build`, `scripts/build_release.sh`).
 
-**Later migrations (uv without backend change, hatchling, Poetry):** see **[PACKAGING.md](./PACKAGING.md)** — complete step-by-step, verify matrix, TestPyPI rules, rollback.
+**Later migrations:** [archive/PACKAGING.md](./archive/PACKAGING.md). TestPyPI: [archive/TESTPYPI_SETUP.md](./archive/TESTPYPI_SETUP.md).

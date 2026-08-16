@@ -31,7 +31,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │  Peer (JS)                                                    │
 │  apply Result.ops via closed drivers                          │
-│  emit events (timer.fired, http.response)                     │
+│  emit events only when a declared async pack exists           │
 │  Peer IR: shadow / coalesce / flush / filter_cached           │
 │  NEVER mint Caps                                              │
 └─────────────────────────────────────────────────────────────┘
@@ -59,11 +59,20 @@ Messages (JSON):
 | `events` | Peer → Host | timer/http/… |
 | `done` | Host → Peer | shutdown |
 
-## Op catalog (surface)
+## Op catalog (S)
 
-Namespaces used in practice: `kv.*`, `ui.dom.*`, `ui.*`, `nav.*`, `http.*`, `timer.*`, `signal.*`, `log.*`, `sys.noop`.
+Sole legal wire names — **pair identity**, not concatenated FQ:
 
-Host macros (`fetch_json`, `navigate_to`, `restart_timer`, …) expand to those Ops in Python — they never appear as Peer recipes.
+| Pack | Ops | Layer |
+|------|-----|--------|
+| Baseline | `kv.set`, `kv.delete`, `log.append` | eternal (CORE 11) |
+| `ui.dom` | `ui.dom.morph`, `ui.dom.restore` | Domain (CORE 16: not frozen) |
+
+Decls live in `cek-contract` (`baseline.rs` + `domain.rs`). Python binds them in `cek_host.legal` (Surface re-exports). Undeclared pair is illegal. `("ui", "dom.morph")` is not `("ui.dom", "morph")`.
+
+Host macros (`navigate_to`, `signal_set`, `set_loading`, `form_errors`) expand in Python to S only. They never appear as Peer recipes. Events (`timer.fired`, `http.response`) are perception, not Ops.
+
+Phase 2 (not shipped): `ui.shell`, `ui.tabs`, families/presets.
 
 ## Continuations
 

@@ -18,7 +18,7 @@ def test_loads_cek_host():
     assert type(k).__name__ == "CekHostPyKernel", type(k).__name__
     assert isinstance(k, CekHostPyKernel)
     tok = k.mint("ping")
-    r = k.submit("ping", {}, tok, project_ops=[{"ns": "sys", "name": "noop", "payload": {}}])
+    r = k.submit("ping", {}, tok, project_ops=[{"ns": "log", "name": "append", "payload": {"message": "x"}}])
     assert r.kind == "ok"
     assert len(r.ops) == 1
     assert r.digest and r.digest.startswith("cek1:")
@@ -52,7 +52,7 @@ def test_contract_op_names():
     """Hot ops align with Baseline-ish names used in vectors."""
     assert Op.kv_set("a", 1).to_dict()["ns"] == "kv"
     assert Op.ui_morph("t", {}).to_dict()["name"] == "morph"
-    assert Op.ui_toast("x").to_dict()["ns"] == "ui"
+    assert Op.log_append("x").to_dict()["ns"] == "log"
 
 
 if __name__ == "__main__":
