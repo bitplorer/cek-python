@@ -7,7 +7,8 @@ Does not depend on ux-channel.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any, Awaitable, Callable, Union
+import inspect
 
 from .continuation import Continuation, match_continuation, resolve_args
 from .kernel import HostKernel, KernelResult, load_host_kernel
@@ -18,8 +19,8 @@ from .stamp import pairs_as_wire
 from cek_host.legal import default_stamp_pairs
 
 
-Handler = Callable[["Ctx"], list[Op]]
-EventHandler = Callable[[dict[str, Any], "Surface"], list[Op] | None]
+Handler = Callable[["Ctx"], Union[list[Op], Awaitable[list[Op]]]]
+EventHandler = Callable[[dict[str, Any], "Surface"], Union[list[Op] | None, Awaitable[list[Op] | None]]]
 
 
 @dataclass
@@ -152,6 +153,29 @@ class Surface:
         )
         return self._deliver(result, drain_async=drain_async, continuations=armed)
 
+    async def asubmit(
+        self,
+        action: str,
+        args: dict[str, Any] | None = None,
+        *,
+        cap: str | None = None,
+        activity_id: str | None = None,
+        idempotency_key: str | None = None,
+        auto_mint: bool = False,
+        once: bool = False,
+        seal_args: bool = False,
+        drain_async: bool = True,
+    ) -> dict[str, Any]:
+        """Same law as submit. Awaits async handlers and Host.asubmit."""
+        args = dict(args or {})
+        if auto_mint and not cap:
+            cap = self.mint(action, once=once, args=args, seal_args=seal_args)
+
+        result, armed = await self._acompose_and_authorize(
+            action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
+        )
+        return await self._adeliver(result, drain_async=drain_async, continuations=armed)
+
     def handle_event(self, event: dict[str, Any]) -> KernelResult | None:
         """Peer event → Host. Continuations (pre-minted Caps) win; else @on.
 
@@ -174,10 +198,38 @@ class Surface:
         fn = self._events.get(str(et))
         if fn is None:
             return None
+        if inspect.iscoroutinefunction(fn):
+            raise TypeError(
+                f"event {et!r} is async; use await surface.ahandle_event(...) "
+                "(sync handle_event does not run an event loop)"
+            )
         ops = fn(event, self)
         if ops is None:
             return None
         # Un-capped @on is a fallback (http.response). Prefer continuations.
+        return KernelResult("ok", as_wire(ops))
+
+    async def ahandle_event(self, event: dict[str, Any]) -> KernelResult | None:
+        et = event.get("type")
+        if not et:
+            return None
+
+        cont = self._take_continuation(event)
+        if cont is not None:
+            args = resolve_args(cont, store=self.store, event=event)
+            result, armed = await self._acompose_and_authorize(cont.action, args, cont.cap)
+            if armed:
+                self.last_continuations = list(armed)
+            return result
+
+        fn = self._events.get(str(et))
+        if fn is None:
+            return None
+        ops = fn(event, self)
+        if inspect.isawaitable(ops):
+            ops = await ops
+        if ops is None:
+            return None
         return KernelResult("ok", as_wire(ops))
 
     def ensure_peer(self) -> PeerSession:
@@ -231,6 +283,11 @@ class Surface:
         handler = self._handlers.get(action)
         if handler is None:
             return KernelResult("dispatch_error", [], f"unknown action: {action}"), None
+        if inspect.iscoroutinefunction(handler):
+            raise TypeError(
+                f"action {action!r} is async; use await surface.asubmit(...) "
+                "(sync submit does not run an event loop)"
+            )
 
         ctx = Ctx(action=action, args=args, surface=self, store=self.store)
         try:
@@ -254,6 +311,87 @@ class Surface:
             project_ops=wire,
             idempotency_key=idempotency_key,
         )
+        return result, getattr(ctx, "continuations", None)
+
+    async def _acompose_and_authorize(
+        self,
+        action: str,
+        args: dict[str, Any],
+        cap: str | None,
+        *,
+        activity_id: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> tuple[KernelResult, list | None]:
+        pol = self.policy.check_action(action)
+        if not pol.allow:
+            return KernelResult("authority_refusal", [], pol.reason), None
+
+        inner = getattr(self.kernel, "_inner", None)
+        host = inner if inner is not None else self.kernel
+        if hasattr(host, "stamp"):
+            host.stamp = self.stamp
+
+        if hasattr(self.kernel, "acheck"):
+            pre = await self.kernel.acheck(
+                action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
+            )
+            if not getattr(pre, "ok", False):
+                return pre, None
+        elif hasattr(self.kernel, "check"):
+            import asyncio
+
+            pre = await asyncio.to_thread(
+                self.kernel.check,
+                action,
+                args,
+                cap,
+                activity_id=activity_id,
+                idempotency_key=idempotency_key,
+            )
+            if not getattr(pre, "ok", False):
+                return pre, None
+
+        handler = self._handlers.get(action)
+        if handler is None:
+            return KernelResult("dispatch_error", [], f"unknown action: {action}"), None
+
+        ctx = Ctx(action=action, args=args, surface=self, store=self.store)
+        try:
+            ops = handler(ctx)
+            if inspect.isawaitable(ops):
+                ops = await ops
+        except Exception as e:
+            return KernelResult("dispatch_error", [], str(e)), None
+
+        if not isinstance(ops, list):
+            return KernelResult("dispatch_error", [], "handler must return list[Op]"), None
+
+        wire = as_wire(ops)
+        pol2 = self.policy.check_ops(wire)
+        if not pol2.allow:
+            return KernelResult("authority_refusal", [], pol2.reason), None
+
+        if hasattr(self.kernel, "asubmit"):
+            result = await self.kernel.asubmit(
+                action,
+                args,
+                cap,
+                activity_id=activity_id,
+                project_ops=wire,
+                idempotency_key=idempotency_key,
+            )
+        else:
+            import asyncio
+
+            result = await asyncio.to_thread(
+                self.kernel.submit,
+                action,
+                args,
+                cap,
+                activity_id=activity_id,
+                project_ops=wire,
+                idempotency_key=idempotency_key,
+            )
         return result, getattr(ctx, "continuations", None)
 
     def _take_continuation(self, event: dict[str, Any]) -> Continuation | None:
@@ -295,6 +433,29 @@ class Surface:
             out["followups"] = self.drain_events()
         return out
 
+    async def _adeliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
+        if continuations:
+            self.last_continuations = [
+                c if isinstance(c, Continuation) else Continuation.from_dict(c)
+                for c in continuations
+            ]
+        peer = self.ensure_peer()
+        reply = await peer.aapply_result(result)
+        self.last_world = reply.get("world") or {}
+        payload = result.to_dict()
+        conts = self.continuation_dicts() if result.ok else []
+        if conts:
+            payload["continuations"] = conts
+        out: dict[str, Any] = {
+            "result": payload,
+            "receipt": reply.get("receipt"),
+            "world": self.last_world,
+            "continuations": conts,
+        }
+        if drain_async and result.ok and _has_async(result.ops):
+            out["followups"] = await self.adrain_events()
+        return out
+
     def drain_events(self, max_rounds: int = 12) -> list[dict[str, Any]]:
         peer = self.ensure_peer()
         followups: list[dict[str, Any]] = []
@@ -325,6 +486,46 @@ class Surface:
                 followups.append(entry)
             if not chained:
                 # wait for possible further async from last apply
+                if any(
+                    _has_async((f.get("result") or {}).get("ops") or [])
+                    for f in followups[-len(events) :]
+                ):
+                    continue
+                break
+        return followups
+
+    async def adrain_events(self, max_rounds: int = 12) -> list[dict[str, Any]]:
+        peer = self.ensure_peer()
+        followups: list[dict[str, Any]] = []
+        for _ in range(max_rounds):
+            try:
+                msg = await peer.aread()
+            except RuntimeError:
+                break
+            events = msg.get("events") or []
+            if msg.get("type") in ("timer.fired", "http.response", "http.error"):
+                events = [msg]
+            if not events:
+                break
+            chained = False
+            for ev in events:
+                nxt = await self.ahandle_event(ev)
+                entry: dict[str, Any] = {"event": ev, "result": None}
+                if nxt is not None:
+                    reply = await peer.aapply_result(nxt)
+                    self.last_world = reply.get("world") or {}
+                    payload = nxt.to_dict()
+                    if nxt.ok:
+                        conts = self.continuation_dicts()
+                        if conts:
+                            payload["continuations"] = conts
+                    entry["result"] = payload
+                    entry["receipt"] = reply.get("receipt")
+                    entry["world"] = self.last_world
+                    if nxt.ok and _has_async(nxt.ops):
+                        chained = True
+                followups.append(entry)
+            if not chained:
                 if any(
                     _has_async((f.get("result") or {}).get("ops") or [])
                     for f in followups[-len(events) :]

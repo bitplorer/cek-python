@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cek-surface"
-version = "0.1.2"
+version = "0.1.3"
 description = "CEK surface: compose Ops, Peer IR, carriers. Depends on cek-host."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "bitplorer" }]
 dependencies = [
-  "cek-host>=0.1.2",
+  "cek-host>=0.1.3",
 ]
 
 [project.optional-dependencies]

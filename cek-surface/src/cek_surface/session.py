@@ -39,8 +39,20 @@ class PeerSession:
         payload = result.to_dict() if hasattr(result, "to_dict") else result
         return self.carrier.apply(payload)
 
+    async def aapply_result(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
+        payload = result.to_dict() if hasattr(result, "to_dict") else result
+        aapply = getattr(self.carrier, "aapply", None)
+        if aapply is not None:
+            return await aapply(payload)
+        import asyncio
+
+        return await asyncio.to_thread(self.carrier.apply, payload)
+
     def apply(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
         return self.apply_result(result)
+
+    async def aapply(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]:
+        return await self.aapply_result(result)
 
     def install_stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
         stamp = getattr(self.carrier, "stamp", None)
@@ -48,11 +60,42 @@ class PeerSession:
             return {"type": "stamp_ack", "pairs": pairs}
         return stamp(pairs)
 
+    async def ainstall_stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
+        astamp = getattr(self.carrier, "astamp", None)
+        if astamp is not None:
+            return await astamp(pairs)
+        import asyncio
+
+        stamp = getattr(self.carrier, "stamp", None)
+        if stamp is None:
+            return {"type": "stamp_ack", "pairs": pairs}
+        return await asyncio.to_thread(stamp, pairs)
+
     def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
         return self.carrier.chrome(chrome)
 
+    async def achrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
+        fn = getattr(self.carrier, "achrome", None)
+        if fn is not None:
+            return await fn(chrome)
+        import asyncio
+
+        return await asyncio.to_thread(self.carrier.chrome, chrome)
+
     def read(self) -> dict[str, Any]:
         msg = self.carrier.read_event()
+        if msg is None:
+            raise RuntimeError("peer died or timeout")
+        return msg
+
+    async def aread(self) -> dict[str, Any]:
+        fn = getattr(self.carrier, "aread_event", None)
+        if fn is not None:
+            msg = await fn()
+        else:
+            import asyncio
+
+            msg = await asyncio.to_thread(self.carrier.read_event)
         if msg is None:
             raise RuntimeError("peer died or timeout")
         return msg

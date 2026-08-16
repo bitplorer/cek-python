@@ -40,6 +40,19 @@ cap = host.mint("hello", once=True)
 print(s.submit("hello", {}, cap=cap, drain_async=False)["result"])
 ```
 
+Async is first-class. Same law, no nested event loop:
+
+```python
+@s.action("hello")
+async def hello(ctx):
+    await fetch()
+    return [Op.ui_morph("shell", {"tag": "main", "text": "hello, cek"})]
+
+print((await s.asubmit("hello", {}, cap=cap, drain_async=False))["result"])
+```
+
+`submit()` refuses an `async def` handler — use `asubmit`. `asubmit` runs both. Host: `await host.asubmit(...)`.
+
 ## Go / no-go
 
 ```bash

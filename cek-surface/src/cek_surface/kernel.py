@@ -117,6 +117,67 @@ class CekHostPyKernel:
         )
         return _as_kernel_result(r)
 
+    async def acheck(
+        self,
+        action: str,
+        args: dict[str, Any],
+        cap: str | None,
+        *,
+        activity_id: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> KernelResult:
+        import asyncio
+
+        inner = getattr(self._inner, "acheck", None)
+        if inner is not None:
+            r = await inner(
+                action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
+            )
+        else:
+            r = await asyncio.to_thread(
+                self._inner.check,
+                action,
+                args,
+                cap,
+                activity_id=activity_id,
+                idempotency_key=idempotency_key,
+            )
+        return _as_kernel_result(r)
+
+    async def asubmit(
+        self,
+        action: str,
+        args: dict[str, Any],
+        cap: str | None,
+        *,
+        activity_id: str | None = None,
+        project_ops: list[dict[str, Any]] | None = None,
+        idempotency_key: str | None = None,
+    ) -> KernelResult:
+        import asyncio
+
+        inner = getattr(self._inner, "asubmit", None)
+        if inner is not None:
+            r = await inner(
+                action=action,
+                args=args,
+                cap=cap,
+                activity_id=activity_id,
+                project_ops=project_ops,
+                idempotency_key=idempotency_key,
+            )
+        else:
+            r = await asyncio.to_thread(
+                self._inner.submit,
+                action=action,
+                args=args,
+                cap=cap,
+                activity_id=activity_id,
+                project_ops=project_ops,
+                idempotency_key=idempotency_key,
+            )
+        return _as_kernel_result(r)
+
     def report_receipt(self, activity_id: str, landed: list[dict[str, Any]] | None = None, **kw: Any):
         return self._inner.report_receipt(activity_id, landed, **kw)
 

@@ -314,6 +314,64 @@ class Host:
         bound = BoundAsk._bind(action, args, claims, self.caps.now_fn())
         return self._finish(bound, project_ops, activity_id, idempotency_key)
 
+    async def acheck(
+        self,
+        action: str,
+        args: dict[str, Any] | None = None,
+        cap: str | None = None,
+        **kw: Any,
+    ) -> KernelResult:
+        """Awaitable check. Same law as check; does not occupy the event loop."""
+        import asyncio
+
+        return await asyncio.to_thread(self.check, action, args, cap, **kw)
+
+    async def asubmit(
+        self,
+        intent: dict[str, Any] | str | None = None,
+        args: dict[str, Any] | None = None,
+        cap: str | None = None,
+        *,
+        action: str | None = None,
+        activity_id: str | None = None,
+        project_ops: list[dict[str, Any]] | None = None,
+        idempotency_key: str | None = None,
+        **_kw: Any,
+    ) -> KernelResult:
+        """Awaitable submit. Same law as submit; store I/O runs in a worker."""
+        import asyncio
+
+        return await asyncio.to_thread(
+            self.submit,
+            intent,
+            args,
+            cap,
+            action=action,
+            activity_id=activity_id,
+            project_ops=project_ops,
+            idempotency_key=idempotency_key,
+            **_kw,
+        )
+
+    async def asubmit_ops(
+        self,
+        project_ops: list[dict[str, Any]],
+        *,
+        cap: str | None = None,
+        action: str = "",
+        args: dict[str, Any] | None = None,
+        activity_id: str | None = None,
+        idempotency_key: str | None = None,
+    ) -> KernelResult:
+        return await self.asubmit(
+            action=action,
+            args=args or {},
+            cap=cap,
+            project_ops=project_ops,
+            activity_id=activity_id,
+            idempotency_key=idempotency_key,
+        )
+
     def submit_ops(
         self,
         project_ops: list[dict[str, Any]],

@@ -32,7 +32,7 @@ from .lineage import (
 from .once import FileOnceBackend, MemoryOnceBackend, OnceBackend, OnceUsed, StoreDown
 from .rust_wrap import RustHostKernel, find_cek_bin
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 __all__ = [
     "Host",

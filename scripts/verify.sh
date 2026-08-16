@@ -20,6 +20,7 @@ python3 cek-surface/tests/test_composition.py
 python3 cek-surface/tests/test_stamp.py
 python3 cek-surface/tests/test_phase2_stdlibs.py
 python3 cek-surface/tests/test_search_stdlib.py
+python3 cek-surface/tests/test_async.py
 python3 cek-surface/tests/test_phase3_wrap.py
 python3 cek-surface/tests/test_roadmap.py
 python3 cek-surface/tests/test_carrier_ir.py
