@@ -66,9 +66,19 @@ surface = Surface()  # uses load_host_kernel() → cek_host.Host
 Optional carriers:
 
 ```python
-Surface()  # default subprocess NDJSON peer
+Surface()  # default subprocess NDJSON peer (Node)
 Surface(carrier_kind="memory")
 Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip install cek-surface[ws]
+Surface(carrier_kind="kernel")  # taught: in-process cek_peer_pyo3
+```
+
+Taught kernel carrier (from a sibling [cek-runtime](https://github.com/bitplorer/cek-runtime) checkout — same crate, no second wheel):
+
+```bash
+cargo build -p cek-peer-pyo3 --features extension-module --release \
+  --manifest-path ../cek-runtime/Cargo.toml
+export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
+# leftover (untaught): CEK_KERNEL_CARRIER=subprocess
 ```
 
 ## What goes where
@@ -81,7 +91,7 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 | Domain+driver structure gate | **cek-host.structure** / **cek-contract** `structure.rs` |
 | Bundled runtime stdlibs | `cek_surface/stdlibs/*.stdlib.json` (`search`, `demo.echo`) |
 | Stdlib loader + agreement | **cek-surface.domain_loader** + `agreement.negotiate` |
-| Peer wrap (opt-in) | `carrier_kind="kernel"` → `cek apply` (cek-peer-kernel) |
+| Peer wrap (opt-in) | `carrier_kind="kernel"` → **taught** in-process `cek_peer_pyo3` (same `cek-peer-kernel`). Leftover: `CEK_KERNEL_CARRIER=subprocess` → `cek apply` |
 | Host wrap (opt-in) | **cek_host.rust_wrap.RustHostKernel** → `cek host-json` |
 | Action handlers, Op constructors | **cek-surface** |
 | Peer apply drivers, Peer IR | **cek-surface/js** (`apply_s.mjs` honors stamp) |
@@ -106,7 +116,8 @@ Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip insta
 |------|----------|
 | Node NDJSON / WS | `cek-surface/js/` |
 | Browser | `cek-surface/js/browser_peer.mjs` |
-| Rust Peer | `cek-runtime` crates |
+| Rust Peer | `cek-runtime` crates (`cek-peer-kernel`) |
+| Taught Python wrap | `cek_peer_pyo3` from `cek-runtime` (`carrier_kind="kernel"`) — not a second kernel |
 
 New language Peers: same **contract messages** (`apply` / `chrome` / `events`), not a new Cap authority.
 

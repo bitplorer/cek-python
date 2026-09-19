@@ -1,7 +1,8 @@
 """Portable Intent/Result carriers — opt-in, plug-and-play.
 
 Default: subprocess NDJSON (zero config, demos/tests).
-Opt-in: memory (in-process mock), websocket (when websockets installed).
+Opt-in: memory (in-process mock), websocket (when websockets installed),
+kernel (taught: in-process `cek_peer_pyo3`; leftover: `cek apply`).
 
 Carriers are transport only — not kernels. They move:
   apply Result, chrome messages, async events, done.
@@ -262,12 +263,15 @@ class WebSocketCarrier:
 
 
 def open_carrier(kind: str = "subprocess", **opts: Any) -> Carrier:
-    """Factory — sensible default is subprocess NDJSON.
+    """Factory — sensible default is subprocess NDJSON (Node Peer).
 
     kind:
-      subprocess | ndjson  → SubprocessNdjsonCarrier (default)
+      subprocess | ndjson  → SubprocessNdjsonCarrier (default Node peer.mjs)
       memory               → MemoryCarrier (tests)
       websocket | ws       → WebSocketCarrier (opt-in, needs websockets)
+      kernel               → KernelPeerCarrier — taught: in-process
+                             `cek_peer_pyo3` (construct→bind→apply→release).
+                             Leftover: backend="subprocess" / CEK_KERNEL_CARRIER=subprocess
     """
     k = (kind or "subprocess").lower()
     if k in ("subprocess", "ndjson", "default"):
@@ -280,7 +284,11 @@ def open_carrier(kind: str = "subprocess", **opts: Any) -> Carrier:
         from .kernel_peer import KernelPeerCarrier
 
         return KernelPeerCarrier(
-            **{kk: opts[kk] for kk in ("profile", "bin_path") if kk in opts}
+            **{
+                kk: opts[kk]
+                for kk in ("profile", "bin_path", "backend")
+                if kk in opts
+            }
         )
     raise ValueError(
         f"unknown carrier kind: {kind!r} (use subprocess|memory|websocket|kernel)"
