@@ -219,6 +219,8 @@ def test_bin_path_is_leftover_only():
 
 
 def test_taught_lifecycle_and_return_contract():
+    env = os.environ.get("CEK_PEER_PYO3")
+    os.environ.pop("CEK_PEER_PYO3", None)
     _install_fake_mod()
     try:
         with mock.patch("cek_surface.kernel_peer.subprocess.run") as ran:
@@ -241,13 +243,17 @@ def test_taught_lifecycle_and_return_contract():
             {"kind": "ok", "ops": [{"ns": "kv", "name": "set", "payload": {"key": "z", "value": 9}}]},
             profile="baseline",
         )
-        assert via["kv"]["a"] == 1
         assert via["receipt"]["landed"]
+        assert via["kv"]["a"] == 1  # canned fixture, not a kernel
     finally:
         _clear_fake_mod()
+        if env is not None:
+            os.environ["CEK_PEER_PYO3"] = env
 
 
 def test_open_carrier_kernel_kind():
+    env = os.environ.get("CEK_PEER_PYO3")
+    os.environ.pop("CEK_PEER_PYO3", None)
     _install_fake_mod()
     try:
         c = open_carrier("kernel", profile="ui")
@@ -258,6 +264,8 @@ def test_open_carrier_kernel_kind():
         c.close()
     finally:
         _clear_fake_mod()
+        if env is not None:
+            os.environ["CEK_PEER_PYO3"] = env
 
 
 def test_kernel_peer_source_has_no_mint():

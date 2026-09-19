@@ -120,9 +120,17 @@ def _load_cdylib(path: str) -> Any:
 
 
 def load_cek_peer_pyo3() -> Any:
-    """Import the taught apply-only module. Fail closed with install text."""
+    """Import the taught apply-only module. Fail closed with install text.
+
+    Order: `CEK_PEER_PYO3` (documented install door), then `import`, then
+    sibling `cek-runtime/target/{release,debug}` cdylib.
+    """
     global _LOADED_MOD
     if _LOADED_MOD is not None:
+        return _LOADED_MOD
+    env = os.environ.get("CEK_PEER_PYO3")
+    if env and Path(env).is_file():
+        _LOADED_MOD = _load_cdylib(env)
         return _LOADED_MOD
     try:
         import cek_peer_pyo3  # type: ignore
