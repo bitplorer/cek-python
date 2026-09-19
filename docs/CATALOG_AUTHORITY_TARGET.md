@@ -20,7 +20,7 @@
 | **Host runtime** | Language port of decide (Python `cek-host`). | not the Rust kernel unless wrap is used |
 | **Host kernel** | Rust `cek-host-kernel` (reference decide). | `cek-runtime` |
 | **Peer kernel** | Rust `cek-peer-kernel` (reference apply). | `cek-runtime` |
-| **Peer runtime** | Language port / carrier that **wraps** apply (JS `apply_s`, or `cek apply`). | must not reimplement decide |
+| **Peer runtime** | Language port / carrier that **wraps** apply (JS `apply_s`, or `cek_peer_pyo3`). | must not reimplement decide |
 
 ## Pair identity
 
@@ -55,16 +55,18 @@ There is no on-the-wire `agree` message. Version intersection happens in the Hos
 | Path | Applies |
 |------|---------|
 | JS `apply_s.mjs` | Stamp ∩ (built-in S drivers ∪ `registerDriver`) |
-| Rust `cek-peer-kernel` / `cek apply` | **S only** (Baseline or Baseline+UI profile). Extensions are skipped. |
+| Rust `cek-peer-kernel` / `cek_peer_pyo3` / leftover `cek apply` | **S only** (Baseline or Baseline+UI profile). Extensions are skipped. |
 | Memory carrier | Echoes ops (tests). Not a kernel. |
 
 So: Host can *project* a stamped extension; only a Peer **runtime with a driver** will *apply* it. The Peer **kernel** never grows drivers for day-to-day domains.
 
 ## Phase 3 wrap (honest)
 
-`cek apply` and `cek host-json` wrap the Rust kernels. Python `carrier_kind="kernel"` and `RustHostKernel` call those binaries.
+Taught Python kernel carrier: `carrier_kind="kernel"` → in-process `cek_peer_pyo3` (`PeerAbi` construct → bind → apply → release; same JSON as wasm). Fail closed if the module is missing.
 
-Default `Surface()` still uses the Python Host port + JS Peer port. That is deliberate: apps do not require a `cek` binary. Dual implementations are **ports**, not a third kernel.
+**Leftover (untaught):** `CEK_KERNEL_CARRIER=subprocess` / `backend="subprocess"` still shells `cek apply`. `cek host-json` / `RustHostKernel` remain the Host wrap. Dual implementations are **ports**, not a third kernel.
+
+Default `Surface()` still uses the Python Host port + JS Peer port. That is deliberate: apps do not require a `cek` binary or `cek_peer_pyo3`.
 
 ## Catalog mode
 

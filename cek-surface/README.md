@@ -22,7 +22,9 @@ def find(ctx):
 
 S is frozen in core. `search.hits` is a **runtime** stdlib pair — legal only after Host↔Peer agree and the stamp includes it.
 
-Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel` (`cek apply`).
+Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel` (taught: in-process `cek_peer_pyo3`).
+
+**Taught kernel:** `Surface(carrier_kind="kernel")` → `cek_peer_pyo3.PeerAbi` construct → bind → apply → release. Install from [cek-runtime](https://github.com/bitplorer/cek-runtime) (`cargo build -p cek-peer-pyo3 --features extension-module --release`; `export CEK_PEER_PYO3=.../libcek_peer_pyo3.so`). Leftover (untaught): `CEK_KERNEL_CARRIER=subprocess` still shells `cek apply`.
 
 Chrome (perception): `s.chrome_pending("btn")` · `s.arm("timer.fired:x", "find")`.
 

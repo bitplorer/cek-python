@@ -1,4 +1,9 @@
-"""Phase 3 — wrap Rust kernels. Skip (exit 0) if `cek` binary is not built."""
+"""Phase 3 — wrap Rust kernels.
+
+Peer apply is taught through `cek_peer_pyo3` (see test_kernel_peer.py).
+This file keeps Host wrap (`cek host-json`) and the leftover subprocess
+Peer door (`backend="subprocess"`). Skip (exit 0) if `cek` is not built.
+"""
 
 from __future__ import annotations
 
@@ -16,27 +21,28 @@ from cek_surface.kernel_peer import KernelPeerCarrier, apply_via_kernel
 def test_find_or_skip():
     exe = find_cek_bin()
     if not exe:
-        print("phase3 wrap skip (no cek binary)")
+        print("phase3 wrap skip (no cek binary; leftover Host/Peer doors)")
         return
-    # Peer wrap: kv.set lands
+    # Leftover Peer door: kv.set lands (taught path is test_kernel_peer)
     resp = apply_via_kernel(
         {
             "kind": "ok",
             "ops": [{"ns": "kv", "name": "set", "payload": {"key": "a", "value": 1}}],
         },
         profile="baseline",
+        backend="subprocess",
         bin_path=exe,
     )
     assert resp["receipt"]["landed"]
     assert resp["kv"]["a"] == 1
-    # refuse is noop
     refuse = apply_via_kernel(
         {"kind": "authority_refusal", "ops": [], "error": "no"},
         profile="baseline",
+        backend="subprocess",
         bin_path=exe,
     )
     assert refuse["kv"] == {} or "a" not in refuse.get("kv", {})
-    # Host wrap: mint + submit kv.write
+    # Host wrap: mint + submit kv.write (Host wrap is not this carrier)
     wrap = RustHostKernel(bin_path=exe)
     cap = wrap.mint("kv.write", id="wrap-1")
     assert cap.get("action") == "kv.write"
@@ -51,14 +57,14 @@ def test_find_or_skip():
     if result.get("kind") == "ok":
         assert result["ops"]
         assert result["ops"][0]["ns"] == "kv"
-    # Carrier façade
-    c = KernelPeerCarrier(profile="baseline", bin_path=exe)
+    c = KernelPeerCarrier(profile="baseline", backend="subprocess", bin_path=exe)
     applied = c.apply(
         {"kind": "ok", "ops": [{"ns": "kv", "name": "set", "payload": {"key": "z", "value": 9}}]}
     )
     assert applied["type"] == "applied"
     assert applied["world"]["kv"]["z"] == 9
-    print("phase3 wrap ok")
+    c.close()
+    print("phase3 wrap ok (leftover subprocess + Host wrap)")
 
 
 if __name__ == "__main__":
