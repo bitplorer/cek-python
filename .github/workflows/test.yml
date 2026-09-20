@@ -24,7 +24,12 @@ jobs:
           node-version: "20"
       - name: editable install
         working-directory: cek-python
-        run: pip install -e ./cek-host -e ./cek-surface
+        run: |
+          pip install -e ./cek-host -e ./cek-surface
+          # Host entry point is also named `cek`. Leftover wrap tests treat
+          # PATH `cek` as Rust cek-cli (`apply` / `host-json`) and must skip
+          # when that binary is not built.
+          rm -f "$(python -c 'import sysconfig; print(sysconfig.get_path("scripts"))')/cek"
       - name: import smoke
         working-directory: cek-python
         run: python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
