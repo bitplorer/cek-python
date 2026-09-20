@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: cek-python
+      - uses: actions/checkout@v4
+        with:
+          repository: bitplorer/cek-runtime
+          path: cek-runtime
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -17,8 +23,11 @@ jobs:
         with:
           node-version: "20"
       - name: editable install
+        working-directory: cek-python
         run: pip install -e ./cek-host -e ./cek-surface
       - name: import smoke
+        working-directory: cek-python
         run: python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
       - name: test suite
+        working-directory: cek-python
         run: sh scripts/verify.sh

@@ -3,7 +3,7 @@
 **Read [START.md](./START.md) first.** Glossary: [docs/CATALOG_AUTHORITY_TARGET.md](docs/CATALOG_AUTHORITY_TARGET.md). Compose: [docs/COMPOSITION.md](docs/COMPOSITION.md). Invariants: [docs/INVARIANTS.md](docs/INVARIANTS.md).
 
 **Date:** 2026-09-19  
-**Repo:** https://github.com/bitplorer/cek-python (tree **0.1.2**)  
+**Repo:** https://github.com/bitplorer/cek-python (tree **0.1.3**)  
 **Law:** https://github.com/bitplorer/cek-framework  
 **Rust:** https://github.com/bitplorer/cek-runtime
 
