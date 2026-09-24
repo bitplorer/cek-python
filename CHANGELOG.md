@@ -4,9 +4,11 @@
 
 Breaking. `cek-host` and `cek-surface` publish together.
 
-Versions before 0.2.0 (`0.1.0`, `0.1.2`, `0.1.3`) are yanked on both packages.
-They teach `cek_host.legal` and the noun "S". pip will not select them.
-An exact pin (`==0.1.3`) still installs that old law. Do not use it.
+Versions before 0.2.0 (`0.1.0`, `0.1.2`, `0.1.3`) teach `cek_host.legal` and the noun "S".
+They are not this law. Do not install them.
+`scripts/yank_pre_020.py` marks them yanked on PyPI. That needs an owner token.
+Until the mark is on the index, pip can still select those wheels when 0.2.0 does not match the specifier.
+An exact pin (`==0.1.3`) installs that old law even after the yank. Do not use it.
 
 ### Removed
 
