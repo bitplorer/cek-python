@@ -41,9 +41,9 @@ class DoctorReport:
         return all(f.checked and f.ok for f in self.findings)
 
     def to_text(self) -> str:
-        lines = ["cek-host doctor"]
+        lines = ["cek-host check"]
         lines.extend(f.line() for f in self.findings)
-        lines.append("doctor: " + ("PASS" if self.ok else "FAIL"))
+        lines.append("check: " + ("PASS" if self.ok else "FAIL"))
         return "\n".join(lines)
 
 
