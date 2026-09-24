@@ -179,7 +179,7 @@ def project_wire(
 ) -> list[dict[str, Any]]:
     """Keep session-legal pairs. Strict unknown raises `IllegalOp` (never silent ok+[]).
 
-    With a stamp: membership in the stamp is the only legality (via negativa).
+    With a stamp: membership in the stamp is the only legality.
     Without a stamp: default_stamp_pairs() (declared catalog, or Baseline in strict).
     """
     closed = normalize_stamp(stamp) if stamp is not None else None

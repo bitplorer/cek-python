@@ -12,14 +12,14 @@ Declared catalog = Baseline ∪ UI seed (5 pairs). Session stamp = this session'
 ```bash
 export PYTHONPATH=cek-host/src:cek-surface/src
 sh scripts/verify.sh
-# taught kernel carrier (in-process PyO3 — not a second Peer kernel)
+# in-process peer (PyO3 — not a second Peer)
 cargo build -p cek-peer-pyo3 --features extension-module --release \
   --manifest-path ../cek-runtime/Cargo.toml
 export CEK_PEER_PYO3=../cek-runtime/target/release/libcek_peer_pyo3.so
 python3 cek-surface/tests/test_kernel_peer.py
-# leftover Host wrap + untaught `cek apply` door
+# optional: Host wrap and subprocess `cek apply`
 cargo build -p cek-cli --manifest-path ../cek-runtime/Cargo.toml
 CEK_BIN=../cek-runtime/target/debug/cek python3 cek-surface/tests/test_phase3_wrap.py
 ```
 
-NEVER REGRESS: refuse → `ops: []` · Peer no mint · once/sealed fail closed · no EmbeddedHostKernel · digest `cek1:` · undeclared pair → `IllegalOp` · stamp membership is pair identity · loaded stdlibs cannot claim `core=true` · wrap path does not reimplement apply/decide · taught kernel carrier is `cek_peer_pyo3` (not subprocess `cek apply`).
+NEVER REGRESS: refuse → `ops: []` · Peer no mint · once/sealed fail closed · no EmbeddedHostKernel · digest `cek1:` · undeclared pair → `IllegalOp` · stamp membership is pair identity · loaded stdlibs cannot claim `core=true` · wrap path does not reimplement apply/decide · in-process peer is `cek_peer_pyo3` (not subprocess `cek apply`).

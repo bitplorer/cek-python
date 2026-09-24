@@ -44,6 +44,6 @@ python -m cek_host doctor --fail
 | [docs/INVARIANTS.md](./docs/INVARIANTS.md) | NEVER REGRESS |
 | [docs/ORGANIZATION.md](./docs/ORGANIZATION.md) | Repos and packages |
 
-Taught kernel carrier: `Surface(carrier_kind="kernel")` uses in-process `cek_peer_pyo3` (see [cek-surface/ARCHITECTURE.md](./cek-surface/ARCHITECTURE.md)). Subprocess `cek apply` is leftover (`CEK_KERNEL_CARRIER=subprocess`).
+In-process peer: `Surface(carrier_kind="kernel")` uses `cek_peer_pyo3` (see [cek-surface/ARCHITECTURE.md](./cek-surface/ARCHITECTURE.md)). `CEK_KERNEL_CARRIER=subprocess` shells `cek apply` and is not the default.
 
 History and publish runbooks: `docs/archive/`.

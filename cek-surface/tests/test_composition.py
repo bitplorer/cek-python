@@ -21,7 +21,7 @@ from cek_surface import (
 )
 
 
-def test_macros_expand_to_s():
+def test_macros_expand_to_catalog():
     nav = navigate_to("/x", title="X")
     assert [o.fq for o in nav] == ["kv.set", "log.append"]
     assert nav[0].payload["key"] == "ui:nav"
@@ -55,6 +55,6 @@ def test_surface_perception_and_continuation():
 
 
 if __name__ == "__main__":
-    test_macros_expand_to_s()
+    test_macros_expand_to_catalog()
     test_surface_perception_and_continuation()
     print("composition ok")

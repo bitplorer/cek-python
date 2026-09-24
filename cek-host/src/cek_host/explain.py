@@ -263,7 +263,7 @@ _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
             "illegal pair",
             "Pair is not in this session stamp (or, with no stamp, not in the default catalog).",
             "Use a Baseline or UI-seed pair, or agree a domain stdlib and put the pair on the stamp. Identity is (ns, name).",
-            "via negativa",
+            "stamp",
         ),
     ),
     (

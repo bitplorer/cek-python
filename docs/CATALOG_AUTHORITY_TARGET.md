@@ -39,7 +39,7 @@ Tokens: lowercase ASCII letters and digits only. Dots belong in `ns`, never in `
 
 - No stamp + `open` → declared catalog (Baseline ∪ UI seed).
 - No stamp + `strict` (`CEK_CATALOG_MODE=strict`) → Baseline only.
-- Stamp present → **only** the stamp (via negativa). Runtime stdlib pairs (e.g. `search.hits`) may appear here without being in the declared catalog.
+- Stamp present → **only** the stamp. Runtime stdlib pairs (e.g. `search.hits`) may appear here without being in the declared catalog.
 
 Bundled stdlibs in `cek-surface`: `search` (`hits`, `clear`). Load with `load_bundled()`, then `Surface.use_stdlibs(["baseline","ui","search"])`.
 
@@ -59,7 +59,7 @@ There is no on-the-wire `agree` message. Version intersection happens in the Hos
 | Path | Applies |
 |------|---------|
 | JS `apply_s.mjs` | Stamp ∩ (built-in catalog drivers ∪ `registerDriver`). Filename is a frozen spelling. |
-| Rust `cek-peer-kernel` / `cek_peer_pyo3` / leftover `cek apply` | **Declared catalog only** (Baseline or Baseline+UI profile). Extensions are skipped. |
+| Rust `cek-peer-kernel` / `cek_peer_pyo3` / subprocess `cek apply` | **Declared catalog only** (Baseline or Baseline+UI profile). Extensions are skipped. |
 | Memory carrier | Echoes ops (tests). Not a kernel. |
 
 So: Host can *project* a stamped extension; only a Peer **runtime with a driver** will *apply* it. The Peer **kernel** never grows drivers for day-to-day domains.
@@ -68,7 +68,7 @@ So: Host can *project* a stamped extension; only a Peer **runtime with a driver*
 
 Taught Python kernel carrier: `carrier_kind="kernel"` → in-process `cek_peer_pyo3` (`PeerAbi` construct → bind → apply → release; same JSON as wasm). Fail closed if the module is missing.
 
-**Leftover (untaught):** `CEK_KERNEL_CARRIER=subprocess` / `backend="subprocess"` still shells `cek apply`. `cek host-json` / `RustHostKernel` remain the Host wrap. Dual implementations are **ports**, not a third kernel.
+**Not the default:** `CEK_KERNEL_CARRIER=subprocess` / `backend="subprocess"` shells `cek apply`. `cek host-json` / `RustHostKernel` remain the Host wrap. These are ports of the same kernels, not a third kernel.
 
 Default `Surface()` still uses the Python Host port + JS Peer port. That is deliberate: apps do not require a `cek` binary or `cek_peer_pyo3`.
 
