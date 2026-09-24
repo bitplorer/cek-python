@@ -61,7 +61,7 @@ python -m cek_host explain "cap required"
 sh scripts/verify.sh
 ```
 
-Production: `Host.production(secret=secrets.token_bytes(32), once=FileOnceBackend("once.json"))` — also stands up FileIdem + FileLineage beside the once file. BoundAsk is not constructible. `end_activity` reverses landed-first.
+Production: `Host.prod(secret=secrets.token_bytes(32), once=FileOnceBackend("once.json"))` — also stands up FileIdem + FileLineage beside the once file. BoundAsk is not constructible. `end_activity` reverses landed-first.
 
 Shop (browser is the Peer): `python cek-surface/demo/http_host.py`
 

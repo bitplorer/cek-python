@@ -85,8 +85,8 @@ class Host:
         accepted_generations: list[str] | None = None,
     ) -> None:
         # Deployment. Channel words adapt and require are not Host modes.
-        if mode not in ("dev", "production"):
-            raise ValueError("Host.mode must be dev|production")
+        if mode not in ("dev", "prod"):
+            raise ValueError("Host.mode must be dev|prod")
         self.secret = secret
         self.require_cap = require_cap
         self.mode = mode
@@ -116,7 +116,7 @@ class Host:
         return cls(**kw)
 
     @classmethod
-    def production(
+    def prod(
         cls,
         secret: bytes,
         once: OnceBackend,
@@ -130,14 +130,14 @@ class Host:
     ) -> Host:
         """Refuses default secret and memory stores unless allow_memory_stores."""
         if not require_cap:
-            raise ValueError("production requires require_cap=True")
+            raise ValueError("prod requires require_cap=True")
         if secret == DEV_SECRET:
-            raise ValueError("production refuses the default dev secret")
+            raise ValueError("prod refuses the default dev secret")
         if len(secret) < MIN_SECRET_LEN:
-            raise ValueError(f"production secret must be ≥ {MIN_SECRET_LEN} bytes")
+            raise ValueError(f"prod secret must be ≥ {MIN_SECRET_LEN} bytes")
         if isinstance(once, MemoryOnceBackend) and not allow_memory_stores:
             raise ValueError(
-                "production refuses memory once-store unless allow_memory_stores=True"
+                "prod refuses memory once-store unless allow_memory_stores=True"
             )
         if idem is None and isinstance(once, FileOnceBackend):
             idem = FileIdemBackend(str(once.path) + ".idem")
@@ -150,18 +150,18 @@ class Host:
         if not allow_memory_stores:
             if isinstance(idem, MemoryIdemBackend):
                 raise ValueError(
-                    "production refuses memory idem-store unless allow_memory_stores=True"
+                    "prod refuses memory idem-store unless allow_memory_stores=True"
                 )
             if isinstance(lineage, MemoryLineageBackend):
                 raise ValueError(
-                    "production refuses memory lineage-store unless allow_memory_stores=True"
+                    "prod refuses memory lineage-store unless allow_memory_stores=True"
                 )
         return cls(
             secret=secret,
             once=once,
             idem=idem,
             lineage=lineage,
-            mode="production",
+            mode="prod",
             allow_memory_stores=allow_memory_stores,
             require_cap=True,
             ttl_s=ttl_s,
@@ -264,7 +264,7 @@ class Host:
 
         # 1. Cap verify (no once). Law-gen + Ed25519 are Host policy.
         # Shared world (Ops a Peer will apply) requires a verified Cap.
-        # require_cap=False does not skip that. production() refuses the flag.
+        # require_cap=False does not skip that. prod() refuses the flag.
         pre = self._verify(action, args, cap, consume_once=False, check_once=False)
         if not pre.ok:
             return pre
@@ -417,7 +417,7 @@ class Host:
         check_once: bool = True,
     ) -> KernelResult:
         # Shared world (Ops a Peer will apply) always needs a verified Cap.
-        # require_cap=False is not a bypass. production() already refuses it.
+        # require_cap=False is not a bypass. prod() already refuses it.
         if not action:
             return _refuse("empty action")
         if not self.require_cap:

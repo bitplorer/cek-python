@@ -15,11 +15,11 @@ def main(argv: list[str] | None = None) -> int:
     sub = p.add_subparsers(dest="cmd")
 
     d = sub.add_parser("check", help="go/no-go for this Host")
-    d.add_argument("--misconfigured", action="store_true", help="inspect a production Host that still uses a memory once-store")
+    d.add_argument("--misconfigured", action="store_true", help="inspect a prod Host that still uses a memory once-store")
     d.add_argument("--fail", action="store_true", help="exit 1 if any finding is FAIL")
     old = sub.add_parser("doctor", help="old name for check")
     old.add_argument("--fail", action="store_true", help="exit 1 if any finding is FAIL")
-    old.add_argument("--misconfigured", action="store_true", help="inspect a production Host that still uses a memory once-store")
+    old.add_argument("--misconfigured", action="store_true", help="inspect a prod Host that still uses a memory once-store")
 
     e = sub.add_parser("explain", help="teach a Host/Surface error string")
     e.add_argument("error", nargs="?", default="cap required")
@@ -65,7 +65,7 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.misconfigured:
             # Deliberate misconfig so the critic can paste FAIL output.
-            host = Host(mode="production", once=MemoryOnceBackend())
+            host = Host(mode="prod", once=MemoryOnceBackend())
         else:
             host = Host()
         report = doctor(host, fail=False)
