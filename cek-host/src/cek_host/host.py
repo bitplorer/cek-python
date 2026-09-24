@@ -272,6 +272,9 @@ class Host:
         args = dict(args or {})
 
         # 1. Cap verify (no once). Law-gen + Ed25519 are Host policy.
+        # Shared world (Ops a Peer will apply) requires a verified Cap
+        # unless this Host was explicitly built with require_cap=False
+        # (not a product path; production() refuses that flag).
         pre = self._verify(action, args, cap, consume_once=False, check_once=False)
         if not pre.ok:
             return pre
@@ -449,19 +452,41 @@ class Host:
         activity_id: str | None,
         idempotency_key: str | None,
     ) -> KernelResult:
+        # Refuse before any consume. A bad activity id must not burn once
+        # or store an idempotent success (A5).
+        if activity_id is not None and not str(activity_id).strip():
+            return KernelResult("dispatch_error", [], "empty activity_id")
         try:
             ops = resolve_ops(bound.action, bound.args, project_ops, self.stamp)
         except ValueError as e:
             # Dispatch miss: once-Cap is NOT committed.
             return KernelResult("dispatch_error", [], str(e))
 
-        digest = result_digest("ok", ops, None)
         result = KernelResult("ok", ops, None)
+
+        # Lineage before once-commit and before idempotency is stored as ok.
+        # A failed lineage write refuses with the Cap still usable.
+        if activity_id is not None:
+            inverse = inverse_ops(ops)
+            rclass = reverse_class_for(ops)
+            try:
+                self._lineage.commit(
+                    str(bound.claims.get("jti") or ""),
+                    activity_id,
+                    bound.action,
+                    ops,
+                    rclass,
+                    inverse,
+                )
+            except LineageError as e:
+                return KernelResult("dispatch_error", [], str(e))
+            except StoreDown as e:
+                return KernelResult("dispatch_error", [], str(e))
 
         if idempotency_key is not None:
             try:
                 replay = self._idem.put_or_check(
-                    str(idempotency_key), digest, result.to_dict()
+                    str(idempotency_key), result.digest, result.to_dict()
                 )
             except IdemConflict as e:
                 return _refuse(str(e))
@@ -479,24 +504,5 @@ class Host:
                 self.caps.commit_once(bound.claims)
             except CapError as e:
                 return _refuse(str(e))
-
-        if activity_id is not None:
-            if not str(activity_id).strip():
-                return KernelResult("dispatch_error", [], "empty activity_id")
-            inverse = inverse_ops(ops)
-            rclass = reverse_class_for(ops)
-            try:
-                self._lineage.commit(
-                    str(bound.claims.get("jti") or ""),
-                    activity_id,
-                    bound.action,
-                    ops,
-                    rclass,
-                    inverse,
-                )
-            except LineageError as e:
-                return KernelResult("dispatch_error", [], str(e))
-            except StoreDown as e:
-                return KernelResult("dispatch_error", [], str(e))
 
         return result

@@ -66,6 +66,30 @@ def resolve_args(
     return args
 
 
+def mint_continuation(
+    kernel: Any,
+    event: str,
+    action: str,
+    *,
+    once: bool = True,
+    args_from: dict[str, str] | None = None,
+    static_args: dict[str, Any] | None = None,
+    args: dict[str, Any] | None = None,
+) -> Continuation:
+    """Host-side pre-mint. The JS peer only echoes this Cap back on the event.
+
+    Do not construct a Surface to mint. Peer code must not call this.
+    """
+    cap = kernel.mint(action, once=once, args=args or {})
+    return Continuation(
+        event=event,
+        action=action,
+        cap=cap,
+        args_from=args_from,
+        static_args=static_args,
+    )
+
+
 def match_continuation(
     continuations: list[Continuation] | list[dict[str, Any]],
     event: dict[str, Any],

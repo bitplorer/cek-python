@@ -29,5 +29,5 @@ Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel
 Chrome (perception): `s.chrome_pending("btn")` · `s.arm("timer.fired:x", "find")`.
 
 ```bash
-pip install cek-surface          # pulls cek-host>=0.1.2
+pip install cek-surface          # pulls cek-host>=0.1.3
 ```

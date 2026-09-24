@@ -108,7 +108,8 @@ def test_async_on_event():
         return [Op.log_append("tock")]
 
     r = asyncio.run(s.async_handle_event({"type": "tick"}))
-    assert r is not None and r.ok
+    assert r is not None and not r.ok and r.ops == []
+    assert "cap required" in (r.error or "")
     try:
         s.handle_event({"type": "tick"})
         raise AssertionError("sync handle_event must refuse async @on")

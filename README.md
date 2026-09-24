@@ -19,7 +19,7 @@ python -m cek_host create-app ./hello-cek && python ./hello-cek/app.py
 
 **Start here:** [START.md](./START.md)
 
-Tree **0.1.2** (Phase 2). Indexes still **0.1.0** until the next publish — do not `pip install cek-host==0.1.2` yet.
+Tree **0.1.3**. `cek-host` and `cek-surface` publish together at that version.
 
 ## Shop
 

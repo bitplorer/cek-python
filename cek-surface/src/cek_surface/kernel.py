@@ -29,6 +29,13 @@ class KernelResult:
             d["digest"] = self.digest
         return d
 
+    def __post_init__(self) -> None:
+        # Same cek1 digest as cek_host.KernelResult. A Result always names its body.
+        if self.digest is None:
+            from cek_host import result_digest
+
+            self.digest = result_digest(self.kind, self.ops, self.error)
+
     @property
     def ok(self) -> bool:
         return self.kind == "ok"

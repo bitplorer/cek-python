@@ -282,6 +282,48 @@ def test_idem_store_down():
     assert "store down" in (r.error or "")
 
 
+def test_lineage_down_does_not_burn_once():
+    lineage = MemoryLineageBackend(down=True)
+    once = MemoryOnceBackend()
+    h = Host(secret=SECRET, lineage=lineage, once=once)
+    cap = h.mint("kv.write", once=True)
+    r = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="act-down",
+    )
+    assert r.kind == "dispatch_error" and r.ops == []
+    assert "store down" in (r.error or "")
+    again = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="act-down",
+    )
+    assert again.kind == "dispatch_error"
+    assert "already used" not in (again.error or "")
+
+
+def test_empty_activity_does_not_burn_once():
+    h = Host(secret=SECRET)
+    cap = h.mint("kv.write", once=True)
+    r = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="  ",
+    )
+    assert r.kind == "dispatch_error" and r.ops == []
+    ok = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="act-ok",
+    )
+    assert ok.kind == "ok" and ok.ops
+
+
 if __name__ == "__main__":
     test_boundask_no_public_ctor()
     test_empty_idempotency_key()
@@ -296,4 +338,6 @@ if __name__ == "__main__":
     test_production_refuses_memory_idem_and_lineage()
     test_file_backends_roundtrip()
     test_idem_store_down()
+    test_lineage_down_does_not_burn_once()
+    test_empty_activity_does_not_burn_once()
     print("phase2 ok")

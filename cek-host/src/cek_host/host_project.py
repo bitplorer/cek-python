@@ -60,8 +60,9 @@ def resolve_ops(
     stamp: frozenset[tuple[str, str]] | None,
 ) -> list[dict[str, Any]]:
     if project_ops is not None:
-        return project_wire(project_ops, unknown="strict", stamp=stamp)
-    planned = project_action(action, args)
-    if stamp is not None:
-        return project_wire(planned, unknown="strict", stamp=stamp)
-    return planned
+        planned = list(project_ops)
+    else:
+        planned = project_action(action, args)
+    # Stamp membership is the session. No stamp → project_wire's core-S check.
+    # Never return a planned list that skipped the legal table.
+    return project_wire(planned, unknown="strict", stamp=stamp)
