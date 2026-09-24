@@ -472,13 +472,15 @@ class Host:
 
         result = KernelResult("ok", ops, None)
 
-        # Lineage before once-commit and before idempotency is stored as ok.
-        # A failed lineage write refuses with the Cap still usable.
+        # Lineage before once-commit and before an idempotent success is stored.
+        # If a later step refuses, the row is removed. The once-Cap stays usable
+        # unless commit_once itself succeeded.
+        lin_id: str | None = None
         if activity_id is not None:
             inverse = inverse_ops(ops)
             rclass = reverse_class_for(ops)
             try:
-                self._lineage.commit(
+                entry = self._lineage.commit(
                     str(bound.claims.get("jti") or ""),
                     activity_id,
                     bound.action,
@@ -486,11 +488,23 @@ class Host:
                     rclass,
                     inverse,
                 )
+                lin_id = str(entry.get("id") or "") or None
             except LineageError as e:
                 return KernelResult("dispatch_error", [], str(e))
             except StoreDown as e:
                 # Store down is an authority refusal (CORE 20), same as once/idem.
                 return _refuse(str(e))
+
+        def _drop_lineage() -> None:
+            if not lin_id:
+                return
+            drop = getattr(self._lineage, "drop", None)
+            if drop is None:
+                return
+            try:
+                drop(lin_id)
+            except Exception:
+                return
 
         if idempotency_key is not None:
             try:
@@ -498,10 +512,13 @@ class Host:
                     str(idempotency_key), result.digest, result.to_dict()
                 )
             except IdemConflict as e:
+                _drop_lineage()
                 return _refuse(str(e))
             except StoreDown:
+                _drop_lineage()
                 return _refuse("idempotency store down")
             if replay is not None:
+                _drop_lineage()
                 return KernelResult(
                     str(replay.get("kind") or "ok"),
                     list(replay.get("ops") or []),
@@ -512,6 +529,7 @@ class Host:
             try:
                 self.caps.commit_once(bound.claims)
             except CapError as e:
+                _drop_lineage()
                 return _refuse(str(e))
 
         return result

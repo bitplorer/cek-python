@@ -72,8 +72,21 @@ def test_create_app_runs():
         assert "once replay refused" in proc.stdout
 
 
+def test_skipped_check_is_not_a_pass():
+    from cek_host.doctor import DoctorReport, Finding
+
+    report = DoctorReport(
+        findings=[Finding(False, "vectors", "skipped — not in this install", checked=False)]
+    )
+    text = report.to_text()
+    assert report.ok is False
+    assert "[skip] vectors:" in text
+    assert text.endswith("doctor: FAIL")
+
+
 if __name__ == "__main__":
     test_explain_top_failures()
+    test_skipped_check_is_not_a_pass()
     test_cli_explain_and_version()
     test_create_app_runs()
     print("explain/doctor/create-app ok")

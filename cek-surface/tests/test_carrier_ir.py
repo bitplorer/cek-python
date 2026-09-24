@@ -110,6 +110,19 @@ def test_websocket_opt_in_missing_dep():
             assert "websockets" in str(e).lower() or "pip install" in str(e)
 
 
+def test_js_peer_copies_match():
+    """The package copy and the repo copy are one peer. Drift is a second peer."""
+    import filecmp
+
+    repo = ROOT / "js"
+    packaged = ROOT / "src" / "cek_surface" / "js"
+    names = sorted(p.name for p in repo.glob("*.mjs"))
+    assert names
+    for name in names:
+        assert (packaged / name).is_file(), name
+        assert filecmp.cmp(repo / name, packaged / name, shallow=False), name
+
+
 if __name__ == "__main__":
     test_open_carrier_default_subprocess()
     test_memory_carrier_roundtrip()
@@ -117,4 +130,5 @@ if __name__ == "__main__":
     test_shadow_cleared_on_apply()
     test_continuation_search_slots()
     test_websocket_opt_in_missing_dep()
+    test_js_peer_copies_match()
     print("carrier+ir ok")

@@ -305,6 +305,45 @@ def test_lineage_down_does_not_burn_once():
     assert "already used" not in (again.error or "")
 
 
+class _IdemPutDown:
+    """get succeeds. put refuses. The decide must not keep a lineage row."""
+
+    def get(self, key: str):
+        return None
+
+    def put_or_check(self, key: str, digest: str, result: dict):
+        from cek_host.once import StoreDown
+
+        raise StoreDown("idempotency store down")
+
+    def label(self) -> str:
+        return "memory"
+
+
+def test_idem_put_down_drops_lineage_and_keeps_once():
+    lineage = MemoryLineageBackend()
+    once = MemoryOnceBackend()
+    h = Host(secret=SECRET, lineage=lineage, once=once, idem=_IdemPutDown())
+    cap = h.mint("kv.write", once=True)
+    r = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="act-put",
+        idempotency_key="idem-put",
+    )
+    assert r.kind == "authority_refusal" and r.ops == []
+    assert lineage.for_activity("act-put") == []
+    again = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="act-put",
+    )
+    assert again.ok and again.ops
+    assert "already used" not in (again.error or "")
+
+
 def test_empty_activity_does_not_burn_once():
     h = Host(secret=SECRET)
     cap = h.mint("kv.write", once=True)
@@ -339,5 +378,6 @@ if __name__ == "__main__":
     test_file_backends_roundtrip()
     test_idem_store_down()
     test_lineage_down_does_not_burn_once()
+    test_idem_put_down_drops_lineage_and_keeps_once()
     test_empty_activity_does_not_burn_once()
     print("phase2 ok")

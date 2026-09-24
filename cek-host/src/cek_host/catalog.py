@@ -161,7 +161,7 @@ def in_stamp(stamp: frozenset[tuple[str, str]], ns: str, name: str) -> bool:
     return (ns, name) in stamp
 
 
-def session_legal(ns: str, name: str, stamp: frozenset[tuple[str, str]] | None) -> bool:
+def in_session(ns: str, name: str, stamp: frozenset[tuple[str, str]] | None) -> bool:
     """Stamp membership when this session has a stamp.
 
     No stamp: catalog mode. open → declared catalog. strict → Baseline only.
@@ -179,7 +179,7 @@ def project_wire(
 ) -> list[dict[str, Any]]:
     """Keep pairs that are in the session stamp. An unknown pair raises `UndeclaredPair` (never silent ok+[]).
 
-    With a stamp: membership in the stamp is the only legality.
+    With a stamp: membership in the stamp is the only rule.
     Without a stamp: default_stamp_pairs() (declared catalog, or Baseline in strict).
     """
     closed = normalize_stamp(stamp) if stamp is not None else None
@@ -187,7 +187,7 @@ def project_wire(
     for op in ops:
         ns = str(op.get("ns") or "")
         name = str(op.get("name") or "")
-        if session_legal(ns, name, closed):
+        if in_session(ns, name, closed):
             out.append(op)
         elif unknown == "strict":
             raise UndeclaredPair(ns, name, "absent from session stamp" if closed is not None else "")

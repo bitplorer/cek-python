@@ -135,6 +135,19 @@ class MemoryLineageBackend:
                 self._by_act.setdefault(activity_id, []).append(eid)
             return dict(entry)
 
+    def drop(self, entry_id: str) -> None:
+        """Remove one commit. Used when a later step refuses the decide."""
+        self._chk()
+        with self._lock:
+            entry = self._by_id.pop(entry_id, None)
+            if not entry:
+                return
+            act = entry.get("activity_id")
+            if act and act in self._by_act:
+                self._by_act[act] = [i for i in self._by_act[act] if i != entry_id]
+                if not self._by_act[act]:
+                    del self._by_act[act]
+
     def mark_ended(self, activity_id: str) -> None:
         self._chk()
         with self._lock:
@@ -246,6 +259,24 @@ class FileLineageBackend:
                     data["by_act"].setdefault(activity_id, []).append(eid)
                 self._save(data)
                 return dict(entry)
+            finally:
+                self._funlock()
+
+    def drop(self, entry_id: str) -> None:
+        """Remove one commit. Used when a later step refuses the decide."""
+        with self._thread:
+            self._flock()
+            try:
+                data = self._load()
+                entry = data["by_id"].pop(entry_id, None)
+                if not entry:
+                    return
+                act = entry.get("activity_id")
+                if act and act in data["by_act"]:
+                    data["by_act"][act] = [i for i in data["by_act"][act] if i != entry_id]
+                    if not data["by_act"][act]:
+                        del data["by_act"][act]
+                self._save(data)
             finally:
                 self._funlock()
 
