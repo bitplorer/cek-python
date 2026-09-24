@@ -23,7 +23,7 @@ Refuse → `r.ops == []`. Illegal pair → `dispatch_error`, never silent `ok`.
 Declared catalog = `kv.set` `kv.delete` `log.append` `ui.dom.morph` `ui.dom.restore`.  
 Pair = `(ns, name)`. Session stamp = this session. FQ is display only. There is no noun "S".
 
-`Host()` is dev. `Host.production(secret, FileOnceBackend(...))` refuses the dev secret and memory stores.
+`Host()` is dev. `Host.prod(secret, FileOnceBackend(...))` refuses the dev secret and memory stores.
 
 ```bash
 pip install cek-host

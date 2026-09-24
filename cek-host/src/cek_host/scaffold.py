@@ -19,13 +19,13 @@ from pathlib import Path
 from cek_host import FileOnceBackend, Host, doctor, explain
 from cek_surface import Op, Surface
 
-# Real secret. Never commit the dev secret. production() refuses the default.
+# Real secret. Never commit the dev secret. prod() refuses the default.
 SECRET = {secret!r}
 ONCE = Path(__file__).with_name("once.json")
 
 
 def main() -> None:
-    host = Host.production(SECRET, FileOnceBackend(ONCE))
+    host = Host.prod(SECRET, FileOnceBackend(ONCE))
     print(doctor(host).to_text())
 
     s = Surface(kernel=host, carrier_kind="memory")
@@ -65,7 +65,7 @@ python app.py
 python -m cek_host check --fail
 ```
 
-`Host.production` + `FileOnceBackend`. `require_cap=True`. Secret is 32 random bytes.
+`Host.prod` + `FileOnceBackend`. `require_cap=True`. Secret is 32 random bytes.
 Once-replay must print `ops:[]`.
 
 Read first: https://github.com/bitplorer/cek-python/blob/main/START.md

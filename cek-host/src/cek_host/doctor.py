@@ -49,7 +49,7 @@ class DoctorReport:
 
 def _finding_secret(secret: bytes) -> Finding:
     if secret == DEV_SECRET:
-        return Finding(False, "secret", "default dev secret — production() refuses it")
+        return Finding(False, "secret", "default dev secret — prod() refuses it")
     if len(secret) < MIN_SECRET_LEN:
         return Finding(False, "secret", f"length {len(secret)} < {MIN_SECRET_LEN}")
     return Finding(True, "secret", f"length {len(secret)}")

@@ -22,19 +22,24 @@ OPS = [{"ns": "kv", "name": "set", "payload": {"key": "a", "value": 1}}]
 SECRET = b"hardening-secret-32-bytes-long!!"
 
 
-def test_mode_is_dev_or_production():
+def test_mode_is_dev_or_prod():
     assert Host().mode == "dev"
     assert Host.dev().mode == "dev"
     try:
         Host(mode="demo")
         raise AssertionError("demo is not a Host mode")
     except ValueError as e:
-        assert "dev|production" in str(e)
+        assert "dev|prod" in str(e)
+    try:
+        Host(mode="production")
+        raise AssertionError("production is not a Host mode")
+    except ValueError as e:
+        assert "dev|prod" in str(e)
 
 
 def test_production_refuses_default_secret():
     try:
-        Host.production(DEV_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
+        Host.prod(DEV_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
         raise AssertionError("default secret must fail")
     except ValueError as e:
         assert "secret" in str(e)
@@ -42,7 +47,7 @@ def test_production_refuses_default_secret():
 
 def test_production_refuses_memory_once():
     try:
-        Host.production(SECRET, MemoryOnceBackend())
+        Host.prod(SECRET, MemoryOnceBackend())
         raise AssertionError("memory once must fail")
     except ValueError as e:
         assert "memory" in str(e)
@@ -50,7 +55,7 @@ def test_production_refuses_memory_once():
 
 def test_production_file_once_ok():
     with tempfile.TemporaryDirectory() as td:
-        h = Host.production(SECRET, FileOnceBackend(Path(td) / "once.json"))
+        h = Host.prod(SECRET, FileOnceBackend(Path(td) / "once.json"))
         cap = h.mint("kv.write", once=True, args={"key": "a", "value": 1}, seal_args=True)
         r1 = h.submit(action="kv.write", args={"key": "a", "value": 1}, cap=cap, project_ops=OPS)
         r2 = h.submit(action="kv.write", args={"key": "a", "value": 1}, cap=cap, project_ops=OPS)
@@ -100,7 +105,7 @@ def test_scope_deny_and_blank():
 
 def test_store_down_fail_closed():
     once = MemoryOnceBackend(down=True)
-    h = Host(SECRET, mode="production", once=once)
+    h = Host(SECRET, mode="prod", once=once)
     cap = h.mint("ping", once=True)
     r = h.submit(action="ping", args={}, cap=cap, project_ops=OPS)
     assert r.kind == "authority_refusal" and r.ops == []
@@ -140,7 +145,7 @@ def test_doctor_flags_demo_secret():
 
 def test_doctor_production_clean():
     with tempfile.TemporaryDirectory() as td:
-        h = Host.production(SECRET, FileOnceBackend(Path(td) / "once.json"))
+        h = Host.prod(SECRET, FileOnceBackend(Path(td) / "once.json"))
         report = h.doctor()
         ids = {f.id: f for f in report.findings}
         assert ids["secret"].ok
@@ -164,6 +169,7 @@ def test_require_cap_false_does_not_authorize():
 
 
 if __name__ == "__main__":
+    test_mode_is_dev_or_prod()
     test_production_refuses_default_secret()
     test_production_refuses_memory_once()
     test_production_file_once_ok()

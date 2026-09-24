@@ -216,12 +216,12 @@ def test_law_generation_window():
 
 def test_production_refuses_memory_idem_and_lineage():
     try:
-        Host.production(SECRET, MemoryOnceBackend(), allow_memory_stores=True)
+        Host.prod(SECRET, MemoryOnceBackend(), allow_memory_stores=True)
         # allow_memory_stores=True permits memory once/idem/lineage
     except ValueError:
         raise AssertionError("allow_memory_stores should permit memory stores")
     try:
-        Host.production(
+        Host.prod(
             SECRET,
             MemoryOnceBackend(),
             idem=MemoryIdemBackend(),
@@ -231,7 +231,7 @@ def test_production_refuses_memory_idem_and_lineage():
     except ValueError as e:
         assert "memory" in str(e)
     try:
-        Host.production(DEV_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
+        Host.prod(DEV_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
         raise AssertionError("dev secret must fail")
     except ValueError as e:
         assert "secret" in str(e)
@@ -240,7 +240,7 @@ def test_production_refuses_memory_idem_and_lineage():
 def test_file_backends_roundtrip():
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
-        h = Host.production(
+        h = Host.prod(
             SECRET,
             FileOnceBackend(root / "once.json"),
             idem=FileIdemBackend(root / "idem.json"),
