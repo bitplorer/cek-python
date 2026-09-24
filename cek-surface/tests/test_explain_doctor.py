@@ -44,7 +44,7 @@ def test_explain_top_failures():
 def test_cli_explain_and_version():
     assert cli_main(["version"]) == 0
     assert cli_main(["explain", "once cap already used"]) == 0
-    assert cli_main(["doctor", "--production-demo"]) == 0
+    assert cli_main(["check", "--production-demo"]) == 0
 
 
 def test_create_app_runs():
@@ -53,7 +53,7 @@ def test_create_app_runs():
         create_app(dest)
         assert (dest / "app.py").is_file()
         readme = (dest / "README.md").read_text()
-        assert "doctor" in readme
+        assert "check" in readme
         assert "require_cap" in readme
         env = dict(**{k: v for k, v in __import__("os").environ.items()})
         env["PYTHONPATH"] = f"{HOST_SRC}:{SURF_SRC}"
@@ -81,7 +81,7 @@ def test_skipped_check_is_not_a_pass():
     text = report.to_text()
     assert report.ok is False
     assert "[skip] vectors:" in text
-    assert text.endswith("doctor: FAIL")
+    assert text.endswith("check: FAIL")
 
 
 if __name__ == "__main__":

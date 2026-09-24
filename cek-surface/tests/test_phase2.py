@@ -282,7 +282,8 @@ def test_idem_store_down():
     assert "store down" in (r.error or "")
 
 
-def test_lineage_down_does_not_burn_once():
+def test_lineage_down_consumes_once_and_refuses():
+    """CORE 08: once is consumed before the lineage write. A down store refuses."""
     lineage = MemoryLineageBackend(down=True)
     once = MemoryOnceBackend()
     h = Host(secret=SECRET, lineage=lineage, once=once)
@@ -302,7 +303,7 @@ def test_lineage_down_does_not_burn_once():
         activity_id="act-down",
     )
     assert again.kind == "authority_refusal"
-    assert "already used" not in (again.error or "")
+    assert "already used" in (again.error or "")
 
 
 class _IdemPutDown:
@@ -320,7 +321,8 @@ class _IdemPutDown:
         return "memory"
 
 
-def test_idem_put_down_drops_lineage_and_keeps_once():
+def test_idem_put_down_consumes_once_and_writes_no_lineage():
+    """CORE 26: a down put refuses. CORE 08: the once-Cap was already consumed."""
     lineage = MemoryLineageBackend()
     once = MemoryOnceBackend()
     h = Host(secret=SECRET, lineage=lineage, once=once, idem=_IdemPutDown())
@@ -340,8 +342,40 @@ def test_idem_put_down_drops_lineage_and_keeps_once():
         cap=cap,
         activity_id="act-put",
     )
-    assert again.ok and again.ops
-    assert "already used" not in (again.error or "")
+    assert again.kind == "authority_refusal"
+    assert "already used" in (again.error or "")
+
+
+class _OnceCommitDown(MemoryOnceBackend):
+    def commit(self, jti: str) -> None:
+        from cek_host.once import StoreDown
+
+        raise StoreDown("once store down")
+
+
+def test_once_commit_fail_forgets_idem_and_lineage():
+    lineage = MemoryLineageBackend()
+    idem = MemoryIdemBackend()
+    h = Host(secret=SECRET, lineage=lineage, once=_OnceCommitDown(), idem=idem)
+    cap = h.mint("kv.write", once=True)
+    r = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+        activity_id="act-once",
+        idempotency_key="idem-once",
+    )
+    assert r.kind == "authority_refusal" and r.ops == []
+    assert "may replay" not in (r.error or "")
+    assert "row remains" not in (r.error or "")
+    assert lineage.for_activity("act-once") == []
+    assert idem.get("idem-once") is None
+    ok = Host(secret=SECRET).submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=cap,
+    )
+    assert ok.kind == "ok" and ok.ops
 
 
 def test_empty_activity_does_not_burn_once():
@@ -377,7 +411,8 @@ if __name__ == "__main__":
     test_production_refuses_memory_idem_and_lineage()
     test_file_backends_roundtrip()
     test_idem_store_down()
-    test_lineage_down_does_not_burn_once()
-    test_idem_put_down_drops_lineage_and_keeps_once()
+    test_lineage_down_consumes_once_and_refuses()
+    test_idem_put_down_consumes_once_and_writes_no_lineage()
+    test_once_commit_fail_forgets_idem_and_lineage()
     test_empty_activity_does_not_burn_once()
     print("phase2 ok")

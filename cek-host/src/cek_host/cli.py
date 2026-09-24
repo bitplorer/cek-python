@@ -10,13 +10,16 @@ from pathlib import Path
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="cek",
-        description="CEK Host — mint/verify Caps. doctor · explain · create-app",
+        description="CEK Host — mint/verify Caps. check · explain · create-app",
     )
     sub = p.add_subparsers(dest="cmd")
 
-    d = sub.add_parser("doctor", help="go/no-go checklist (≡ production factory)")
+    d = sub.add_parser("check", help="go/no-go for this Host")
     d.add_argument("--fail", action="store_true", help="exit 1 if any finding is FAIL")
     d.add_argument("--production-demo", action="store_true", help="inspect a misconfigured Host")
+    old = sub.add_parser("doctor", help="old name for check")
+    old.add_argument("--fail", action="store_true", help="exit 1 if any finding is FAIL")
+    old.add_argument("--production-demo", action="store_true", help="inspect a misconfigured Host")
 
     e = sub.add_parser("explain", help="teach a Host/Surface error string")
     e.add_argument("error", nargs="?", default="cap required")
@@ -29,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     if not args.cmd:
         p.print_help()
-        print("\nTry:  python -m cek_host doctor --fail")
+        print("\nTry:  python -m cek_host check --fail")
         print("      python -m cek_host create-app ./my-app")
         print("      python -m cek_host explain 'once cap already used'")
         return 2
@@ -52,10 +55,10 @@ def main(argv: list[str] | None = None) -> int:
         dest = create_app(args.dest)
         print(f"created {dest.resolve() / 'app.py'}")
         print(f"next   : python {dest / 'app.py'}")
-        print(f"doctor : python -m cek_host doctor --fail")
+        print(f"check  : python -m cek_host check --fail")
         return 0
 
-    if args.cmd == "doctor":
+    if args.cmd in ("check", "doctor"):
         from . import Host
         from .doctor import doctor
         from .once import MemoryOnceBackend

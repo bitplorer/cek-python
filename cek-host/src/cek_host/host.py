@@ -84,15 +84,9 @@ class Host:
         ed25519_trust: list[bytes] | None = None,
         accepted_generations: list[str] | None = None,
     ) -> None:
-        # Deployment, not Channel's cek mode. adapt/require are old spellings
-        # of production. They do not choose a Cap machine.
-        if mode in ("adapt", "require"):
-            mode = "production"
+        # Deployment. Channel words adapt and require are not Host modes.
         if mode not in ("demo", "production"):
-            raise ValueError(
-                "Host.mode must be demo|production "
-                "(adapt and require are old spellings of production, not Channel cek mode)"
-            )
+            raise ValueError("Host.mode must be demo|production")
         self.secret = secret
         self.require_cap = require_cap
         self.mode = mode
@@ -450,9 +444,18 @@ class Host:
         idempotency_key: str | None,
     ) -> KernelResult:
         # Refuse before any consume. A bad activity id must not burn once
-        # or store an idempotent success (A5).
+        # or store an idempotent success (A5, CORE 08, CORE 26).
         if activity_id is not None and not str(activity_id).strip():
             return KernelResult("dispatch_error", [], "empty activity_id")
+        if activity_id is not None:
+            try:
+                ended = self._lineage.is_ended(activity_id)
+            except StoreDown as e:
+                return _refuse(str(e))
+            if ended:
+                return KernelResult(
+                    "dispatch_error", [], f"cannot commit to ended activity: {activity_id}"
+                )
         try:
             ops = resolve_ops(bound.action, bound.args, project_ops, self.stamp)
         except ValueError as e:
@@ -461,39 +464,15 @@ class Host:
 
         result = KernelResult("ok", ops, None)
 
-        # Lineage before once-commit and before an idempotent success is stored.
-        # If a later step refuses, the row is removed. The once-Cap stays usable
-        # unless commit_once itself succeeded.
-        lin_id: str | None = None
-        if activity_id is not None:
-            inverse = inverse_ops(ops)
-            rclass = reverse_class_for(ops)
+        # CORE 08: consume a once-Cap before side-effects.
+        # CORE 26: the bind was checked in submit. Record lineage only after
+        # this handling is the one that stores the result. A duplicate bind
+        # returns the prior Result and does not write a second row.
+        if bound.claims.get("once"):
             try:
-                entry = self._lineage.commit(
-                    str(bound.claims.get("jti") or ""),
-                    activity_id,
-                    bound.action,
-                    ops,
-                    rclass,
-                    inverse,
-                )
-                lin_id = str(entry.get("id") or "") or None
-            except LineageError as e:
-                return KernelResult("dispatch_error", [], str(e))
-            except StoreDown as e:
-                # Store down is an authority refusal (CORE 20), same as once/idem.
+                self.caps.commit_once(bound.claims)
+            except CapError as e:
                 return _refuse(str(e))
-
-        def _drop_lineage() -> None:
-            if not lin_id:
-                return
-            drop = getattr(self._lineage, "drop", None)
-            if drop is None:
-                return
-            try:
-                drop(lin_id)
-            except Exception:
-                return
 
         if idempotency_key is not None:
             try:
@@ -501,24 +480,43 @@ class Host:
                     str(idempotency_key), result.digest, result.to_dict()
                 )
             except IdemConflict as e:
-                _drop_lineage()
                 return _refuse(str(e))
             except StoreDown:
-                _drop_lineage()
                 return _refuse("idempotency store down")
             if replay is not None:
-                _drop_lineage()
                 return KernelResult(
                     str(replay.get("kind") or "ok"),
                     list(replay.get("ops") or []),
                     replay.get("error"),
                 )
 
-        if bound.claims.get("once"):
+        if activity_id is not None:
+            inverse = inverse_ops(ops)
+            rclass = reverse_class_for(ops)
             try:
-                self.caps.commit_once(bound.claims)
-            except CapError as e:
-                _drop_lineage()
-                return _refuse(str(e))
+                self._lineage.commit(
+                    str(bound.claims.get("jti") or ""),
+                    activity_id,
+                    bound.action,
+                    ops,
+                    rclass,
+                    inverse,
+                )
+            except LineageError as e:
+                return KernelResult("dispatch_error", [], str(e) + self._forget_idem(idempotency_key))
+            except StoreDown as e:
+                return _refuse(str(e) + self._forget_idem(idempotency_key))
 
         return result
+
+    def _forget_idem(self, key: str | None) -> str:
+        if not key:
+            return ""
+        forget = getattr(self._idem, "forget", None)
+        if forget is None:
+            return " — idempotency key may replay (store has no forget)"
+        try:
+            forget(str(key))
+        except Exception as err:
+            return f" — idempotency key may replay ({err})"
+        return ""

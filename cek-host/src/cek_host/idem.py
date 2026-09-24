@@ -51,6 +51,13 @@ class MemoryIdemBackend:
                 return dict(prev["result"])
             raise IdemConflict(f"idempotency conflict for key `{key}`")
 
+    def forget(self, key: str) -> None:
+        """Remove a key this attempt stored. A refused decide must not replay."""
+        if self._down:
+            raise StoreDown("idempotency store down")
+        with self._lock:
+            self._data.pop(key, None)
+
     def label(self) -> str:
         return "down" if self._down else "memory"
 
@@ -125,6 +132,17 @@ class FileIdemBackend:
                 if prev.get("digest") == digest:
                     return dict(prev["result"])
                 raise IdemConflict(f"idempotency conflict for key `{key}`")
+            finally:
+                self._funlock()
+
+    def forget(self, key: str) -> None:
+        """Remove a key this attempt stored. A refused decide must not replay."""
+        with self._thread:
+            self._flock()
+            try:
+                data = self._load()
+                data.pop(key, None)
+                self._save(data)
             finally:
                 self._funlock()
 
