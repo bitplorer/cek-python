@@ -122,17 +122,6 @@ class Host:
         return cls(**kw)
 
     @classmethod
-    def lab(
-        cls,
-        secret: bytes,
-        once: OnceBackend | None = None,
-        **kw: Any,
-    ) -> Host:
-        """Lab host. Not a Channel mode. Stored mode is production."""
-        kw.setdefault("mode", "production")
-        return cls(secret=secret, once=once or MemoryOnceBackend(), **kw)
-
-    @classmethod
     def production(
         cls,
         secret: bytes,
