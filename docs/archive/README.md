@@ -12,3 +12,4 @@ Current names, if you are reading an old sentence:
 | `cek_host.legal` | `cek_host.catalog` |
 | `Host.adapt`, `Host.lab` | `Host(mode="production")` or `Host.production()` |
 | `doctor` | `check` |
+| `Host.demo`, `mode="demo"`, `DEMO_SECRET` | `Host.dev`, `mode="dev"`, `DEV_SECRET` |

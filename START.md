@@ -56,7 +56,7 @@ print((await s.async_submit("hello", {}, cap=cap, drain_async=False))["result"])
 ## Go / no-go
 
 ```bash
-python -m cek_host doctor --production-demo --fail   # expect FAIL (default secret + memory)
+python -m cek_host check --misconfigured --fail   # expect FAIL (dev secret + memory)
 python -m cek_host explain "cap required"
 sh scripts/verify.sh
 ```

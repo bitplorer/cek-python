@@ -9,7 +9,7 @@ from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from . import Host
 
-DEMO_SECRET = b"cek-host-dev-secret-change-me!!!"
+DEV_SECRET = b"cek-host-dev-secret-change-me!!!"
 MIN_SECRET_LEN = 32
 VECTOR_PACK_VERSION = 4
 
@@ -48,15 +48,15 @@ class DoctorReport:
 
 
 def _finding_secret(secret: bytes) -> Finding:
-    if secret == DEMO_SECRET:
-        return Finding(False, "secret", "default demo secret — production() refuses it")
+    if secret == DEV_SECRET:
+        return Finding(False, "secret", "default dev secret — production() refuses it")
     if len(secret) < MIN_SECRET_LEN:
         return Finding(False, "secret", f"length {len(secret)} < {MIN_SECRET_LEN}")
     return Finding(True, "secret", f"length {len(secret)}")
 
 
 def _finding_store(host: Host, kind: str, label: str) -> Finding:
-    if label == "memory" and host.mode != "demo" and not host.allow_memory_stores:
+    if label == "memory" and host.mode != "dev" and not host.allow_memory_stores:
         return Finding(False, kind, "memory — not a security domain across workers")
     if label == "down":
         return Finding(False, kind, "marked down — Host must refuse (K6)")
@@ -152,7 +152,7 @@ def _finding_vectors() -> Finding:
 
 
 def doctor(host: Host | None = None, *, fail: bool = False) -> DoctorReport:
-    """Inspect a Host (or the demo defaults) plus the install graph."""
+    """Inspect a Host (or the dev defaults) plus the install graph."""
     from . import Host
 
     h = host if host is not None else Host()

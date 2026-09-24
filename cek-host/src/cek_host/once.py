@@ -4,7 +4,7 @@ I4  Once commit only after successful project (K6)
 I9  Fail closed on store down (K6)
 I12 Concurrent once: exactly one ok (fcntl flock on file backend)
 
-Memory is demo. production() refuses it unless allow_memory_stores=True.
+Memory is for a dev Host. production() refuses it unless allow_memory_stores=True.
 """
 
 from __future__ import annotations

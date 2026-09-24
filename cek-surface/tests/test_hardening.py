@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_host import (
-    DEMO_SECRET,
+    DEV_SECRET,
     FileOnceBackend,
     Host,
     MemoryOnceBackend,
@@ -22,9 +22,19 @@ OPS = [{"ns": "kv", "name": "set", "payload": {"key": "a", "value": 1}}]
 SECRET = b"hardening-secret-32-bytes-long!!"
 
 
+def test_mode_is_dev_or_production():
+    assert Host().mode == "dev"
+    assert Host.dev().mode == "dev"
+    try:
+        Host(mode="demo")
+        raise AssertionError("demo is not a Host mode")
+    except ValueError as e:
+        assert "dev|production" in str(e)
+
+
 def test_production_refuses_default_secret():
     try:
-        Host.production(DEMO_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
+        Host.production(DEV_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
         raise AssertionError("default secret must fail")
     except ValueError as e:
         assert "secret" in str(e)
