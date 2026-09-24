@@ -201,7 +201,7 @@ _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
         Explanation(
             "require_cap_false",
             "require_cap=False",
-            "Production templates never ship require_cap=False.",
+            "require_cap=False does not skip Cap verify. Submit refuses.",
             "Construct Host(require_cap=True) or Host.production(...).",
             "K1",
         ),

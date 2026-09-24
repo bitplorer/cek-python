@@ -280,9 +280,8 @@ class Host:
         args = dict(args or {})
 
         # 1. Cap verify (no once). Law-gen + Ed25519 are Host policy.
-        # Shared world (Ops a Peer will apply) requires a verified Cap
-        # unless this Host was explicitly built with require_cap=False
-        # (not a product path; production() refuses that flag).
+        # Shared world (Ops a Peer will apply) requires a verified Cap.
+        # require_cap=False does not skip that. production() refuses the flag.
         pre = self._verify(action, args, cap, consume_once=False, check_once=False)
         if not pre.ok:
             return pre
@@ -434,21 +433,22 @@ class Host:
         consume_once: bool,
         check_once: bool = True,
     ) -> KernelResult:
+        # Shared world (Ops a Peer will apply) always needs a verified Cap.
+        # require_cap=False is not a bypass. production() already refuses it.
         if not action:
             return _refuse("empty action")
-        if self.require_cap or cap:
-            if not cap:
-                return _refuse("cap required")
-            try:
-                claims = self.caps.verify(
-                    cap, action, args, consume_once=consume_once, check_once=check_once
-                )
-                check_generation(claims, self.accepted_generations)
-                check_ed25519(claims, seed=self._ed_seed, trust=self._ed_trust)
-            except CapError as e:
-                return _refuse(str(e))
-        else:
-            claims = {}
+        if not self.require_cap:
+            return _refuse("require_cap=False cannot authorize shared-world ops")
+        if not cap:
+            return _refuse("cap required")
+        try:
+            claims = self.caps.verify(
+                cap, action, args, consume_once=consume_once, check_once=check_once
+            )
+            check_generation(claims, self.accepted_generations)
+            check_ed25519(claims, seed=self._ed_seed, trust=self._ed_trust)
+        except CapError as e:
+            return _refuse(str(e))
         r = KernelResult("ok", [], None)
         r._claims = claims  # type: ignore[attr-defined]
         return r

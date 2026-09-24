@@ -7,41 +7,12 @@ EmbeddedHostKernel is gone (D3 / G4).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
 from cek_host import Host as CekHost
-from cek_host import KernelResult as HostKernelResult
+from cek_host import KernelResult
 from cek_host import CapError, CapService, explain
 from .ops import Op, as_wire
-
-
-@dataclass
-class KernelResult:
-    kind: str  # ok | authority_refusal | dispatch_error
-    ops: list[dict[str, Any]] = field(default_factory=list)
-    error: str | None = None
-    digest: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        d: dict[str, Any] = {"kind": self.kind, "ops": self.ops, "error": self.error}
-        if self.digest is not None:
-            d["digest"] = self.digest
-        return d
-
-    def __post_init__(self) -> None:
-        # Same cek1 digest as cek_host.KernelResult. A Result always names its body.
-        if self.digest is None:
-            from cek_host import result_digest
-
-            self.digest = result_digest(self.kind, self.ops, self.error)
-
-    @property
-    def ok(self) -> bool:
-        return self.kind == "ok"
-
-    def explain(self):
-        return explain(self.error)
 
 
 @runtime_checkable
