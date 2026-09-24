@@ -29,5 +29,5 @@ Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel
 Perception (not shared world): `s.mark_pending("btn")` · `s.mint_continuation("timer.fired:x", "find")`.
 
 ```bash
-pip install cek-surface          # pulls cek-host>=0.1.3
+pip install cek-surface          # pulls cek-host>=0.2.0
 ```

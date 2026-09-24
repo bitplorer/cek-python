@@ -19,7 +19,7 @@ python -m cek_host create-app ./hello-cek && python ./hello-cek/app.py
 
 **Start here:** [START.md](./START.md)
 
-Tree **0.1.3**. `cek-host` and `cek-surface` publish together at that version.
+Tree **0.2.0**. `cek-host` and `cek-surface` publish together. 0.1.3 is the `cek_host.legal` wheel and does not install. See [CHANGELOG.md](./CHANGELOG.md).
 
 ## Shop
 
