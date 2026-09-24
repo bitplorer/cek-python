@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_host import Host, IllegalOp
+from cek_host import Host, UndeclaredPair
 from cek_host.catalog import CATALOG_PAIRS, in_catalog
 from cek_surface import Op, Surface, search_clear, search_hits
 from cek_surface.domain_loader import load_bundled

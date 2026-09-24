@@ -175,21 +175,21 @@ def run_case(case: dict) -> None:
         assert args == case["expect_args"]
         return
 
-    if cid == "illegal_pair_rejected":
-        from cek_host.catalog import IllegalOp, in_catalog, project_wire
+    if cid == "undeclared_pair_rejected":
+        from cek_host.catalog import UndeclaredPair, in_catalog, project_wire
 
-        for ns, name in case["illegal"]:
+        for ns, name in case["undeclared"]:
             try:
                 Op(ns, name, {})
                 raise AssertionError(f"Op({ns},{name}) must raise")
             except ValueError as e:
-                assert "illegal" in str(e)
+                assert "undeclared" in str(e)
             assert not in_catalog(ns, name)
-        wire = [{"ns": ns, "name": name, "payload": {}} for ns, name in case["illegal"]]
+        wire = [{"ns": ns, "name": name, "payload": {}} for ns, name in case["undeclared"]]
         try:
             project_wire(wire, unknown="strict")
-            raise AssertionError("strict illegal batch must raise")
-        except IllegalOp:
+            raise AssertionError("strict undeclared batch must raise")
+        except UndeclaredPair:
             pass
         assert project_wire(wire, unknown="tolerant") == []
         mixed = [
@@ -199,7 +199,7 @@ def run_case(case: dict) -> None:
         try:
             project_wire(mixed, unknown="strict")
             raise AssertionError("split-alias mixed batch must raise")
-        except IllegalOp:
+        except UndeclaredPair:
             pass
         return
 

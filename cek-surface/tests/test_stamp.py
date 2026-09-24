@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_host import Host, IllegalOp
+from cek_host import Host, UndeclaredPair
 from cek_host.catalog import (
     BASELINE_PAIRS,
     CATALOG_PAIRS,
@@ -30,7 +30,7 @@ from cek_surface.domain_stdlib import (
 from cek_surface.stamp import pairs_as_wire
 
 
-def test_default_agreement_is_s():
+def test_default_agreement_is_catalog():
     assert default_agreement_stamp() == CATALOG_PAIRS
     assert len(default_agreement_stamp()) == 5
 
@@ -74,7 +74,7 @@ def test_project_wire_stamp_rejects():
     try:
         project_wire(ui, unknown="strict", stamp=baseline)
         raise AssertionError("ui.dom.morph must be absent from baseline stamp")
-    except IllegalOp as e:
+    except UndeclaredPair as e:
         assert e.ns == "ui.dom" and e.name == "morph"
 
 
@@ -92,7 +92,7 @@ def test_host_stamp_rejects_unstamped_pair():
     )
     assert r.kind == "dispatch_error"
     assert r.ops == []
-    assert "illegal" in (r.error or "")
+    assert "undeclared" in (r.error or "")
     cap2 = h.mint("ping")
     ok = h.submit(
         action="ping",
@@ -163,18 +163,18 @@ def test_strict_mode_default_stamp_is_baseline():
         from cek_host.catalog_mode import get_catalog_mode
         from importlib import reload
         import cek_host.catalog_mode as cm
-        import cek_host.catalog as legal
+        import cek_host.catalog as catalog
 
         reload(cm)
-        reload(legal)
+        reload(catalog)
         assert cm.get_catalog_mode() == "strict"
-        assert legal.default_stamp_pairs() == BASELINE_PAIRS
+        assert catalog.default_stamp_pairs() == BASELINE_PAIRS
         try:
-            legal.project_wire([{"ns": "ui.dom", "name": "morph", "payload": {}}])
+            catalog.project_wire([{"ns": "ui.dom", "name": "morph", "payload": {}}])
             raise AssertionError("strict missing stamp must not project ui.dom")
-        except legal.IllegalOp:
+        except catalog.UndeclaredPair:
             pass
-        assert legal.project_wire(
+        assert catalog.project_wire(
             [{"ns": "log", "name": "append", "payload": {"message": "x"}}]
         )
     finally:
@@ -184,14 +184,14 @@ def test_strict_mode_default_stamp_is_baseline():
             os.environ["CEK_CATALOG_MODE"] = prev
         from importlib import reload
         import cek_host.catalog_mode as cm
-        import cek_host.catalog as legal
+        import cek_host.catalog as catalog
 
         reload(cm)
-        reload(legal)
+        reload(catalog)
 
 
 if __name__ == "__main__":
-    test_default_agreement_is_s()
+    test_default_agreement_is_catalog()
     test_agree_intersection()
     test_concatenation_hole_not_in_stamp()
     test_malformed_stamp_falls_back()

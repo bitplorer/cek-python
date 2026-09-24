@@ -13,7 +13,7 @@ from .explain import Explanation, explain
 from .host import Host, KernelResult, LAW_GENERATION
 from .idem import FileIdemBackend, IdemConflict, IdemBackend, MemoryIdemBackend
 from .catalog import (
-    IllegalOp,
+    UndeclaredPair,
     CATALOG_FQS,
     CATALOG_PAIRS,
     default_stamp_pairs,
@@ -69,7 +69,7 @@ __all__ = [
     "in_catalog",
     "CATALOG_FQS",
     "CATALOG_PAIRS",
-    "IllegalOp",
+    "UndeclaredPair",
     "default_stamp_pairs",
     "normalize_stamp",
     "in_stamp",

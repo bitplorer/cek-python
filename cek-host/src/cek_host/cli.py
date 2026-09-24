@@ -62,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.production_demo:
             # Deliberate misconfig so the critic can paste FAIL output.
-            host = Host(mode="adapt", once=MemoryOnceBackend())
+            host = Host(mode="production", once=MemoryOnceBackend())
         else:
             host = Host()
         report = doctor(host, fail=False)

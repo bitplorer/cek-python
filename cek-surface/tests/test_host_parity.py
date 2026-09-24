@@ -21,7 +21,7 @@ OPS = [{"ns": "log", "name": "append", "payload": {"message": "x"}}]
 
 def _pair():
     a = Host.demo(secret=SECRET)
-    b = Host.adapt(secret=SECRET, once=MemoryOnceBackend())
+    b = Host.lab(secret=SECRET, once=MemoryOnceBackend())
     return a, b
 
 

@@ -155,10 +155,10 @@ export function applyOp(world, op) {
   const ns = String(op.ns || "");
   const name = String(op.name || "");
   if (!name || name.includes(".")) {
-    throw new Error(`illegal pair: ${ns}.${name}`);
+    throw new Error(`undeclared pair: ${ns}.${name}`);
   }
   if (!stampAllows(ns, name)) {
-    throw new Error(`illegal pair: ${ns}.${name} — absent from session stamp`);
+    throw new Error(`undeclared pair: ${ns}.${name} — absent from session stamp`);
   }
   if (applyBuiltin(world, ns, name, p)) return;
   const drv = drivers.get(keyOf(ns, name));
@@ -166,7 +166,7 @@ export function applyOp(world, op) {
     drv(world, p, op);
     return;
   }
-  throw new Error(`illegal pair: ${ns}.${name} — no driver`);
+  throw new Error(`undeclared pair: ${ns}.${name} — no driver`);
 }
 
 export function applyResult(world, result, { before } = {}) {

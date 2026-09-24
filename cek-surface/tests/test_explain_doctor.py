@@ -33,7 +33,7 @@ def test_explain_top_failures():
         ("memory once-store", "memory_once"),
         ("empty action", "empty_action"),
         ("cap signature invalid", "hmac_tamper"),
-        ("illegal pair: nav.push", "illegal_op"),
+        ("undeclared pair: nav.push", "undeclared_pair"),
     ]
     for err, code in cases:
         e = explain(err)

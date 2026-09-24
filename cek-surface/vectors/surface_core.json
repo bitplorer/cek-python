@@ -103,10 +103,10 @@
       ]
     },
     {
-      "id": "illegal_pair_rejected",
+      "id": "undeclared_pair_rejected",
       "family": "via_negativa",
       "note": "undeclared pairs and split-aliases must not construct or project",
-      "illegal": [
+      "undeclared": [
         ["nav", "push"],
         ["ui", "toast"],
         ["timer", "set"],

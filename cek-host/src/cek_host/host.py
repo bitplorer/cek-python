@@ -122,14 +122,14 @@ class Host:
         return cls(**kw)
 
     @classmethod
-    def adapt(
+    def lab(
         cls,
         secret: bytes,
         once: OnceBackend | None = None,
         **kw: Any,
     ) -> Host:
-        """Lab host. Not Channel cek=adapt. Stored mode is production."""
-        kw.setdefault("mode", "adapt")
+        """Lab host. Not a Channel mode. Stored mode is production."""
+        kw.setdefault("mode", "production")
         return cls(secret=secret, once=once or MemoryOnceBackend(), **kw)
 
     @classmethod
