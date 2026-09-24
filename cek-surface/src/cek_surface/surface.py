@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Union
 import inspect
 
-from .continuation import Continuation, match_continuation, resolve_args
+from .continuation import Continuation, match_continuation, mint_continuation, resolve_args
 from .kernel import HostKernel, KernelResult, load_host_kernel
 from .ops import Op, as_wire
 from .policy import SurfacePolicy
@@ -98,13 +98,14 @@ class Surface:
         args: dict[str, Any] | None = None,
     ) -> Continuation:
         """Pre-mint a continuation Cap. Peer fills slots; Host still verifies."""
-        cap = self.mint(action, once=once, args=args or {})
-        return Continuation(
-            event=event,
-            action=action,
-            cap=cap,
+        return mint_continuation(
+            self.kernel,
+            event,
+            action,
+            once=once,
             args_from=args_from,
             static_args=static_args,
+            args=args,
         )
 
     # -- Compose -------------------------------------------------------------
@@ -204,10 +205,35 @@ class Surface:
                 "(sync handle_event does not run an event loop)"
             )
         ops = fn(event, self)
+        return self._authorize_event_ops(event, ops)
+
+    def _authorize_event_ops(self, event: dict[str, Any], ops: Any) -> KernelResult | None:
+        """Bare @on is not a second decide.
+
+        Host-local bookkeeping inside the handler is fine. Ops that a JS peer
+        would apply are shared world and go through kernel.submit. With no
+        Cap, a require_cap Host refuses and the peer sees ops: []. Arm a
+        continuation when the event should change the world.
+        """
         if ops is None:
             return None
-        # Un-capped @on is a fallback (http.response). Prefer continuations.
-        return KernelResult("ok", as_wire(ops))
+        if not isinstance(ops, list):
+            return KernelResult("dispatch_error", [], "event handler must return list[Op] or None")
+        wire = as_wire(ops)
+        action = str(event.get("type") or "")
+        return self.kernel.submit(action, dict(event), None, project_ops=wire)
+
+    async def _async_authorize_event_ops(self, event: dict[str, Any], ops: Any) -> KernelResult | None:
+        if ops is None:
+            return None
+        if not isinstance(ops, list):
+            return KernelResult("dispatch_error", [], "event handler must return list[Op] or None")
+        wire = as_wire(ops)
+        action = str(event.get("type") or "")
+        submit = getattr(self.kernel, "async_submit", None)
+        if submit is not None:
+            return await submit(action, dict(event), None, project_ops=wire)
+        return self.kernel.submit(action, dict(event), None, project_ops=wire)
 
     async def async_handle_event(self, event: dict[str, Any]) -> KernelResult | None:
         et = event.get("type")
@@ -228,9 +254,7 @@ class Surface:
         ops = fn(event, self)
         if inspect.isawaitable(ops):
             ops = await ops
-        if ops is None:
-            return None
-        return KernelResult("ok", as_wire(ops))
+        return await self._async_authorize_event_ops(event, ops)
 
     def ensure_peer(self) -> PeerSession:
         if self.peer is None:
@@ -265,7 +289,7 @@ class Surface:
     ) -> tuple[KernelResult, list | None]:
         pol = self.policy.check_action(action)
         if not pol.allow:
-            return KernelResult("authority_refusal", [], pol.reason), None
+            return KernelResult("dispatch_error", [], pol.reason), None
 
         inner = getattr(self.kernel, "_inner", None)
         host = inner if inner is not None else self.kernel
@@ -301,7 +325,7 @@ class Surface:
         wire = as_wire(ops)
         pol2 = self.policy.check_ops(wire)
         if not pol2.allow:
-            return KernelResult("authority_refusal", [], pol2.reason), None
+            return KernelResult("dispatch_error", [], pol2.reason), None
 
         result = self.kernel.submit(
             action,
@@ -324,7 +348,7 @@ class Surface:
     ) -> tuple[KernelResult, list | None]:
         pol = self.policy.check_action(action)
         if not pol.allow:
-            return KernelResult("authority_refusal", [], pol.reason), None
+            return KernelResult("dispatch_error", [], pol.reason), None
 
         inner = getattr(self.kernel, "_inner", None)
         host = inner if inner is not None else self.kernel
@@ -369,7 +393,7 @@ class Surface:
         wire = as_wire(ops)
         pol2 = self.policy.check_ops(wire)
         if not pol2.allow:
-            return KernelResult("authority_refusal", [], pol2.reason), None
+            return KernelResult("dispatch_error", [], pol2.reason), None
 
         if hasattr(self.kernel, "async_submit"):
             result = await self.kernel.async_submit(
@@ -541,5 +565,5 @@ class Surface:
 
 
 def _has_async(ops: list[dict[str, Any]]) -> bool:
-    # S has no timer/http wire Ops. Continuations are Host-injected.
+    # Declared catalog has no timer/http wire Ops. Continuations are Host-injected.
     return False

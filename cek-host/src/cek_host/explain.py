@@ -201,7 +201,7 @@ _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
         Explanation(
             "require_cap_false",
             "require_cap=False",
-            "Production templates never ship require_cap=False.",
+            "require_cap=False does not skip Cap verify. Submit refuses.",
             "Construct Host(require_cap=True) or Host.production(...).",
             "K1",
         ),
@@ -261,8 +261,8 @@ _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
         Explanation(
             "illegal_op",
             "illegal pair",
-            "Pair is not session-legal (not in S, or absent from the session stamp).",
-            "Emit S, or agree a domain-stdlib and put the pair on the stamp. Pair identity is (ns, name).",
+            "Pair is not in this session stamp (or, with no stamp, not in the default catalog).",
+            "Use a Baseline or UI-seed pair, or agree a domain stdlib and put the pair on the stamp. Identity is (ns, name).",
             "via negativa",
         ),
     ),

@@ -20,7 +20,7 @@ def find(ctx):
     return [search_hits("results", [{"title": "a"}], q="a", stamp=ctx.surface.stamp)]
 ```
 
-S is frozen in core. `search.hits` is a **runtime** stdlib pair — legal only after Host↔Peer agree and the stamp includes it.
+The declared catalog is frozen (Baseline ∪ UI seed). `search.hits` is a **runtime** stdlib pair — projected only after Host↔Peer agree and the session stamp includes it.
 
 Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel` (taught: in-process `cek_peer_pyo3`).
 
@@ -29,5 +29,5 @@ Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel
 Chrome (perception): `s.chrome_pending("btn")` · `s.arm("timer.fired:x", "find")`.
 
 ```bash
-pip install cek-surface          # pulls cek-host>=0.1.2
+pip install cek-surface          # pulls cek-host>=0.1.3
 ```

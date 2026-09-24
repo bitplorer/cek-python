@@ -119,8 +119,11 @@ def _finding_vectors() -> Finding:
     from pathlib import Path
 
     here = Path(__file__).resolve()
+    # Source tree: cek-host/src/cek_host/doctor.py → repo/cek-surface/...
+    # An installed wheel has no pack; that is "not checked", not a pass of the pack.
+    repo = here.parents[2].parent
     candidates = [
-        here.parents[4] / "cek-surface" / "vectors" / "surface_core.json",
+        repo / "cek-surface" / "vectors" / "surface_core.json",
         Path("cek-surface/vectors/surface_core.json"),
     ]
     for p in candidates:
@@ -132,7 +135,11 @@ def _finding_vectors() -> Finding:
             if ver != VECTOR_PACK_VERSION:
                 return Finding(False, "vectors", f"surface pack version {ver}, want {VECTOR_PACK_VERSION}")
             return Finding(True, "vectors", f"surface_core v{ver} ({len(data.get('cases') or [])} cases)")
-    return Finding(True, "vectors", f"pack v{VECTOR_PACK_VERSION} (not on this path)")
+    return Finding(
+        True,
+        "vectors",
+        f"skipped — surface_core v{VECTOR_PACK_VERSION} is not in this install",
+    )
 
 
 def doctor(host: Host | None = None, *, fail: bool = False) -> DoctorReport:

@@ -1,7 +1,7 @@
-"""Host-runtime policy hooks (outer layer — not Cap law).
+"""Surface policy (L6). Not Cap law.
 
 Rate limits, action allow-lists, navigate allow-lists.
-Refuse produces zero ops via Surface/kernel still owning Cap checks.
+A deny is dispatch_error with empty ops. It is not authority_refusal.
 """
 
 from __future__ import annotations

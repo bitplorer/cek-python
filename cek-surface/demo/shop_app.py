@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shop surface: catalog, cart, checkout — wire Ops ⊆ S only."""
+"""Shop surface: catalog, cart, checkout — wire Ops are declared-catalog pairs only."""
 
 from __future__ import annotations
 
@@ -199,33 +199,14 @@ def build_shop(*, carrier_kind: str = "subprocess", **carrier_opts) -> Surface:
 
     @s.on("http.response")
     def on_http(ev, surface: Surface):
-        if ev.get("id") != "search-1":
-            return None
-        items = (ev.get("body") or {}).get("items") or []
-        q = str(surface.store.get("search.pending") or "").lower()
-        local = [it for it in CATALOG.values() if q in it["title"].lower()]
-        merged = local or items
-        surface.store["search.results"] = merged
-        children = [
-            {
-                "tag": "li",
-                "attrs": {"id": f"hit-{it.get('id')}"},
-                "text": f"{it.get('title')} — ${it.get('price')}",
-            }
-            for it in merged
-            if isinstance(it, dict)
-        ]
-        return plan(
-            *set_loading("search", False, f"{len(children)} hits"),
-            Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": children}),
-            Op.log_append(f"Found {len(children)}"),
-        )
+        # Host memory only. Painting results is search.commit under its Cap.
+        if ev.get("id") == "search-1":
+            surface.store["search.http"] = (ev.get("body") or {}).get("items") or []
+        return None
 
     @s.on("http.error")
     def on_err(ev, surface: Surface):
-        return plan(
-            *set_loading("search", False, "Error"),
-            Op.log_append(ev.get("message") or "error", level="error"),
-        )
+        surface.store["search.http_error"] = ev.get("message") or "error"
+        return None
 
     return s

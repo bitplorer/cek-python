@@ -86,7 +86,7 @@ export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
 | Concern | Package |
 |---------|---------|
 | Cap mint / verify / once | **cek-host** |
-| Legal name set S (Python bind) | **cek-host.legal** (re-exported by cek-surface.catalog) |
+| Declared catalog (Python bind) | **cek-host.legal** (`LEGAL_PAIRS`; re-exported by cek-surface.catalog) |
 | Isolated Domain decls | **cek-contract** `domain.rs` |
 | Domain+driver structure gate | **cek-host.structure** / **cek-contract** `structure.rs` |
 | Bundled runtime stdlibs | `cek_surface/stdlibs/*.stdlib.json` (`search`, `demo.echo`) |

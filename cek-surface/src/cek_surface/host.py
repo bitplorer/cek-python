@@ -1,12 +1,15 @@
 """Intent / Result types. Authority is cek_host.Host (D3).
 
 This module is not a Cap machine. Mint / verify / once live on cek_host.
+Result is the Host Result. There is not a second one.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
+
+from cek_host import KernelResult as Result
 
 
 @dataclass
@@ -28,18 +31,7 @@ class Intent:
         )
 
 
-@dataclass
-class Result:
-    kind: str  # ok | authority_refusal | dispatch_error
-    ops: list[dict[str, Any]] = field(default_factory=list)
-    error: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        return {"kind": self.kind, "ops": self.ops, "error": self.error}
-
-    @property
-    def ok(self) -> bool:
-        return self.kind == "ok"
+# Result is cek_host.KernelResult (imported above).
 
 
 @dataclass

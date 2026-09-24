@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_surface import Op, Surface
+from cek_surface.continuation import Continuation
 from cek_surface.ops import (
     clear_form_errors,
     form_errors,
@@ -48,11 +49,27 @@ def build() -> Surface:
     def search_type(ctx):
         q = str(ctx.args.get("q") or "")
         ctx.store["search.pending"] = q
+        cap = ctx.surface.mint("search.commit", once=True, args={"q": q}, seal_args=False)
+        ctx.continuations = [
+            Continuation(
+                event="timer.fired:search-debounce",
+                action="search.commit",
+                cap=cap,
+                args_from={"q": "store:search.pending"},
+            )
+        ]
         return plan(
             Op.kv_set("search.pending", q),
             Op.ui_morph("search-input", {"tag": "input", "attrs": {"id": "search-input"}, "text": q}),
             Op.log_append("search.type", fields={"q": q}),
         )
+
+    @s.action("search.commit")
+    def search_commit(ctx):
+        q = str(ctx.args.get("q") or ctx.store.get("search.pending") or "")
+        if not q.strip():
+            return plan(Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": []}))
+        return plan(Op.log_append("search.debounce", fields={"q": q}))
 
     @s.action("cart.add")
     def cart_add(ctx):
@@ -103,36 +120,19 @@ def build() -> Surface:
 
     @s.on("timer.fired")
     def on_timer(ev, surface: Surface):
-        if ev.get("id") != "search-debounce":
-            return None
-        q = surface.store.get("search.pending") or ""
-        if not str(q).strip():
-            return plan(Op.ui_morph("results", {"tag": "ul", "children": []}))
-        return plan(Op.log_append("search.debounce", fields={"q": q}))
+        # World changes ride the continuation Cap (search.commit), not this hook.
+        return None
 
     @s.on("http.response")
     def on_http(ev, surface: Surface):
-        if ev.get("id") != "search-1":
-            return None
-        items = (ev.get("body") or {}).get("items") or []
-        surface.store["search.results"] = items
-        children = [
-            {"tag": "li", "attrs": {"id": f"hit-{it['id']}"}, "text": it.get("title")}
-            for it in items
-            if isinstance(it, dict)
-        ]
-        return plan(
-            *set_loading("search", False, f"{len(children)} results"),
-            Op.ui_morph("results", {"tag": "ul", "attrs": {"id": "results"}, "children": children}),
-            Op.log_append(f"Found {len(children)}"),
-        )
+        if ev.get("id") == "search-1":
+            surface.store["search.http"] = (ev.get("body") or {}).get("items") or []
+        return None
 
     @s.on("http.error")
     def on_err(ev, surface: Surface):
-        return plan(
-            *set_loading("search", False, "Error"),
-            Op.log_append(ev.get("message") or "error", level="error"),
-        )
+        surface.store["search.http_error"] = ev.get("message") or "error"
+        return None
 
     return s
 

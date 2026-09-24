@@ -1,14 +1,16 @@
-"""Python binding of S — pair identity, not concatenated FQ.
+"""Declared catalog — pair identity, not concatenated FQ.
 
-Must match cek-contract baseline.rs + domain.rs.
-S = Baseline ∪ declared family.scope Domain pairs.
-Undeclared pair is illegal. `ui` + `dom.morph` is not `ui.dom.morph`.
+The law has no noun "S". This module has three sets:
+
+- Baseline: kv set/delete, log append. Never grows.
+- UI seed: ui.dom morph/restore. The document pack this Host and Peer ship.
+- Declared catalog: Baseline ∪ UI seed. Python name: LEGAL_PAIRS.
+
+A session stamp is a different set: only those pairs, for this session.
+Undeclared pair is not in the catalog. `ui` + `dom.morph` is not `ui.dom.morph`.
 
 Host `project_wire(..., unknown="strict")` **raises** `IllegalOp`.
 A non-empty illegal batch must never become `kind=ok` with empty ops.
-
-Session stamp: a closed PairSet. Host and Peer agree on domain
-stdlibs, Host stamps the union of seed pairs, both sides honor only the stamp.
 """
 
 from __future__ import annotations
@@ -32,6 +34,7 @@ DOMAIN_PAIRS: frozenset[tuple[str, str]] = frozenset(
     p for pairs in DOMAIN_PACKS.values() for p in pairs
 )
 LEGAL_PAIRS: frozenset[tuple[str, str]] = BASELINE_PAIRS | DOMAIN_PAIRS
+"""Declared catalog. Not a session stamp. Not the letter S."""
 
 
 class IllegalOp(ValueError):
@@ -72,6 +75,7 @@ def is_domain_pair(ns: str, name: str) -> bool:
 
 
 def is_legal(ns: str, name: str) -> bool:
+    """True when the pair is in the declared catalog. Not "lawful for this session"."""
     return name_is_token(name) and (ns, name) in LEGAL_PAIRS
 
 
@@ -106,10 +110,10 @@ def pair_from_fq(fq: str) -> tuple[str, str] | None:
 
 
 def default_stamp_pairs() -> frozenset[tuple[str, str]]:
-    """Fallback stamp when none was agreed.
+    """Stamp installed when nobody agreed one yet.
 
-    open  → full S (transitional)
-    strict → Baseline only (fail-closed)
+    open  → declared catalog (Baseline ∪ UI seed). Bundled document peer.
+    strict → Baseline only. Unknown peer.
     """
     if is_strict():
         return BASELINE_PAIRS
@@ -123,7 +127,7 @@ def normalize_stamp(
 ) -> frozenset[tuple[str, str]]:
     """Close a stamp.
 
-    Core S pairs always allowed. Structure-valid extension pairs
+    Core catalog pairs always allowed. Structure-valid extension pairs
     may enter the stamp after Host↔Peer agreement (`allow_extension=True`).
     If nothing valid remains, fall back to default_stamp_pairs().
     """
@@ -158,10 +162,13 @@ def in_stamp(stamp: frozenset[tuple[str, str]], ns: str, name: str) -> bool:
 
 
 def session_legal(ns: str, name: str, stamp: frozenset[tuple[str, str]] | None) -> bool:
-    """Session legality: stamp membership if a stamp exists, else core S."""
+    """Stamp membership when this session has a stamp.
+
+    No stamp: catalog mode. open → declared catalog. strict → Baseline only.
+    """
     if stamp is not None:
         return in_stamp(stamp, ns, name)
-    return is_legal(ns, name)
+    return (ns, name) in default_stamp_pairs()
 
 
 def project_wire(
@@ -173,7 +180,7 @@ def project_wire(
     """Keep session-legal pairs. Strict unknown raises `IllegalOp` (never silent ok+[]).
 
     With a stamp: membership in the stamp is the only legality (via negativa).
-    Without a stamp: core S only.
+    Without a stamp: default_stamp_pairs() (declared catalog, or Baseline in strict).
     """
     closed = normalize_stamp(stamp) if stamp is not None else None
     out: list[dict[str, Any]] = []
@@ -194,7 +201,7 @@ def project(
     unknown: UnknownMode = "strict",
     stamp: Iterable[tuple[str, str] | dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """S ∩ profile packs. Declared-but-not-in-profile is skipped. Undeclared: raise or skip."""
+    """Declared catalog ∩ profile packs. Declared-but-not-in-profile is skipped. Undeclared: raise or skip."""
     allowed = set(packs) if packs is not None else set(DOMAIN_PACKS)
     closed = normalize_stamp(stamp) if stamp is not None else None
     out: list[dict[str, Any]] = []
@@ -216,7 +223,7 @@ def project(
             continue
         if pack is not None:
             continue
-        # Stamped extension (not in core S)
+        # Stamped extension (not in the declared catalog)
         if closed is not None and in_stamp(closed, ns, name):
             out.append(op)
             continue

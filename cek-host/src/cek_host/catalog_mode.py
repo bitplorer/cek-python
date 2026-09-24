@@ -1,10 +1,14 @@
-"""Catalog mode — open (transitional) vs strict (fail-closed destination).
+"""Catalog mode — which pairs a missing session stamp stands for.
 
 CEK_CATALOG_MODE=open|strict  (default: open)
 
-Under strict mode a missing/malformed session stamp falls back to Baseline-only.
-Under open mode a missing stamp uses the full declared S (Baseline ∪ Domain seed).
-A received stamp is always the only legal pair set for the session.
+The law noun is Baseline or profile, never "S".
+The declared catalog is Baseline ∪ the UI seed (five pairs). It is what this
+Host and the bundled document Peer both ship.
+
+open:   no stamp yet → declared catalog, so ui.dom morph works before a handshake.
+strict: no stamp yet → Baseline only. Use this for a peer that has not been identified.
+A stamp that was actually received is the only legal set for that session.
 """
 
 from __future__ import annotations

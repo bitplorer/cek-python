@@ -84,8 +84,15 @@ class Host:
         ed25519_trust: list[bytes] | None = None,
         accepted_generations: list[str] | None = None,
     ) -> None:
-        if mode not in ("demo", "adapt", "require"):
-            raise ValueError("Host.mode must be demo|adapt|require")
+        # Deployment, not Channel's cek mode. adapt/require are old spellings
+        # of production. They do not choose a Cap machine.
+        if mode in ("adapt", "require"):
+            mode = "production"
+        if mode not in ("demo", "production"):
+            raise ValueError(
+                "Host.mode must be demo|production "
+                "(adapt and require are old spellings of production, not Channel cek mode)"
+            )
         self.secret = secret
         self.require_cap = require_cap
         self.mode = mode
@@ -121,6 +128,7 @@ class Host:
         once: OnceBackend | None = None,
         **kw: Any,
     ) -> Host:
+        """Lab host. Not Channel cek=adapt. Stored mode is production."""
         kw.setdefault("mode", "adapt")
         return cls(secret=secret, once=once or MemoryOnceBackend(), **kw)
 
@@ -170,7 +178,7 @@ class Host:
             once=once,
             idem=idem,
             lineage=lineage,
-            mode="require",
+            mode="production",
             allow_memory_stores=allow_memory_stores,
             require_cap=True,
             ttl_s=ttl_s,
@@ -272,6 +280,8 @@ class Host:
         args = dict(args or {})
 
         # 1. Cap verify (no once). Law-gen + Ed25519 are Host policy.
+        # Shared world (Ops a Peer will apply) requires a verified Cap.
+        # require_cap=False does not skip that. production() refuses the flag.
         pre = self._verify(action, args, cap, consume_once=False, check_once=False)
         if not pre.ok:
             return pre
@@ -423,21 +433,22 @@ class Host:
         consume_once: bool,
         check_once: bool = True,
     ) -> KernelResult:
+        # Shared world (Ops a Peer will apply) always needs a verified Cap.
+        # require_cap=False is not a bypass. production() already refuses it.
         if not action:
             return _refuse("empty action")
-        if self.require_cap or cap:
-            if not cap:
-                return _refuse("cap required")
-            try:
-                claims = self.caps.verify(
-                    cap, action, args, consume_once=consume_once, check_once=check_once
-                )
-                check_generation(claims, self.accepted_generations)
-                check_ed25519(claims, seed=self._ed_seed, trust=self._ed_trust)
-            except CapError as e:
-                return _refuse(str(e))
-        else:
-            claims = {}
+        if not self.require_cap:
+            return _refuse("require_cap=False cannot authorize shared-world ops")
+        if not cap:
+            return _refuse("cap required")
+        try:
+            claims = self.caps.verify(
+                cap, action, args, consume_once=consume_once, check_once=check_once
+            )
+            check_generation(claims, self.accepted_generations)
+            check_ed25519(claims, seed=self._ed_seed, trust=self._ed_trust)
+        except CapError as e:
+            return _refuse(str(e))
         r = KernelResult("ok", [], None)
         r._claims = claims  # type: ignore[attr-defined]
         return r
@@ -449,19 +460,42 @@ class Host:
         activity_id: str | None,
         idempotency_key: str | None,
     ) -> KernelResult:
+        # Refuse before any consume. A bad activity id must not burn once
+        # or store an idempotent success (A5).
+        if activity_id is not None and not str(activity_id).strip():
+            return KernelResult("dispatch_error", [], "empty activity_id")
         try:
             ops = resolve_ops(bound.action, bound.args, project_ops, self.stamp)
         except ValueError as e:
             # Dispatch miss: once-Cap is NOT committed.
             return KernelResult("dispatch_error", [], str(e))
 
-        digest = result_digest("ok", ops, None)
         result = KernelResult("ok", ops, None)
+
+        # Lineage before once-commit and before idempotency is stored as ok.
+        # A failed lineage write refuses with the Cap still usable.
+        if activity_id is not None:
+            inverse = inverse_ops(ops)
+            rclass = reverse_class_for(ops)
+            try:
+                self._lineage.commit(
+                    str(bound.claims.get("jti") or ""),
+                    activity_id,
+                    bound.action,
+                    ops,
+                    rclass,
+                    inverse,
+                )
+            except LineageError as e:
+                return KernelResult("dispatch_error", [], str(e))
+            except StoreDown as e:
+                # Store down is an authority refusal (CORE 20), same as once/idem.
+                return _refuse(str(e))
 
         if idempotency_key is not None:
             try:
                 replay = self._idem.put_or_check(
-                    str(idempotency_key), digest, result.to_dict()
+                    str(idempotency_key), result.digest, result.to_dict()
                 )
             except IdemConflict as e:
                 return _refuse(str(e))
@@ -479,24 +513,5 @@ class Host:
                 self.caps.commit_once(bound.claims)
             except CapError as e:
                 return _refuse(str(e))
-
-        if activity_id is not None:
-            if not str(activity_id).strip():
-                return KernelResult("dispatch_error", [], "empty activity_id")
-            inverse = inverse_ops(ops)
-            rclass = reverse_class_for(ops)
-            try:
-                self._lineage.commit(
-                    str(bound.claims.get("jti") or ""),
-                    activity_id,
-                    bound.action,
-                    ops,
-                    rclass,
-                    inverse,
-                )
-            except LineageError as e:
-                return KernelResult("dispatch_error", [], str(e))
-            except StoreDown as e:
-                return KernelResult("dispatch_error", [], str(e))
 
         return result

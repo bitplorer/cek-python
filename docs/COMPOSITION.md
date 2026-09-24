@@ -39,7 +39,7 @@ def go(ctx):
 ```
 
 - `plan(*ops)` concatenates lists of Ops.
-- Macros (`navigate_to`, `signal_set`, `set_loading`, `form_errors`) expand to **S only**.
+- Macros (`navigate_to`, `signal_set`, `set_loading`, `form_errors`) expand to **declared-catalog pairs only**.
 - `search_hits` / `search_clear` are **runtime** pairs. Call `load_bundled()` and `use_stdlibs(["baseline","ui","search"])` first; pass `stamp=ctx.surface.stamp`.
 - `Surface.arm(...)` pre-mints a continuation Cap. Peer fills slots; Host verifies again.
 

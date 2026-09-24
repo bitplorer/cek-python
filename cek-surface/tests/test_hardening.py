@@ -138,6 +138,21 @@ def test_doctor_production_clean():
         assert ids["require_cap"].ok
 
 
+def test_require_cap_false_does_not_authorize():
+    h = Host(secret=SECRET, require_cap=False)
+    r = h.submit(
+        action="kv.write",
+        args={"key": "k", "value": 1},
+        cap=None,
+    )
+    assert r.kind == "authority_refusal" and r.ops == []
+    assert "require_cap" in (r.error or "")
+    cap = h.mint("kv.write")
+    again = h.submit(action="kv.write", args={"key": "k", "value": 1}, cap=cap)
+    assert again.kind == "authority_refusal"
+    assert again.ops == []
+
+
 if __name__ == "__main__":
     test_production_refuses_default_secret()
     test_production_refuses_memory_once()
@@ -149,4 +164,5 @@ if __name__ == "__main__":
     test_hmac_tamper_zero_ops()
     test_doctor_flags_demo_secret()
     test_doctor_production_clean()
+    test_require_cap_false_does_not_authorize()
     print("hardening ok")

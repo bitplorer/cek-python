@@ -1,6 +1,6 @@
 """Domain stdlibs — runtime-level domain expansion.
 
-Core seeds: baseline + ui (S). Additional stdlibs load after structure
+Core seeds: baseline + ui (the declared catalog). Additional stdlibs load after structure
 validation. Host and Peer agree on names+versions; Host stamps the union.
 Via negativa: absent from stamp = illegal.
 """
@@ -129,7 +129,7 @@ def agree(
 
 
 def stamp_from_agreement(agreed: Iterable[DomainStdlib]) -> frozenset[tuple[str, str]]:
-    """Union seed pairs of agreed domain-stdlibs (core S ∪ extensions)."""
+    """Union seed pairs of agreed domain-stdlibs (declared catalog ∪ extensions)."""
     out: set[tuple[str, str]] = set()
     for d in agreed:
         for ns, name in d.seed_pairs:
@@ -144,7 +144,7 @@ def stamp_from_agreement(agreed: Iterable[DomainStdlib]) -> frozenset[tuple[str,
 
 
 def default_agreement_stamp() -> frozenset[tuple[str, str]]:
-    """Default agreement {baseline, ui} → core S."""
+    """Default agreement {baseline, ui} → the declared catalog."""
     return stamp_from_agreement(agree(["baseline", "ui"], ["baseline", "ui"]))
 
 
