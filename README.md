@@ -19,7 +19,7 @@ python -m cek_host create-app ./hello-cek && python ./hello-cek/app.py
 
 **Start here:** [START.md](./START.md)
 
-Tree **0.2.0**. `cek-host` and `cek-surface` publish together. Versions before 0.2.0 teach `cek_host.legal`. Do not install them. They are not yanked on the index yet. Mark them on the PyPI release pages. Until that mark lands, pip can still select those wheels when 0.2.0 is outside the specifier. See [CHANGELOG.md](./CHANGELOG.md).
+Tree **0.2.0**. `cek-host` and `cek-surface` publish together. Versions before 0.2.0 teach `cek_host.legal`. Do not install them. `0.1.0`, `0.1.2`, and `0.1.3` are yanked. pip will not select them unless the version is pinned exactly. An exact pin still installs that old law. See [CHANGELOG.md](./CHANGELOG.md).
 
 ## Shop
 

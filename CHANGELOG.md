@@ -6,9 +6,8 @@ Breaking. `cek-host` and `cek-surface` publish together.
 
 Versions before 0.2.0 (`0.1.0`, `0.1.2`, `0.1.3`) teach `cek_host.legal` and the noun "S".
 They are not this law. Do not install them.
-PyPI has no yank API. Mark `0.1.0`, `0.1.2`, and `0.1.3` yanked on each project's release page.
-Until that mark is on the index, pip can still select those wheels when 0.2.0 does not match the specifier.
-An exact pin (`==0.1.3`) installs that old law even after the yank. Do not use it.
+Those releases are yanked on PyPI. pip will not select them unless the version is pinned exactly.
+An exact pin (`==0.1.3`) still installs that old law. Do not use it.
 
 ### Removed
 
