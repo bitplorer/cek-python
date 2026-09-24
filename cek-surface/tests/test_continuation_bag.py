@@ -73,3 +73,28 @@ def test_drain_does_not_republish_sibling_once_cap():
         assert [c.event for c in s.last_continuations] == ["timer.fired:b"]
     finally:
         s.close()
+
+
+def test_idempotent_replay_does_not_mint_another_cap():
+    s = _surface()
+    try:
+        @s.action("tick")
+        def tick(ctx):
+            ctx.store["log"] = list(ctx.store.get("log") or []) + ["x"]
+            ctx.continuations = [s.mint_continuation("timer.fired:new", "new.act")]
+            return [Op.kv_set("k", 1)]
+
+        cap = s.mint("tick", once=True)
+        first = s.submit("tick", {"k": 1}, cap=cap, idempotency_key="same", drain_async=False)
+        assert first["result"]["kind"] == "ok"
+        assert len(first["continuations"]) == 1
+        assert s.store["log"] == ["x"]
+
+        again = s.submit("tick", {"k": 1}, cap=cap, idempotency_key="same", drain_async=False)
+        assert again["result"]["kind"] == "ok"
+        assert again["continuations"] == []
+        assert again["result"]["ops"] == first["result"]["ops"]
+        assert s.store["log"] == ["x"]
+        assert [c.event for c in s.last_continuations] == ["timer.fired:new"]
+    finally:
+        s.close()

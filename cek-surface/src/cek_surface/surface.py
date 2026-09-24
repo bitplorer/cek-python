@@ -342,7 +342,7 @@ class Surface:
             project_ops=wire,
             idempotency_key=idempotency_key,
         )
-        if not result.ok:
+        if not result.ok or getattr(result, "_replayed", False):
             self._restore_store(before)
             return result, None
         return result, getattr(ctx, "continuations", None)
@@ -430,7 +430,7 @@ class Surface:
                 project_ops=wire,
                 idempotency_key=idempotency_key,
             )
-        if not result.ok:
+        if not result.ok or getattr(result, "_replayed", False):
             self._restore_store(before)
             return result, None
         return result, getattr(ctx, "continuations", None)

@@ -116,7 +116,6 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
 
   function applyResult(result) {
     const receipt = { landed: [], failed: [] };
-    if (result?.continuations) lastContinuations = result.continuations;
     if (!result || result.kind !== "ok") return receipt;
     ir.beforeAuthorityApply();
     for (const op of result.ops || []) {
@@ -131,14 +130,23 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
   }
 
   function onMessage(msg) {
-    if (msg.continuations) lastContinuations = msg.continuations;
     if (msg.type === "stamp") {
       setStamp(msg.pairs || []);
       if (typeof send === "function") send({ type: "stamp_ack", pairs: msg.pairs || [] });
     } else if (msg.type === "apply") {
       const receipt = applyResult(msg.result);
       if (msg.result?.kind === "ok") {
-        armContinuations(msg.continuations || msg.result?.continuations || lastContinuations);
+        const minted = Array.isArray(msg.continuations)
+          ? msg.continuations
+          : Array.isArray(msg.result?.continuations)
+            ? msg.result.continuations
+            : null;
+        // An empty list is "this handling minted nothing". Do not re-arm
+        // the previous once-Cap. A missing field leaves the armed timer.
+        if (minted !== null) {
+          lastContinuations = minted;
+          armContinuations(minted);
+        }
       }
       if (typeof send === "function") send({ type: "applied", receipt, world: snapshot() });
     } else if (msg.type === "perception") {
