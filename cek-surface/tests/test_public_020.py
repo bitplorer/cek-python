@@ -52,8 +52,10 @@ def test_pre_020_is_documented_as_yanked() -> None:
     readme = (ROOT.parent / "README.md").read_text(encoding="utf-8")
     assert "stays on PyPI" not in changelog
     assert "yanked" in changelog.lower()
+    assert "not yanked" not in changelog.lower()
     assert "0.1.0" in changelog and "0.1.2" in changelog and "0.1.3" in changelog
-    assert "yanked" in readme.lower()
+    assert "are yanked" in readme.lower()
+    assert "not yanked" not in readme.lower()
     assert "does not install" not in readme
 
 
