@@ -1,0 +1,24 @@
+# One-shot. Marks cek-host and cek-surface 0.1.0, 0.1.2, and 0.1.3 yanked.
+# Trusted Publishing cannot yank. The owner token is the Actions secret
+# PYPI_API_TOKEN. Delete that token on PyPI after a green run.
+
+name: yank-pre-020
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  yank:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: yank releases before 0.2.0
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: python scripts/yank_pre_020.py
