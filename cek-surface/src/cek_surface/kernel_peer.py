@@ -1,17 +1,12 @@
-"""Peer wrap — apply via the in-process Rust peer-kernel (`cek_peer_pyo3`).
+"""Peer wrap — apply via the in-process Rust peer (`cek_peer_pyo3`).
 
-Taught path: `carrier_kind="kernel"` → PyO3 `PeerAbi`
-construct → bind → apply → release. Same JSON as wasm / `cek apply`
-(`{ result, profile, unknown_op_policy }` → `{ receipt, kv, ui, log }`).
+`carrier_kind="kernel"` loads PyO3 `PeerAbi`: construct, bind, apply, release.
+Same JSON as wasm (`{ result, profile, unknown_op_policy }` → `{ receipt, kv, ui, log }`).
 
 Does not reimplement apply. No mint. Not a Python Peer kernel.
 
-Leftover (untaught, until absence lock): subprocess `cek apply` via
-`CEK_KERNEL_CARRIER=subprocess` or `backend="subprocess"`. Do not teach
-that door as an equal default.
-
-Install the taught module from cek-runtime (same crate; no second wheel
-story). See `PYO3_INSTALL`.
+`backend="subprocess"` shells `cek apply`. That is not the default.
+Do not treat it as a second peer.
 """
 
 from __future__ import annotations
@@ -24,11 +19,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# Taught install — matches cek-runtime ports/cek-peer-pyo3 (SHA 5e58cca).
-PYO3_INSTALL = """cek_peer_pyo3 is not installed (taught kernel carrier).
+# Install matches cek-runtime ports/cek-peer-pyo3 (SHA 5e58cca).
+PYO3_INSTALL = """cek_peer_pyo3 is not installed (in-process peer).
 
 Install from bitplorer/cek-runtime (crates/cek-peer-pyo3 + ports/cek-peer-pyo3).
-Do not invent a second packaging story — cargo build of that crate is the door:
+cargo build of that crate is the install:
 
   git clone https://github.com/bitplorer/cek-runtime && cd cek-runtime
   git checkout 5e58cca7ea1f59e2b73ebfc49222edc5eb81544a
@@ -42,7 +37,7 @@ or put a copy named cek_peer_pyo3.so on PYTHONPATH and `import cek_peer_pyo3`.
 
 See cek-runtime ports/cek-peer-pyo3/README.md.
 
-Leftover (untaught): CEK_KERNEL_CARRIER=subprocess uses `cek apply`.
+CEK_KERNEL_CARRIER=subprocess shells `cek apply`. That is not the default.
 """
 
 _LOADED_MOD: Any | None = None
@@ -58,19 +53,19 @@ _CDYLIB_NAMES = (
 
 
 def reset_pyo3_cache() -> None:
-    """Drop the cached extension (tests). Not a kernel door."""
+    """Drop the cached extension (tests)."""
     global _LOADED_MOD
     _LOADED_MOD = None
 
 
-def _taught_backend(explicit: str | None) -> str:
+def _kernel_backend(explicit: str | None) -> str:
     raw = (explicit or os.environ.get("CEK_KERNEL_CARRIER") or "pyo3").strip().lower()
     if raw in ("subprocess", "cek-apply", "cli"):
         return "subprocess"
-    if raw in ("pyo3", "cek_peer_pyo3", "inproc", "taught", ""):
+    if raw in ("pyo3", "cek_peer_pyo3", "inproc", ""):
         return "pyo3"
     raise ValueError(
-        f"unknown kernel carrier backend: {raw!r} (taught: pyo3; leftover: subprocess)"
+        f"unknown kernel carrier backend: {raw!r} (pyo3, or subprocess for the cek binary)"
     )
 
 
@@ -85,7 +80,7 @@ def _runtime_roots() -> list[Path]:
 
 
 def find_cek_peer_pyo3() -> str | None:
-    """Locate the taught cdylib. None if the module is not installed."""
+    """Locate the in-process cdylib. None if the module is not installed."""
     env = os.environ.get("CEK_PEER_PYO3")
     if env and Path(env).is_file():
         return env
@@ -114,13 +109,13 @@ def _load_cdylib(path: str) -> Any:
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     if not hasattr(mod, "PeerAbi"):
-        raise ImportError("cek_peer_pyo3 is missing PeerAbi — not the taught ABI")
+        raise ImportError("cek_peer_pyo3 is missing PeerAbi — not the in-process ABI")
     sys.modules.setdefault("cek_peer_pyo3", mod)
     return mod
 
 
 def load_cek_peer_pyo3() -> Any:
-    """Import the taught apply-only module. Fail closed with install text.
+    """Import the in-process apply module. Fail closed with install text.
 
     Order: `CEK_PEER_PYO3` (documented install door), then `import`, then
     sibling `cek-runtime/target/{release,debug}` cdylib.
@@ -179,21 +174,21 @@ def _apply_via_pyo3(
     return resp
 
 
-def _apply_via_subprocess_leftover(
+def _apply_via_subprocess(
     result: dict[str, Any],
     *,
     profile: str,
     unknown_op_policy: str,
     bin_path: str | None,
 ) -> dict[str, Any]:
-    """Untaught leftover door. Named so it cannot be mistaken for the default."""
+    """Shell `cek apply`. Not the default. The default is cek_peer_pyo3."""
     from cek_host.rust_wrap import find_cek_bin
 
     exe = bin_path or find_cek_bin()
     if not exe:
         raise FileNotFoundError(
-            "leftover kernel carrier needs the cek binary "
-            "(build cek-cli or set CEK_BIN). Taught path is cek_peer_pyo3."
+            "subprocess carrier needs the cek binary "
+            "(build cek-cli or set CEK_BIN). The in-process peer is cek_peer_pyo3."
         )
     req = _apply_request(result, profile=profile, unknown_op_policy=unknown_op_policy)
     proc = subprocess.run(
@@ -216,10 +211,10 @@ def apply_via_kernel(
     bin_path: str | None = None,
     backend: str | None = None,
 ) -> dict[str, Any]:
-    """Call the Rust peer-kernel. Taught: in-process PyO3. Raises if missing."""
-    kind = _taught_backend(backend)
+    """Call the Rust peer. Default is in-process PyO3. Raises if that module is missing."""
+    kind = _kernel_backend(backend)
     if kind == "subprocess":
-        return _apply_via_subprocess_leftover(
+        return _apply_via_subprocess(
             result,
             profile=profile,
             unknown_op_policy=unknown_op_policy,
@@ -227,8 +222,8 @@ def apply_via_kernel(
         )
     if bin_path:
         raise ValueError(
-            "bin_path is leftover subprocess only; taught kernel uses cek_peer_pyo3. "
-            "Pass backend='subprocess' to use the untaught cek apply door."
+            "bin_path is only for backend='subprocess'. The in-process peer is cek_peer_pyo3. "
+            "Pass backend='subprocess' to shell `cek apply`."
         )
     mod = load_cek_peer_pyo3()
     abi = mod.PeerAbi.construct()
@@ -242,7 +237,7 @@ def apply_via_kernel(
 
 
 class KernelPeerCarrier:
-    """Carrier that wraps the Rust Peer kernel (taught: PyO3). No mint."""
+    """Carrier that wraps the Rust Peer (in-process PyO3). No mint."""
 
     name = "kernel"
 
@@ -255,15 +250,15 @@ class KernelPeerCarrier:
     ) -> None:
         self.profile = profile
         self.bin_path = bin_path
-        self.backend = _taught_backend(backend)
+        self.backend = _kernel_backend(backend)
         self._last_stamp: list[dict[str, str]] = []
         self._abi: Any | None = None
         if self.backend == "subprocess":
             return
         if bin_path:
             raise ValueError(
-                "bin_path is leftover subprocess only; taught kernel uses cek_peer_pyo3. "
-                "Pass backend='subprocess' to use the untaught cek apply door."
+                "bin_path is only for backend='subprocess'. The in-process peer is cek_peer_pyo3. "
+                "Pass backend='subprocess' to shell `cek apply`."
             )
         mod = load_cek_peer_pyo3()
         abi = mod.PeerAbi.construct()
@@ -276,7 +271,7 @@ class KernelPeerCarrier:
 
     def apply(self, result: dict[str, Any]) -> dict[str, Any]:
         if self.backend == "subprocess":
-            resp = _apply_via_subprocess_leftover(
+            resp = _apply_via_subprocess(
                 result,
                 profile=self.profile,
                 unknown_op_policy="skip",

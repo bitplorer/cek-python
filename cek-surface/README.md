@@ -22,9 +22,9 @@ def find(ctx):
 
 The declared catalog is frozen (Baseline ∪ UI seed). `search.hits` is a **runtime** stdlib pair — projected only after Host↔Peer agree and the session stamp includes it.
 
-Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel` (taught: in-process `cek_peer_pyo3`).
+Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel` (in-process `cek_peer_pyo3`).
 
-**Taught kernel:** `Surface(carrier_kind="kernel")` → `cek_peer_pyo3.PeerAbi` construct → bind → apply → release. Install from [cek-runtime](https://github.com/bitplorer/cek-runtime) (`cargo build -p cek-peer-pyo3 --features extension-module --release`; `export CEK_PEER_PYO3=.../libcek_peer_pyo3.so`). Leftover (untaught): `CEK_KERNEL_CARRIER=subprocess` still shells `cek apply`.
+**In-process peer:** `Surface(carrier_kind="kernel")` → `cek_peer_pyo3.PeerAbi` construct → bind → apply → release. Install from [cek-runtime](https://github.com/bitplorer/cek-runtime) (`cargo build -p cek-peer-pyo3 --features extension-module --release`; `export CEK_PEER_PYO3=.../libcek_peer_pyo3.so`). `CEK_KERNEL_CARRIER=subprocess` shells `cek apply`. That is not the default.
 
 Perception (not shared world): `s.mark_pending("btn")` · `s.mint_continuation("timer.fired:x", "find")`.
 

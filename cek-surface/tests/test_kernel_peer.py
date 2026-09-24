@@ -172,7 +172,7 @@ def test_taught_path_fails_closed_without_pyo3():
             # None in sys.modules → import raises ImportError
             try:
                 load_cek_peer_pyo3()
-                raise AssertionError("taught path must fail closed")
+                raise AssertionError("in-process peer must fail closed")
             except ImportError as e:
                 msg = str(e)
                 assert "cek_peer_pyo3" in msg
@@ -183,7 +183,7 @@ def test_taught_path_fails_closed_without_pyo3():
                 assert PYO3_INSTALL[:40] in msg
             try:
                 KernelPeerCarrier()
-                raise AssertionError("open taught carrier must fail closed")
+                raise AssertionError("kernel carrier must fail closed")
             except ImportError as e:
                 assert "cek_peer_pyo3" in str(e)
             try:
@@ -204,15 +204,15 @@ def test_bin_path_is_leftover_only():
     try:
         try:
             apply_via_kernel({"kind": "ok", "ops": []}, bin_path="/tmp/cek")
-            raise AssertionError("bin_path without leftover backend must raise")
+            raise AssertionError("bin_path without subprocess backend must raise")
         except ValueError as e:
-            assert "leftover" in str(e).lower()
             assert "subprocess" in str(e)
+            assert "cek_peer_pyo3" in str(e)
         try:
             KernelPeerCarrier(bin_path="/tmp/cek")
-            raise AssertionError("bin_path without leftover backend must raise")
+            raise AssertionError("bin_path without subprocess backend must raise")
         except ValueError as e:
-            assert "leftover" in str(e).lower()
+            assert "subprocess" in str(e)
     finally:
         if carrier is not None:
             os.environ["CEK_KERNEL_CARRIER"] = carrier
@@ -278,10 +278,13 @@ def test_kernel_peer_source_has_no_mint():
 
 def test_taught_default_is_not_subprocess():
     text = (ROOT / "src" / "cek_surface" / "kernel_peer.py").read_text(encoding="utf-8")
-    assert "Taught path" in text
-    assert "Leftover (untaught" in text
+    assert "in-process" in text
+    assert "backend=\"subprocess\"" in text or "backend='subprocess'" in text
     assert '("pyo3"' in text or '"pyo3"' in text
-    assert '_apply_via_subprocess_leftover' in text
+    assert "_apply_via_subprocess" in text
+    assert "taught" not in text
+    assert "leftover" not in text
+    assert "untaught" not in text
 
 
 def _have_pyo3() -> bool:

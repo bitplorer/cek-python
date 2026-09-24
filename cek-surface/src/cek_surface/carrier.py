@@ -2,7 +2,7 @@
 
 Default: subprocess NDJSON (zero config, demos/tests).
 Opt-in: memory (in-process mock), websocket (when websockets installed),
-kernel (taught: in-process `cek_peer_pyo3`; leftover: `cek apply`).
+kernel (in-process `cek_peer_pyo3`; `backend="subprocess"` shells `cek apply`).
 
 Carriers are transport only — not kernels. They move:
   apply Result, perception messages, async events, done.
@@ -269,7 +269,7 @@ def open_carrier(kind: str = "subprocess", **opts: Any) -> Carrier:
       subprocess | ndjson  → SubprocessNdjsonCarrier (default Node peer.mjs)
       memory               → MemoryCarrier (tests)
       websocket | ws       → WebSocketCarrier (opt-in, needs websockets)
-      kernel               → KernelPeerCarrier — taught: in-process
+      kernel               → KernelPeerCarrier — in-process
                              `cek_peer_pyo3` (construct→bind→apply→release).
                              Leftover: backend="subprocess" / CEK_KERNEL_CARRIER=subprocess
     """

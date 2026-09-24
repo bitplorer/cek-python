@@ -69,7 +69,7 @@ Optional carriers:
 Surface()  # default subprocess NDJSON peer (Node)
 Surface(carrier_kind="memory")
 Surface(carrier_kind="websocket", carrier_opts={"url": "ws://..."})  # pip install cek-surface[ws]
-Surface(carrier_kind="kernel")  # taught: in-process cek_peer_pyo3
+Surface(carrier_kind="kernel")  # in-process cek_peer_pyo3
 ```
 
 Taught kernel carrier (from a sibling [cek-runtime](https://github.com/bitplorer/cek-runtime) checkout — same crate, no second wheel):
@@ -78,7 +78,7 @@ Taught kernel carrier (from a sibling [cek-runtime](https://github.com/bitplorer
 cargo build -p cek-peer-pyo3 --features extension-module --release \
   --manifest-path ../cek-runtime/Cargo.toml
 export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
-# leftover (untaught): CEK_KERNEL_CARRIER=subprocess
+# not the default: CEK_KERNEL_CARRIER=subprocess
 ```
 
 ## What goes where
@@ -91,7 +91,7 @@ export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
 | Domain+driver structure gate | **cek-host.structure** / **cek-contract** `structure.rs` |
 | Bundled runtime stdlibs | `cek_surface/stdlibs/*.stdlib.json` (`search`, `demo.echo`) |
 | Stdlib loader + agreement | **cek-surface.domain_loader** + `agreement.negotiate` |
-| Peer wrap (opt-in) | `carrier_kind="kernel"` → **taught** in-process `cek_peer_pyo3` (same `cek-peer-kernel`). Leftover: `CEK_KERNEL_CARRIER=subprocess` → `cek apply` |
+| Peer wrap (opt-in) | `carrier_kind="kernel"` → in-process `cek_peer_pyo3` (same `cek-peer-kernel`). `CEK_KERNEL_CARRIER=subprocess` → `cek apply`, not the default |
 | Host wrap (opt-in) | **cek_host.rust_wrap.RustHostKernel** → `cek host-json` |
 | Action handlers, Op constructors | **cek-surface** |
 | Peer apply drivers, Peer IR | **cek-surface/js** (`apply_s.mjs` honors stamp) |

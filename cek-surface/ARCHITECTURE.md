@@ -46,13 +46,13 @@ Plug-and-play, **opt-in**, not a kernel.
 | **subprocess** (default) | `SubprocessNdjsonCarrier` | demos, CI, zero deps (Node `peer.mjs`) |
 | **memory** | `MemoryCarrier` | unit tests, same-process |
 | **websocket** | `WebSocketCarrier` | production browser Peer (`pip install websockets`) |
-| **kernel** | `KernelPeerCarrier` | **taught:** in-process `cek_peer_pyo3` (`PeerAbi` construct → bind → apply → release). Same JSON as wasm. Not a Python Peer kernel. |
+| **kernel** | `KernelPeerCarrier` | In-process `cek_peer_pyo3` (`PeerAbi` construct → bind → apply → release). Same JSON as wasm. Not a Python Peer. |
 
 **Taught kernel sentence:** `open_carrier("kernel")` applies through the installed `cek_peer_pyo3` module (Rust `cek-peer-kernel` via PyO3). Fail closed if that module is missing.
 
-**Leftover (untaught):** subprocess `cek apply` via `CEK_KERNEL_CARRIER=subprocess` or `open_carrier("kernel", backend="subprocess")`. Named leftover until absence lock — not a second taught default.
+**Not the default:** subprocess `cek apply` via `CEK_KERNEL_CARRIER=subprocess` or `open_carrier("kernel", backend="subprocess")`. One peer. Not a second decider.
 
-Install the taught module from [cek-runtime](https://github.com/bitplorer/cek-runtime) (`ports/cek-peer-pyo3`): `cargo build -p cek-peer-pyo3 --features extension-module --release`, then `export CEK_PEER_PYO3=$PWD/target/release/libcek_peer_pyo3.so`.
+Install the module from [cek-runtime](https://github.com/bitplorer/cek-runtime) (`ports/cek-peer-pyo3`): `cargo build -p cek-peer-pyo3 --features extension-module --release`, then `export CEK_PEER_PYO3=$PWD/target/release/libcek_peer_pyo3.so`.
 
 ```python
 from cek_surface import Surface, open_carrier
@@ -61,7 +61,7 @@ s = Surface()  # default subprocess peer.mjs
 
 s = Surface(carrier_kind="memory")
 s = Surface(carrier_kind="websocket", carrier_opts={"url": "ws://127.0.0.1:8765"})
-s = Surface(carrier_kind="kernel")  # taught: cek_peer_pyo3
+s = Surface(carrier_kind="kernel")  # in-process cek_peer_pyo3
 ```
 
 Message shapes are identical across carriers: `apply` / `perception` / `events` / `done`.
