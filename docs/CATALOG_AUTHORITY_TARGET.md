@@ -6,7 +6,11 @@
 
 > Core signs stable contracts, freezes Baseline, and enforces consistent domain+driver structure; domain growth lives in runtime domain stdlibs; Host and Peer agree on the domain stdlibs they share; Host stamps the closed pair set; both sides honor only that stamp.
 
-## Glossary (use these names only)
+The letter **S** was a nickname for the declared catalog. It was not "shared world".
+
+**Shared world** (CORE 14) is any effect a Peer applies: `Result.ops`. That needs a verified Cap. It is not a list of five names.
+
+**Declared catalog** is which `(ns, name)` pairs this build knows. **Session stamp** is which of those this session may project.
 
 | Name | Meaning | Who owns it |
 |------|---------|-------------|

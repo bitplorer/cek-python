@@ -289,7 +289,7 @@ class Surface:
     ) -> tuple[KernelResult, list | None]:
         pol = self.policy.check_action(action)
         if not pol.allow:
-            return KernelResult("authority_refusal", [], pol.reason), None
+            return KernelResult("dispatch_error", [], pol.reason), None
 
         inner = getattr(self.kernel, "_inner", None)
         host = inner if inner is not None else self.kernel
@@ -325,7 +325,7 @@ class Surface:
         wire = as_wire(ops)
         pol2 = self.policy.check_ops(wire)
         if not pol2.allow:
-            return KernelResult("authority_refusal", [], pol2.reason), None
+            return KernelResult("dispatch_error", [], pol2.reason), None
 
         result = self.kernel.submit(
             action,
@@ -348,7 +348,7 @@ class Surface:
     ) -> tuple[KernelResult, list | None]:
         pol = self.policy.check_action(action)
         if not pol.allow:
-            return KernelResult("authority_refusal", [], pol.reason), None
+            return KernelResult("dispatch_error", [], pol.reason), None
 
         inner = getattr(self.kernel, "_inner", None)
         host = inner if inner is not None else self.kernel
@@ -393,7 +393,7 @@ class Surface:
         wire = as_wire(ops)
         pol2 = self.policy.check_ops(wire)
         if not pol2.allow:
-            return KernelResult("authority_refusal", [], pol2.reason), None
+            return KernelResult("dispatch_error", [], pol2.reason), None
 
         if hasattr(self.kernel, "async_submit"):
             result = await self.kernel.async_submit(

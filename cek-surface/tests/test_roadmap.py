@@ -22,7 +22,7 @@ def test_vectors_pack():
     cont = Continuation.from_dict(c["continuation"])
     args = resolve_args(cont, store=c["store"], event=c["event"])
     assert args == c["expect_args"]
-    # morph shape (S)
+    # morph shape (declared catalog)
     t = next(x for x in pack["cases"] if x["id"] == "morph_op_shape")
     op = Op.ui_morph("shell", {"tag": "div"})
     d = op.to_dict()
@@ -40,6 +40,22 @@ def test_policy_rate_and_nav():
     assert not p.check_ops(ops).allow
     ops2 = as_wire(navigate_to("/shop/x"))
     assert p.check_ops(ops2).allow
+
+
+def test_policy_deny_is_dispatch_error():
+    s = Surface(policy=SurfacePolicy(max_intents_per_sec=1), carrier_kind="memory")
+
+    @s.action("ping")
+    def ping(ctx):
+        return [Op.log_append("p")]
+
+    first = s.submit("ping", {}, cap=s.mint("ping"), drain_async=False)
+    second = s.submit("ping", {}, cap=s.mint("ping"), drain_async=False)
+    assert first["result"]["kind"] == "ok"
+    assert second["result"]["kind"] == "dispatch_error"
+    assert second["result"]["ops"] == []
+    assert "rate" in (second["result"]["error"] or "")
+    s.close()
 
 
 def test_refuse_and_once():
@@ -83,6 +99,7 @@ def test_continuation_match():
 if __name__ == "__main__":
     test_vectors_pack()
     test_policy_rate_and_nav()
+    test_policy_deny_is_dispatch_error()
     test_refuse_and_once()
     test_chrome_pending()
     test_continuation_match()

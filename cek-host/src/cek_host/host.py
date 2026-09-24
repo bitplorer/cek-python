@@ -84,8 +84,15 @@ class Host:
         ed25519_trust: list[bytes] | None = None,
         accepted_generations: list[str] | None = None,
     ) -> None:
-        if mode not in ("demo", "adapt", "require"):
-            raise ValueError("Host.mode must be demo|adapt|require")
+        # Deployment, not Channel's cek mode. adapt/require are old spellings
+        # of production. They do not choose a Cap machine.
+        if mode in ("adapt", "require"):
+            mode = "production"
+        if mode not in ("demo", "production"):
+            raise ValueError(
+                "Host.mode must be demo|production "
+                "(adapt and require are old spellings of production, not Channel cek mode)"
+            )
         self.secret = secret
         self.require_cap = require_cap
         self.mode = mode
@@ -121,6 +128,7 @@ class Host:
         once: OnceBackend | None = None,
         **kw: Any,
     ) -> Host:
+        """Lab host. Not Channel cek=adapt. Stored mode is production."""
         kw.setdefault("mode", "adapt")
         return cls(secret=secret, once=once or MemoryOnceBackend(), **kw)
 
@@ -170,7 +178,7 @@ class Host:
             once=once,
             idem=idem,
             lineage=lineage,
-            mode="require",
+            mode="production",
             allow_memory_stores=allow_memory_stores,
             require_cap=True,
             ttl_s=ttl_s,
