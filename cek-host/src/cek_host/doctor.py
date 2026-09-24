@@ -1,4 +1,4 @@
-"""doctor() — go/no-go. ≡ production factory checklist (G10)."""
+"""doctor() — go or no-go for this Host."""
 
 from __future__ import annotations
 
@@ -19,9 +19,15 @@ class Finding:
     ok: bool
     id: str
     detail: str
+    checked: bool = True
 
     def line(self) -> str:
-        mark = "ok" if self.ok else "FAIL"
+        if not self.checked:
+            mark = "skip"
+        elif self.ok:
+            mark = "ok"
+        else:
+            mark = "FAIL"
         return f"  [{mark}] {self.id}: {self.detail}"
 
 
@@ -31,7 +37,8 @@ class DoctorReport:
 
     @property
     def ok(self) -> bool:
-        return all(f.ok for f in self.findings)
+        # A check that did not run is not a pass.
+        return all(f.checked and f.ok for f in self.findings)
 
     def to_text(self) -> str:
         lines = ["cek-host doctor"]
@@ -135,10 +142,12 @@ def _finding_vectors() -> Finding:
             if ver != VECTOR_PACK_VERSION:
                 return Finding(False, "vectors", f"surface pack version {ver}, want {VECTOR_PACK_VERSION}")
             return Finding(True, "vectors", f"surface_core v{ver} ({len(data.get('cases') or [])} cases)")
+    # An installed wheel has no pack. That is not a pass of the pack.
     return Finding(
-        True,
+        False,
         "vectors",
         f"skipped — surface_core v{VECTOR_PACK_VERSION} is not in this install",
+        checked=False,
     )
 
 
