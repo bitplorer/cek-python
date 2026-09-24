@@ -1,4 +1,4 @@
-"""Op constructors — emit only legal S (catalog.py).
+"""Op constructors — emit only declared-catalog pairs (catalog.py).
 
 Composition language = Python. Wire = list of Op.to_dict() only.
 """
@@ -104,7 +104,7 @@ def _nonempty(v: Any, label: str) -> None:
         raise ValueError(f"{label} must be non-empty str")
 
 
-# ── Host-only macros (expand to S only) ─────────────────────────────────────
+# ── Host-only macros (expand to declared-catalog pairs only) ───────────────
 
 def signal_set(path: str, value: Any) -> Op:
     """Not a Domain pack. Macro → kv.set(\"signal:{path}\")."""

@@ -39,7 +39,7 @@ python -m cek_host doctor --fail
 | Doc | Role |
 |-----|------|
 | **[START.md](./START.md)** | First morph |
-| [docs/CATALOG_AUTHORITY_TARGET.md](./docs/CATALOG_AUTHORITY_TARGET.md) | Glossary (pair / S / stamp) |
+| [docs/CATALOG_AUTHORITY_TARGET.md](./docs/CATALOG_AUTHORITY_TARGET.md) | Glossary (pair / declared catalog / session stamp) |
 | [docs/COMPOSITION.md](./docs/COMPOSITION.md) | Host compose + Peer IR |
 | [docs/INVARIANTS.md](./docs/INVARIANTS.md) | NEVER REGRESS |
 | [docs/ORGANIZATION.md](./docs/ORGANIZATION.md) | Repos and packages |

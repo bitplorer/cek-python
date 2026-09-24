@@ -1,4 +1,4 @@
-"""S is closed. Pair identity. Host legal ≡ Surface catalog ≡ Rust decls."""
+"""Declared catalog is closed. Pair identity. Host ≡ Surface ≡ Rust decls."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from cek_surface.catalog import LEGAL_FQS as SURF_FQS
 from cek_surface.catalog import LEGAL_PAIRS as SURF_PAIRS
 
 
-S = frozenset(
+DECLARED = frozenset(
     {
         ("kv", "set"),
         ("kv", "delete"),
@@ -49,16 +49,16 @@ def rust_declared_pairs() -> set[tuple[str, str]]:
     return pairs
 
 
-def test_s_is_exactly_five_pairs():
-    assert LEGAL_PAIRS == S
-    assert SURF_PAIRS == S
+def test_declared_catalog_is_exactly_five_pairs():
+    assert LEGAL_PAIRS == DECLARED
+    assert SURF_PAIRS == DECLARED
     assert LEGAL_FQS == SURF_FQS
-    assert LEGAL_FQS == frozenset(f"{n}.{m}" for n, m in S)
+    assert LEGAL_FQS == frozenset(f"{n}.{m}" for n, m in DECLARED)
 
 
 def test_python_s_matches_rust_decls():
     rust = rust_declared_pairs()
-    assert rust == set(S), (sorted(rust), sorted(S))
+    assert rust == set(DECLARED), (sorted(rust), sorted(DECLARED))
 
 
 def test_packs_are_scoped():
@@ -151,7 +151,7 @@ def test_baseline_pairs_untouched():
 
 
 if __name__ == "__main__":
-    test_s_is_exactly_five_pairs()
+    test_declared_catalog_is_exactly_five_pairs()
     test_python_s_matches_rust_decls()
     test_packs_are_scoped()
     test_constructors_emit_s_only()

@@ -20,8 +20,8 @@ assert r.kind == "ok" and r.digest.startswith("cek1:")
 
 Refuse → `r.ops == []`. Illegal pair → `dispatch_error`, never silent `ok`.
 
-S (core) = `kv.set` `kv.delete` `log.append` `ui.dom.morph` `ui.dom.restore`.  
-Pair = `(ns, name)`. Stamp = this session. FQ is display only.
+Declared catalog = `kv.set` `kv.delete` `log.append` `ui.dom.morph` `ui.dom.restore`.  
+Pair = `(ns, name)`. Session stamp = this session. FQ is display only. There is no noun "S".
 
 `Host()` is demo. `Host.production(secret, FileOnceBackend(...))` refuses the demo secret and memory stores.
 

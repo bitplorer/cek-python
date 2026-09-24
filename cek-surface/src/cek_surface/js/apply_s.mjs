@@ -1,5 +1,7 @@
 /**
- * Single apply of S + Phase 2 stamped extensions.
+ * Apply one op from the declared catalog, plus stamped extensions.
+ * File name apply_s.mjs and export S_PAIRS are frozen spellings.
+ * "S" is not a law noun. The set is Baseline ∪ UI seed.
  * Pair identity: (ns, name), name is one token.
  * No mint. No recipes. Undeclared / unstamped pair throws.
  *

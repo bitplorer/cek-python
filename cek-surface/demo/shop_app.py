@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shop surface: catalog, cart, checkout — wire Ops ⊆ S only."""
+"""Shop surface: catalog, cart, checkout — wire Ops are declared-catalog pairs only."""
 
 from __future__ import annotations
 

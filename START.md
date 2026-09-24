@@ -5,8 +5,8 @@
 ```text
 mint Cap → submit Intent {action, args, cap} → verify → project Ops → Result {kind, ops[]}
 
-S (core wire) = kv.set · kv.delete · log.append · ui.dom.morph · ui.dom.restore
-pair = (ns, name)   stamp = this session   FQ = display only
+Declared catalog = kv.set · kv.delete · log.append · ui.dom.morph · ui.dom.restore
+pair = (ns, name)   session stamp = this session   FQ = display only
 Undeclared pair → dispatch_error, never kind=ok with a silent empty batch.
 ```
 

@@ -8,7 +8,7 @@
 | Layer | Package | Owns |
 |-------|---------|------|
 | **Host kernel** | `cek-host` only | mint, verify, once, sealed-args, package Result |
-| **Surface** | **cek-surface** | Op constructors bound to S, actions, events, Peer apply, chrome IR, coalesce, policy hooks |
+| **Surface** | **cek-surface** | Op constructors bound to the declared catalog, actions, events, Peer apply, chrome IR, coalesce, policy hooks |
 | **Law / contract** | cek-framework + cek-contract | schemas, vectors, Baseline Ops |
 | **ux-channel** | — | **not a dependency** |
 

@@ -565,5 +565,5 @@ class Surface:
 
 
 def _has_async(ops: list[dict[str, Any]]) -> bool:
-    # S has no timer/http wire Ops. Continuations are Host-injected.
+    # Declared catalog has no timer/http wire Ops. Continuations are Host-injected.
     return False

@@ -10,13 +10,13 @@
 
 | Name | Meaning | Who owns it |
 |------|---------|-------------|
-| **pair** | `(ns, name)` — the legality key. `name` is one token (no dots). | wire + catalogs |
+| **pair** | `(ns, name)` — the membership key. `name` is one token (no dots). | wire + catalogs |
 | **FQ** | `ns.name` display/serialization only. Never the identity key. | wire |
-| **S** | Frozen **core** set: Baseline ∪ UI seed. Five pairs. | `cek-contract` + `cek_host.legal` |
-| **Baseline** | `("kv","set")` `("kv","delete")` `("log","append")` | core, never grows |
-| **UI seed** | `("ui.dom","morph")` `("ui.dom","restore")` | core Domain pack `ui.dom` |
+| **Baseline** | `("kv","set")` `("kv","delete")` `("log","append")`. Never grows. | core |
+| **UI seed** | `("ui.dom","morph")` `("ui.dom","restore")`. Domain pack `ui.dom`. | core |
+| **declared catalog** | Baseline ∪ UI seed. Five pairs. Python: `LEGAL_PAIRS`. JS frozen spelling: `S_PAIRS`. There is no law noun "S". | `cek-contract` + `cek_host.legal` |
 | **domain stdlib** | Versioned runtime module with seed pairs. Core ones: `baseline`, `ui`. | runtime (`cek_surface`) |
-| **stamp** | Closed pair set for **one session**. Subset or extension of S after agreement. | Host builds, Peer honors |
+| **session stamp** | Closed pair set for **one session**. Subset of the declared catalog, or that catalog plus an agreed extension. | Host builds, Peer honors |
 | **Host runtime** | Language port of decide (Python `cek-host`). | not the Rust kernel unless wrap is used |
 | **Host kernel** | Rust `cek-host-kernel` (reference decide). | `cek-runtime` |
 | **Peer kernel** | Rust `cek-peer-kernel` (reference apply). | `cek-runtime` |
@@ -30,12 +30,12 @@ Tokens: lowercase ASCII letters and digits only. Dots belong in `ns`, never in `
 
 ## Two legality questions (do not mix)
 
-1. **Is it in S?** — core declaration. `is_legal` / `is_legal_pair`.
-2. **Is it in this session's stamp?** — what Host may project and what a JS Peer may apply.
+1. **Is it in the declared catalog?** — `is_legal`. This is not "lawful for this session".
+2. **Is it in this session's stamp?** — what Host may project and what a JS Peer may apply. `in_stamp`.
 
-- No stamp + `open` → treat as S.
+- No stamp + `open` → declared catalog (Baseline ∪ UI seed).
 - No stamp + `strict` (`CEK_CATALOG_MODE=strict`) → Baseline only.
-- Stamp present → **only** the stamp (via negativa). Runtime stdlib pairs (e.g. `search.hits`) may appear here without being in S.
+- Stamp present → **only** the stamp (via negativa). Runtime stdlib pairs (e.g. `search.hits`) may appear here without being in the declared catalog.
 
 Bundled stdlibs in `cek-surface`: `search` (`hits`, `clear`). Load with `load_bundled()`, then `Surface.use_stdlibs(["baseline","ui","search"])`.
 
@@ -54,8 +54,8 @@ There is no on-the-wire `agree` message. Version intersection happens in the Hos
 
 | Path | Applies |
 |------|---------|
-| JS `apply_s.mjs` | Stamp ∩ (built-in S drivers ∪ `registerDriver`) |
-| Rust `cek-peer-kernel` / `cek_peer_pyo3` / leftover `cek apply` | **S only** (Baseline or Baseline+UI profile). Extensions are skipped. |
+| JS `apply_s.mjs` | Stamp ∩ (built-in catalog drivers ∪ `registerDriver`). Filename is a frozen spelling. |
+| Rust `cek-peer-kernel` / `cek_peer_pyo3` / leftover `cek apply` | **Declared catalog only** (Baseline or Baseline+UI profile). Extensions are skipped. |
 | Memory carrier | Echoes ops (tests). Not a kernel. |
 
 So: Host can *project* a stamped extension; only a Peer **runtime with a driver** will *apply* it. The Peer **kernel** never grows drivers for day-to-day domains.
@@ -70,5 +70,5 @@ Default `Surface()` still uses the Python Host port + JS Peer port. That is deli
 
 ## Catalog mode
 
-- `CEK_CATALOG_MODE=open` (default) — missing stamp = S
+- `CEK_CATALOG_MODE=open` (default) — missing stamp = declared catalog
 - `CEK_CATALOG_MODE=strict` — missing stamp = Baseline

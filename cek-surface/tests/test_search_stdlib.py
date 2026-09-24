@@ -1,4 +1,4 @@
-"""search domain stdlib — runtime expansion, not core S."""
+"""search domain stdlib — runtime expansion, not part of the declared catalog."""
 
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def test_surface_use_search():
     assert clr.name == "clear"
     try:
         Op("search", "hits", {})
-        raise AssertionError("Op() without stamp must not invent S")
+        raise AssertionError("Op() without stamp must not invent catalog pairs")
     except ValueError:
         pass
 

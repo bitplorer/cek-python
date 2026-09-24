@@ -63,6 +63,6 @@ def resolve_ops(
         planned = list(project_ops)
     else:
         planned = project_action(action, args)
-    # Stamp membership is the session. No stamp → project_wire's core-S check.
+    # Stamp membership is the session. No stamp → default_stamp_pairs().
     # Never return a planned list that skipped the legal table.
     return project_wire(planned, unknown="strict", stamp=stamp)

@@ -169,6 +169,14 @@ def test_strict_mode_default_stamp_is_baseline():
         reload(legal)
         assert cm.get_catalog_mode() == "strict"
         assert legal.default_stamp_pairs() == BASELINE_PAIRS
+        try:
+            legal.project_wire([{"ns": "ui.dom", "name": "morph", "payload": {}}])
+            raise AssertionError("strict missing stamp must not project ui.dom")
+        except legal.IllegalOp:
+            pass
+        assert legal.project_wire(
+            [{"ns": "log", "name": "append", "payload": {"message": "x"}}]
+        )
     finally:
         if prev is None:
             os.environ.pop("CEK_CATALOG_MODE", None)

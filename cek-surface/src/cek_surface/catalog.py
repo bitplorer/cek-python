@@ -1,7 +1,8 @@
-"""Surface binding of S — re-exports cek_host.legal (one Python table).
+"""Surface binding of the declared catalog — re-exports cek_host.legal (one Python table).
 
+Declared catalog = Baseline ∪ UI seed. There is no law noun "S".
 Must match cek-contract domain.rs + baseline.rs.
-Undeclared pair is illegal. Concatenation is not identity.
+Undeclared pair is not in the catalog. Concatenation is not identity.
 """
 
 from __future__ import annotations

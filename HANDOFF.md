@@ -7,7 +7,7 @@
 **Law:** https://github.com/bitplorer/cek-framework  
 **Rust:** https://github.com/bitplorer/cek-runtime
 
-S = frozen core (5 pairs). Stamp = session set. FQ is display only. Peer kernel applies S; extensions need a runtime driver.
+Declared catalog = Baseline ∪ UI seed (5 pairs). Session stamp = this session's closed set. FQ is display only. The Peer kernel applies the declared catalog; extensions need a runtime driver. Do not call the catalog "S".
 
 ```bash
 export PYTHONPATH=cek-host/src:cek-surface/src
