@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Awaitable, Callable, Union
 import inspect
+import copy
 
 from .continuation import Continuation, match_continuation, mint_continuation, resolve_args
 from .kernel import HostKernel, KernelResult, load_host_kernel
@@ -192,9 +193,10 @@ class Surface:
         if cont is not None:
             args = resolve_args(cont, store=self.store, event=event)
             result, continuations = self._compose_and_authorize(cont.action, args, cont.cap)
-            if continuations:
-                self.last_continuations = list(continuations)
+            self._arm_minted(result, continuations)
             return result
+
+        self._minted_for_publish = []
 
         fn = self._events.get(str(et))
         if fn is None:
@@ -244,9 +246,10 @@ class Surface:
         if cont is not None:
             args = resolve_args(cont, store=self.store, event=event)
             result, continuations = await self._async_compose_and_authorize(cont.action, args, cont.cap)
-            if continuations:
-                self.last_continuations = list(continuations)
+            self._arm_minted(result, continuations)
             return result
+
+        self._minted_for_publish = []
 
         fn = self._events.get(str(et))
         if fn is None:
@@ -314,17 +317,21 @@ class Surface:
             )
 
         ctx = Ctx(action=action, args=args, surface=self, store=self.store)
+        before = copy.deepcopy(self.store)
         try:
             ops = handler(ctx)
         except Exception as e:
+            self._restore_store(before)
             return KernelResult("dispatch_error", [], str(e)), None
 
         if not isinstance(ops, list):
+            self._restore_store(before)
             return KernelResult("dispatch_error", [], "handler must return list[Op]"), None
 
         wire = as_wire(ops)
         pol2 = self.policy.check_ops(wire)
         if not pol2.allow:
+            self._restore_store(before)
             return KernelResult("dispatch_error", [], pol2.reason), None
 
         result = self.kernel.submit(
@@ -335,6 +342,9 @@ class Surface:
             project_ops=wire,
             idempotency_key=idempotency_key,
         )
+        if not result.ok or getattr(result, "_replayed", False):
+            self._restore_store(before)
+            return result, None
         return result, getattr(ctx, "continuations", None)
 
     async def _async_compose_and_authorize(
@@ -380,19 +390,23 @@ class Surface:
             return KernelResult("dispatch_error", [], f"unknown action: {action}"), None
 
         ctx = Ctx(action=action, args=args, surface=self, store=self.store)
+        before = copy.deepcopy(self.store)
         try:
             ops = handler(ctx)
             if inspect.isawaitable(ops):
                 ops = await ops
         except Exception as e:
+            self._restore_store(before)
             return KernelResult("dispatch_error", [], str(e)), None
 
         if not isinstance(ops, list):
+            self._restore_store(before)
             return KernelResult("dispatch_error", [], "handler must return list[Op]"), None
 
         wire = as_wire(ops)
         pol2 = self.policy.check_ops(wire)
         if not pol2.allow:
+            self._restore_store(before)
             return KernelResult("dispatch_error", [], pol2.reason), None
 
         if hasattr(self.kernel, "async_submit"):
@@ -416,6 +430,9 @@ class Surface:
                 project_ops=wire,
                 idempotency_key=idempotency_key,
             )
+        if not result.ok or getattr(result, "_replayed", False):
+            self._restore_store(before)
+            return result, None
         return result, getattr(ctx, "continuations", None)
 
     def _take_continuation(self, event: dict[str, Any]) -> Continuation | None:
@@ -433,18 +450,42 @@ class Surface:
         self.last_continuations = remaining
         return cont
 
+    def _restore_store(self, before: dict[str, Any]) -> None:
+        """Handler writes are not a commit. A refusal puts the store back."""
+        self.store.clear()
+        self.store.update(before)
+
+    def _arm_minted(self, result: KernelResult, continuations) -> None:
+        """Keep a new Cap only when this handling succeeded.
+
+        A refusal must not replace the armed bag. Caps the client never
+        received would drop the previous once-Cap, and the next event
+        would miss it.
+        """
+        minted = list(continuations or [])
+        if result.ok and minted:
+            self.last_continuations = [
+                c if isinstance(c, Continuation) else Continuation.from_dict(c)
+                for c in minted
+            ]
+            self._minted_for_publish = minted
+            return
+        self._minted_for_publish = []
+
     def _published_continuations(self, continuations) -> list:
         """Caps minted by this handling only. An older row stays for handle_event."""
         if not continuations:
             return []
-        return self.continuation_dicts()
+        out = []
+        for c in continuations:
+            if isinstance(c, Continuation):
+                out.append(c.to_dict())
+            else:
+                out.append(dict(c))
+        return out
 
     def _deliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
-        if continuations:
-            self.last_continuations = [
-                c if isinstance(c, Continuation) else Continuation.from_dict(c)
-                for c in continuations
-            ]
+        self._arm_minted(result, continuations)
         peer = self.ensure_peer()
         reply = peer.apply_result(result)
         self.last_world = reply.get("world") or {}
@@ -465,11 +506,7 @@ class Surface:
         return out
 
     async def _async_deliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
-        if continuations:
-            self.last_continuations = [
-                c if isinstance(c, Continuation) else Continuation.from_dict(c)
-                for c in continuations
-            ]
+        self._arm_minted(result, continuations)
         peer = self.ensure_peer()
         reply = await peer.async_apply_result(result)
         self.last_world = reply.get("world") or {}
@@ -506,7 +543,9 @@ class Surface:
                     self.last_world = reply.get("world") or {}
                     payload = nxt.to_dict()
                     if nxt.ok:
-                        conts = self.continuation_dicts()
+                        conts = self._published_continuations(
+                            getattr(self, "_minted_for_publish", None)
+                        )
                         if conts:
                             payload["continuations"] = conts
                     entry["result"] = payload
@@ -547,7 +586,9 @@ class Surface:
                     self.last_world = reply.get("world") or {}
                     payload = nxt.to_dict()
                     if nxt.ok:
-                        conts = self.continuation_dicts()
+                        conts = self._published_continuations(
+                            getattr(self, "_minted_for_publish", None)
+                        )
                         if conts:
                             payload["continuations"] = conts
                     entry["result"] = payload

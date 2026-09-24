@@ -171,18 +171,22 @@ class CekHostPyKernel:
 
 def _as_kernel_result(r: Any) -> KernelResult:
     if isinstance(r, dict):
-        return KernelResult(
+        out = KernelResult(
             kind=r.get("kind") or ("ok" if r.get("ok") else "authority_refusal"),
             ops=list(r.get("ops") or []),
             error=r.get("error"),
             digest=r.get("digest"),
         )
-    return KernelResult(
-        kind=getattr(r, "kind", "ok"),
-        ops=list(getattr(r, "ops", []) or []),
-        error=getattr(r, "error", None),
-        digest=getattr(r, "digest", None),
-    )
+    else:
+        out = KernelResult(
+            kind=getattr(r, "kind", "ok"),
+            ops=list(getattr(r, "ops", []) or []),
+            error=getattr(r, "error", None),
+            digest=getattr(r, "digest", None),
+        )
+    if getattr(r, "_replayed", False) or (isinstance(r, dict) and r.get("_replayed")):
+        out._replayed = True  # type: ignore[attr-defined]
+    return out
 
 
 def load_host_kernel(host: CekHost | None = None) -> HostKernel:

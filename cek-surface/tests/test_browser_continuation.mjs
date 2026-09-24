@@ -43,3 +43,29 @@ peer.onMessage({
 await new Promise((resolve) => setTimeout(resolve, 30));
 assert.equal(calls.length, 1);
 console.log("browser continuation ok");
+
+const calls2 = [];
+const peer2 = mountBrowserPeer({
+  submitIntent: (action, args, cap) => calls2.push({ action, args, cap }),
+});
+peer2.onMessage({
+  type: "apply",
+  result: { kind: "ok", ops: [] },
+  continuations: [
+    {
+      event: "timer.fired:search-debounce",
+      action: "search.commit",
+      cap: "CAP",
+      static_args: { ms: 0 },
+    },
+  ],
+});
+await new Promise((resolve) => setTimeout(resolve, 20));
+assert.equal(calls2.length, 1);
+peer2.onMessage({
+  type: "apply",
+  result: { kind: "ok", ops: [] },
+});
+await new Promise((resolve) => setTimeout(resolve, 20));
+assert.equal(calls2.length, 1);
+

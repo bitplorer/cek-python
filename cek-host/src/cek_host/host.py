@@ -63,6 +63,13 @@ def _refuse(error: str) -> KernelResult:
     return KernelResult("authority_refusal", [], error)
 
 
+def _replayed(kind: str, ops: list[dict[str, Any]], error: str | None) -> KernelResult:
+    """Same bytes as the stored result. Not a new decide."""
+    result = KernelResult(kind, ops, error)
+    result._replayed = True  # type: ignore[attr-defined]
+    return result
+
+
 class Host:
     """Authority kernel: Cap machine + Result packaging.
 
@@ -287,7 +294,7 @@ class Host:
                     return _refuse(f"idempotency conflict for key `{idempotency_key}`")
                 digest = result_digest("ok", planned, None)
                 if prior.get("digest") == digest:
-                    return KernelResult(
+                    return _replayed(
                         str(prior.get("kind") or "ok"),
                         list(prior.get("ops") or []),
                         prior.get("error"),
@@ -484,7 +491,7 @@ class Host:
             except StoreDown:
                 return _refuse("idempotency store down")
             if replay is not None:
-                return KernelResult(
+                return _replayed(
                     str(replay.get("kind") or "ok"),
                     list(replay.get("ops") or []),
                     replay.get("error"),
