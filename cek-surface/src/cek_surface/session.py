@@ -71,16 +71,16 @@ class PeerSession:
             return {"type": "stamp_ack", "pairs": pairs}
         return await asyncio.to_thread(stamp, pairs)
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        return self.carrier.chrome(chrome)
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        return self.carrier.perception(message)
 
-    async def async_chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        fn = getattr(self.carrier, "async_chrome", None)
+    async def async_perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        fn = getattr(self.carrier, "async_perception", None)
         if fn is not None:
-            return await fn(chrome)
+            return await fn(message)
         import asyncio
 
-        return await asyncio.to_thread(self.carrier.chrome, chrome)
+        return await asyncio.to_thread(self.carrier.perception, message)
 
     def read(self) -> dict[str, Any]:
         msg = self.carrier.read_event()

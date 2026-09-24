@@ -1,4 +1,4 @@
-"""Vectors + policy + continuation + chrome IR."""
+"""Vectors + policy + continuation + perception."""
 from __future__ import annotations
 import json
 import sys
@@ -75,16 +75,16 @@ def test_refuse_and_once():
     s.close()
 
 
-def test_chrome_pending():
+def test_mark_pending():
     s = Surface()
     @s.action("noop_act")
     def noop_act(ctx):
         return [Op.log_append("noop")]
     s.submit("noop_act", {}, auto_mint=True, drain_async=False)
-    reply = s.ensure_peer().chrome({"op": "pending", "target": "btn", "on": True})
-    assert reply.get("type") == "chrome_applied"
-    chrome = (reply.get("world") or {}).get("chrome") or {}
-    assert chrome.get("busy") is not None or chrome.get("shadows") is not None
+    reply = s.ensure_peer().perception({"op": "pending", "target": "btn", "on": True})
+    assert reply.get("type") == "perception_applied"
+    perception = (reply.get("world") or {}).get("perception") or {}
+    assert perception.get("busy") is not None or perception.get("shadows") is not None
     s.close()
 
 
@@ -101,6 +101,6 @@ if __name__ == "__main__":
     test_policy_rate_and_nav()
     test_policy_deny_is_dispatch_error()
     test_refuse_and_once()
-    test_chrome_pending()
+    test_mark_pending()
     test_continuation_match()
     print("roadmap ok")

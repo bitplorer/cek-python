@@ -56,7 +56,7 @@ def memory_surface() -> Surface:
                     "world": {"kv": dict(world_kv)},
                 }
             ]
-        return [{"type": "chrome_applied", "world": {}}]
+        return [{"type": "perception_applied", "world": {}}]
 
     handler._kv = {}
     mem.peer_handler = handler

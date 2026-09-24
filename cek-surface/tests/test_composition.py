@@ -1,4 +1,4 @@
-"""Host composition macros + Surface chrome helpers (perception IR)."""
+"""Host composition macros + Surface perception helpers."""
 
 from __future__ import annotations
 
@@ -36,25 +36,25 @@ def test_macros_expand_to_s():
     assert len(batch) == 3
 
 
-def test_surface_chrome_and_arm():
+def test_surface_perception_and_continuation():
     s = Surface(carrier_kind="memory")
 
     @s.action("boot")
     def boot(ctx):
         ctx.continuations = [
-            ctx.surface.arm("timer.fired:x", "boot", args_from={"q": "store:q"})
+            ctx.surface.mint_continuation("timer.fired:x", "boot", args_from={"q": "store:q"})
         ]
         return [Op.log_append("boot")]
 
     s.submit("boot", {}, auto_mint=True, drain_async=False)
-    ch = s.chrome_pending("btn", True)
-    assert ch["type"] == "chrome_applied"
-    sh = s.chrome_shadow("hdr", {"text": "hi"})
-    assert sh["type"] == "chrome_applied"
+    ch = s.mark_pending("btn", True)
+    assert ch["type"] == "perception_applied"
+    sh = s.preview("hdr", {"text": "hi"})
+    assert sh["type"] == "perception_applied"
     assert isinstance(s.last_continuations[0], Continuation) or s.last_continuations
 
 
 if __name__ == "__main__":
     test_macros_expand_to_s()
-    test_surface_chrome_and_arm()
+    test_surface_perception_and_continuation()
     print("composition ok")

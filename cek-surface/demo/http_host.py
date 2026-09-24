@@ -42,7 +42,7 @@ def _echo_memory() -> MemoryCarrier:
                     "world": {},
                 }
             ]
-        return [{"type": "chrome_applied", "world": {}}]
+        return [{"type": "perception_applied", "world": {}}]
 
     mem.peer_handler = handler
     return mem

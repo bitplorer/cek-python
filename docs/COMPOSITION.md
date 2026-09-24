@@ -1,6 +1,6 @@
 # Host composition + Peer perception
 
-Peer logic stays on the Host. The Peer applies data and paints chrome. It does not own control flow.
+Peer logic stays on the Host. The Peer applies data and paints perception. It does not own control flow.
 
 ## Two clocks
 
@@ -22,7 +22,7 @@ s = Surface()
 def search_type(ctx):
     q = ctx.args.get("q") or ""
     ctx.continuations = [
-        ctx.surface.arm(
+        ctx.surface.mint_continuation(
             "timer.fired:search-debounce",
             "search.commit",
             args_from={"q": "store:search.pending"},
@@ -41,7 +41,7 @@ def go(ctx):
 - `plan(*ops)` concatenates lists of Ops.
 - Macros (`navigate_to`, `signal_set`, `set_loading`, `form_errors`) expand to **declared-catalog pairs only**.
 - `search_hits` / `search_clear` are **runtime** pairs. Call `load_bundled()` and `use_stdlibs(["baseline","ui","search"])` first; pass `stamp=ctx.surface.stamp`.
-- `Surface.arm(...)` pre-mints a continuation Cap. Peer fills slots; Host verifies again.
+- `Surface.mint_continuation(...)` mints a continuation Cap. Peer fills slots; Host verifies again.
 
 ## Kill frontend jitter (Peer IR)
 
@@ -51,17 +51,17 @@ Implemented in `cek-surface/js/peer_ir.mjs`, wired in `peer.mjs` and `browser_pe
 |------|--------|
 | `coalesceIntent(key, args, send)` | At most one Intent per key per `coalesceMs` (default 50) |
 | `flush(key)` | Send now (Enter / blur) |
-| `pending(target)` | Busy chrome |
-| `shadowMorph(target, patch)` | Optimistic paint, not authority |
-| `filterCached(kvKey, q, out)` | Local filter over Host snapshot |
-| `beforeAuthorityApply()` | Clear shadows when Result lands |
+| `pending(target)` | Busy marker |
+| `preview(target, patch)` | Optimistic paint, not authority |
+| `filter(kvKey, q, out)` | Local filter over Host snapshot |
+| `beforeAuthorityApply()` | Clear previews when Result lands |
 
 From Host:
 
 ```python
-s.chrome_pending("search", True)          # perception
-s.chrome_shadow("hdr", {"text": "…"})     # perception
-# later, submit() applies Result.ops and IR clears shadows
+s.mark_pending("search", True)
+s.preview("hdr", {"text": "…"})
+# later, submit() applies Result.ops and the peer clears previews
 ```
 
 Browser search input uses the same IR: type → coalesce → Host action; Enter/blur → flush.

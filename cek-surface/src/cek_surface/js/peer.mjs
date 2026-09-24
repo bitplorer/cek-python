@@ -13,7 +13,7 @@ const world = createWorld();
 ir.bindWorld(world);
 
 function snapshot() {
-  return snapshotS(world, { chrome: ir.snapshotChrome() });
+  return snapshotS(world, { perception: ir.snapshotPerception() });
 }
 
 function applyResult(result) {
@@ -48,13 +48,13 @@ for await (const line of rl) {
     emit({ type: "stamp_ack", pairs: stampPairs() });
   } else if (msg.type === "apply") {
     emit({ type: "applied", receipt: applyResult(msg.result), world: snapshot() });
-  } else if (msg.type === "chrome") {
-    const c = msg.chrome || {};
+  } else if (msg.type === "perception") {
+    const c = msg.perception || {};
     if (c.op === "pending") ir.pending(c.target, c.on !== false);
-    else if (c.op === "shadowMorph") ir.shadowMorph(c.target, c.patch);
-    else if (c.op === "filterCached") ir.filterCached(c.kvKey, c.query, c.outTarget);
-    else if (c.op === "clearShadows") ir.clearShadows();
-    emit({ type: "chrome_applied", world: snapshot() });
+    else if (c.op === "preview") ir.preview(c.target, c.patch);
+    else if (c.op === "filter") ir.filter(c.kvKey, c.query, c.outTarget);
+    else if (c.op === "clearPreview") ir.clearPreview();
+    emit({ type: "perception_applied", world: snapshot() });
   } else if (msg.type === "done") {
     break;
   } else {
