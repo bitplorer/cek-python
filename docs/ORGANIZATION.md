@@ -119,7 +119,7 @@ export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
 | Rust Peer | `cek-runtime` crates (`cek-peer-kernel`) |
 | Taught Python wrap | `cek_peer_pyo3` from `cek-runtime` (`carrier_kind="kernel"`) — not a second kernel |
 
-New language Peers: same **contract messages** (`apply` / `chrome` / `events`), not a new Cap authority.
+New language Peers: same **contract messages** (`apply` / `perception` / `events`), not a new Cap authority.
 
 ## Publish (TestPyPI)
 

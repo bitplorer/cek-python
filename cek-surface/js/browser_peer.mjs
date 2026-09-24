@@ -104,19 +104,19 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
     } else if (msg.type === "apply") {
       const receipt = applyResult(msg.result);
       if (typeof send === "function") send({ type: "applied", receipt, world: snapshot() });
-    } else if (msg.type === "chrome") {
-      const c = msg.chrome || {};
+    } else if (msg.type === "perception") {
+      const c = msg.perception || {};
       if (c.op === "pending") ir.pending(c.target, c.on !== false);
-      else if (c.op === "shadowMorph") ir.shadowMorph(c.target, c.patch);
-      else if (c.op === "filterCached") ir.filterCached(c.kvKey, c.query, c.outTarget);
-      else if (c.op === "clearShadows") ir.clearShadows();
-      if (typeof send === "function") send({ type: "chrome_applied", world: snapshot() });
+      else if (c.op === "preview") ir.preview(c.target, c.patch);
+      else if (c.op === "filter") ir.filter(c.kvKey, c.query, c.outTarget);
+      else if (c.op === "clearPreview") ir.clearPreview();
+      if (typeof send === "function") send({ type: "perception_applied", world: snapshot() });
     }
   }
 
   function snapshot() {
     return snapshotS(w, {
-      chrome: ir.snapshotChrome(),
+      perception: ir.snapshotPerception(),
       continuations: lastContinuations,
     });
   }

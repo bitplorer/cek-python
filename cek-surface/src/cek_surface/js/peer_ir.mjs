@@ -1,6 +1,6 @@
 /**
  * Peer IR v0 — perception only.
- * Shadow chrome, coalesce, closed reducers.
+ * Perception, coalesce, closed reducers.
  * No mint. No authority kv writes. No recipes.
  */
 
@@ -14,21 +14,21 @@ export function createPeerIR({ coalesceMs = 50 } = {}) {
     if (!world.shadow) world.shadow = new Map();
   }
 
-  /** Immediate chrome — not Result.ops, not lineage. */
+  /** Immediate perception — not Result.ops, not lineage. */
   function pending(target, on = true) {
     if (!worldRef) return;
     worldRef.busy.set(target, !!on);
     worldRef.shadow.set(`pending:${target}`, { on: !!on, t: Date.now() });
   }
 
-  function shadowMorph(target, patch) {
+  function preview(target, patch) {
     if (!worldRef) return;
     shadows.set(target, patch);
     worldRef.shadow.set(target, { patch, t: Date.now() });
     // do not write world.ui authority tree as final truth
   }
 
-  function clearShadows() {
+  function clearPreview() {
     shadows.clear();
     if (worldRef?.shadow) worldRef.shadow.clear();
     if (worldRef?.busy) worldRef.busy.clear();
@@ -36,7 +36,7 @@ export function createPeerIR({ coalesceMs = 50 } = {}) {
 
   /** Call before applying authority Result. */
   function beforeAuthorityApply() {
-    clearShadows();
+    clearPreview();
   }
 
   function toastFade(ms = 3000) {
@@ -48,7 +48,7 @@ export function createPeerIR({ coalesceMs = 50 } = {}) {
   }
 
   /** Filter cached list in kv — display only. */
-  function filterCached(kvKey, query, outTarget) {
+  function filter(kvKey, query, outTarget) {
     if (!worldRef) return;
     const raw = worldRef.kv.get(kvKey);
     const q = String(query || "").toLowerCase();
@@ -58,10 +58,10 @@ export function createPeerIR({ coalesceMs = 50 } = {}) {
     }
     worldRef.ui.set(outTarget, {
       tag: "ul",
-      attrs: { id: outTarget, "data-cek-chrome": "1" },
+      attrs: { id: outTarget, "data-cek-perception": "1" },
       children: rows.map((r, i) => ({
         tag: "li",
-        attrs: { id: `chrome-hit-${i}` },
+        attrs: { id: `perception-hit-${i}` },
         text: r.title || r.name || String(r.id || i),
       })),
     });
@@ -104,7 +104,7 @@ export function createPeerIR({ coalesceMs = 50 } = {}) {
     return [...coalesce.keys()];
   }
 
-  function snapshotChrome() {
+  function snapshotPerception() {
     return {
       shadows: Object.fromEntries(worldRef?.shadow || []),
       busy: worldRef ? Object.fromEntries(worldRef.busy) : {},
@@ -114,15 +114,15 @@ export function createPeerIR({ coalesceMs = 50 } = {}) {
   return {
     bindWorld,
     pending,
-    shadowMorph,
-    clearShadows,
+    preview,
+    clearPreview,
     beforeAuthorityApply,
     toastFade,
-    filterCached,
+    filter,
     coalesceIntent,
     flush,
     flushAll,
     pendingKeys,
-    snapshotChrome,
+    snapshotPerception,
   };
 }

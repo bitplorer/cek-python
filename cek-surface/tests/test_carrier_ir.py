@@ -30,16 +30,16 @@ def test_memory_carrier_roundtrip():
     def handler(msg):
         if msg["type"] == "apply":
             return [{"type": "applied", "receipt": {"landed": msg["result"].get("ops") or [], "failed": []}, "world": {"ok": True}}]
-        if msg["type"] == "chrome":
-            return [{"type": "chrome_applied", "world": {"chrome": msg["chrome"]}}]
+        if msg["type"] == "perception":
+            return [{"type": "perception_applied", "world": {"perception": msg["perception"]}}]
         return [{"type": "events", "events": []}]
 
     mem.peer_handler = handler
     r = mem.apply({"kind": "ok", "ops": [{"ns": "log", "name": "append", "payload": {"message": "x"}}]})
     assert r["type"] == "applied"
     assert r["world"]["ok"] is True
-    ch = mem.chrome({"op": "pending", "target": "b"})
-    assert ch["world"]["chrome"]["op"] == "pending"
+    ch = mem.perception({"op": "pending", "target": "b"})
+    assert ch["world"]["perception"]["op"] == "pending"
     mem.close()
 
 
@@ -50,7 +50,7 @@ def test_surface_memory_carrier():
         if msg["type"] == "apply":
             ops = (msg.get("result") or {}).get("ops") or []
             return [{"type": "applied", "receipt": {"landed": ops, "failed": []}, "world": {"n": len(ops)}}]
-        return [{"type": "chrome_applied", "world": {}}]
+        return [{"type": "perception_applied", "world": {}}]
 
     mem.peer_handler = handler
     s = Surface(carrier_kind="memory")
@@ -72,12 +72,12 @@ def test_shadow_cleared_on_apply():
     def boot(ctx):
         return [Op.log_append("boot")]
     s.submit("boot", {}, auto_mint=True, drain_async=False)
-    s.ensure_peer().chrome({"op": "pending", "target": "btn", "on": True})
+    s.ensure_peer().perception({"op": "pending", "target": "btn", "on": True})
     # authority apply clears shadows
     out = s.submit("boot", {}, auto_mint=True, drain_async=False)
-    chrome = (out.get("world") or {}).get("chrome") or {}
+    perception = (out.get("world") or {}).get("perception") or {}
     # shadows map should be empty after beforeAuthorityApply
-    shadows = chrome.get("shadows") or {}
+    shadows = perception.get("shadows") or {}
     assert shadows == {} or not shadows
     s.close()
 

@@ -26,7 +26,7 @@ Carriers: `subprocess` (default Node Peer) · `memory` · `websocket` · `kernel
 
 **Taught kernel:** `Surface(carrier_kind="kernel")` → `cek_peer_pyo3.PeerAbi` construct → bind → apply → release. Install from [cek-runtime](https://github.com/bitplorer/cek-runtime) (`cargo build -p cek-peer-pyo3 --features extension-module --release`; `export CEK_PEER_PYO3=.../libcek_peer_pyo3.so`). Leftover (untaught): `CEK_KERNEL_CARRIER=subprocess` still shells `cek apply`.
 
-Chrome (perception): `s.chrome_pending("btn")` · `s.arm("timer.fired:x", "find")`.
+Perception (not shared world): `s.mark_pending("btn")` · `s.mint_continuation("timer.fired:x", "find")`.
 
 ```bash
 pip install cek-surface          # pulls cek-host>=0.1.3

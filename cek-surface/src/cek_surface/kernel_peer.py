@@ -299,8 +299,8 @@ class KernelPeerCarrier:
         self._last_stamp = list(pairs)
         return {"type": "stamp_ack", "pairs": pairs, "kernel_apply": "profile"}
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        return {"type": "chrome_applied", "world": {}}
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        return {"type": "perception_applied", "world": {}}
 
     def read_event(self, timeout: float | None = None) -> dict[str, Any] | None:
         return None

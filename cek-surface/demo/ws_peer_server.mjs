@@ -32,7 +32,7 @@ const ir = createPeerIR({ coalesceMs: 50 });
 ir.bindWorld(world);
 
 function snapshot() {
-  return snapshotS(world, { chrome: ir.snapshotChrome() });
+  return snapshotS(world, { perception: ir.snapshotPerception() });
 }
 
 function applyResult(result) {
@@ -54,11 +54,11 @@ wss.on("connection", (ws) => {
     }
     if (msg.type === "apply") {
       ws.send(JSON.stringify({ type: "applied", receipt: applyResult(msg.result), world: snapshot() }));
-    } else if (msg.type === "chrome") {
-      const c = msg.chrome || {};
+    } else if (msg.type === "perception") {
+      const c = msg.perception || {};
       if (c.op === "pending") ir.pending(c.target, c.on !== false);
-      else if (c.op === "clearShadows") ir.clearShadows();
-      ws.send(JSON.stringify({ type: "chrome_applied", world: snapshot() }));
+      else if (c.op === "clearPreview") ir.clearPreview();
+      ws.send(JSON.stringify({ type: "perception_applied", world: snapshot() }));
     } else if (msg.type === "done") {
       ws.close();
     }

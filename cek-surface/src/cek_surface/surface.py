@@ -70,24 +70,24 @@ class Surface:
         loaded = load_dir(directory)
         return [d.name for d in loaded]
 
-    # -- Chrome (perception) -------------------------------------------------
+    # -- Perception (not shared world) ---------------------------------------
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        """Perception-only. Does not mint, does not enter lineage."""
-        return self.ensure_peer().chrome(chrome)
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        """Perception only. Does not mint, does not enter lineage."""
+        return self.ensure_peer().perception(message)
 
-    def chrome_pending(self, target: str, on: bool = True) -> dict[str, Any]:
-        return self.chrome({"op": "pending", "target": target, "on": on})
+    def mark_pending(self, target: str, on: bool = True) -> dict[str, Any]:
+        return self.perception({"op": "pending", "target": target, "on": on})
 
-    def chrome_shadow(self, target: str, patch: Any) -> dict[str, Any]:
-        return self.chrome({"op": "shadowMorph", "target": target, "patch": patch})
+    def preview(self, target: str, patch: Any) -> dict[str, Any]:
+        return self.perception({"op": "preview", "target": target, "patch": patch})
 
-    def chrome_filter(self, kv_key: str, query: str, out_target: str) -> dict[str, Any]:
-        return self.chrome(
-            {"op": "filterCached", "kvKey": kv_key, "query": query, "outTarget": out_target}
+    def filter_cached(self, kv_key: str, query: str, out_target: str) -> dict[str, Any]:
+        return self.perception(
+            {"op": "filter", "kvKey": kv_key, "query": query, "outTarget": out_target}
         )
 
-    def arm(
+    def mint_continuation(
         self,
         event: str,
         action: str,
@@ -97,7 +97,7 @@ class Surface:
         static_args: dict[str, Any] | None = None,
         args: dict[str, Any] | None = None,
     ) -> Continuation:
-        """Pre-mint a continuation Cap. Peer fills slots; Host still verifies."""
+        """Mint a continuation Cap. The Peer fills slots; the Host still verifies."""
         return mint_continuation(
             self.kernel,
             event,
@@ -149,10 +149,10 @@ class Surface:
         if auto_mint and not cap:
             cap = self.mint(action, once=once, args=args, seal_args=seal_args)
 
-        result, armed = self._compose_and_authorize(
+        result, continuations = self._compose_and_authorize(
             action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
         )
-        return self._deliver(result, drain_async=drain_async, continuations=armed)
+        return self._deliver(result, drain_async=drain_async, continuations=continuations)
 
     async def async_submit(
         self,
@@ -172,10 +172,10 @@ class Surface:
         if auto_mint and not cap:
             cap = self.mint(action, once=once, args=args, seal_args=seal_args)
 
-        result, armed = await self._async_compose_and_authorize(
+        result, continuations = await self._async_compose_and_authorize(
             action, args, cap, activity_id=activity_id, idempotency_key=idempotency_key
         )
-        return await self._async_deliver(result, drain_async=drain_async, continuations=armed)
+        return await self._async_deliver(result, drain_async=drain_async, continuations=continuations)
 
     def handle_event(self, event: dict[str, Any]) -> KernelResult | None:
         """Peer event → Host. Continuations (pre-minted Caps) win; else @on.
@@ -191,9 +191,9 @@ class Surface:
         cont = self._take_continuation(event)
         if cont is not None:
             args = resolve_args(cont, store=self.store, event=event)
-            result, armed = self._compose_and_authorize(cont.action, args, cont.cap)
-            if armed:
-                self.last_continuations = list(armed)
+            result, continuations = self._compose_and_authorize(cont.action, args, cont.cap)
+            if continuations:
+                self.last_continuations = list(continuations)
             return result
 
         fn = self._events.get(str(et))
@@ -243,9 +243,9 @@ class Surface:
         cont = self._take_continuation(event)
         if cont is not None:
             args = resolve_args(cont, store=self.store, event=event)
-            result, armed = await self._async_compose_and_authorize(cont.action, args, cont.cap)
-            if armed:
-                self.last_continuations = list(armed)
+            result, continuations = await self._async_compose_and_authorize(cont.action, args, cont.cap)
+            if continuations:
+                self.last_continuations = list(continuations)
             return result
 
         fn = self._events.get(str(et))

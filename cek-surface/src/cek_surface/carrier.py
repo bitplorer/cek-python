@@ -5,7 +5,7 @@ Opt-in: memory (in-process mock), websocket (when websockets installed),
 kernel (taught: in-process `cek_peer_pyo3`; leftover: `cek apply`).
 
 Carriers are transport only — not kernels. They move:
-  apply Result, chrome messages, async events, done.
+  apply Result, perception messages, async events, done.
 """
 
 from __future__ import annotations
@@ -32,8 +32,8 @@ class Carrier(Protocol):
         """Install session stamp on Peer. Optional on older carriers."""
         ...
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        """Perception-only chrome; not lineage."""
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        """Perception only. Not lineage. Not shared world."""
         ...
 
     def read_event(self, timeout: float | None = None) -> dict[str, Any] | None:
@@ -66,8 +66,8 @@ class MemoryCarrier:
     def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
         return self._roundtrip({"type": "stamp", "pairs": pairs})
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        return self._roundtrip({"type": "chrome", "chrome": chrome})
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        return self._roundtrip({"type": "perception", "perception": message})
 
     def read_event(self, timeout: float | None = None) -> dict[str, Any] | None:
         try:
@@ -106,7 +106,7 @@ class MemoryCarrier:
                 "receipt": {"landed": ops, "failed": []},
                 "world": {},
             }
-        return {"type": "chrome_applied", "world": {}}
+        return {"type": "perception_applied", "world": {}}
 
 
 # ── Subprocess NDJSON (default) ─────────────────────────────────────────────
@@ -137,8 +137,8 @@ class SubprocessNdjsonCarrier:
     def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
         return self._rpc({"type": "stamp", "pairs": pairs})
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        return self._rpc({"type": "chrome", "chrome": chrome})
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        return self._rpc({"type": "perception", "perception": message})
 
     def read_event(self, timeout: float | None = None) -> dict[str, Any] | None:
         # Blocking readline; timeout via non-portable select optional
@@ -226,8 +226,8 @@ class WebSocketCarrier:
     def stamp(self, pairs: list[dict[str, str]]) -> dict[str, Any]:
         return self._rpc({"type": "stamp", "pairs": pairs})
 
-    def chrome(self, chrome: dict[str, Any]) -> dict[str, Any]:
-        return self._rpc({"type": "chrome", "chrome": chrome})
+    def perception(self, message: dict[str, Any]) -> dict[str, Any]:
+        return self._rpc({"type": "perception", "perception": message})
 
     def read_event(self, timeout: float | None = None) -> dict[str, Any] | None:
         try:
@@ -253,10 +253,10 @@ class WebSocketCarrier:
             await self._ws.send(json.dumps(msg))
 
         self._asyncio.run_coroutine_threadsafe(_send(), self._loop).result(timeout=5)
-        # Wait for applied / chrome_applied (skip pure events)
+        # Wait for applied / perception_applied (skip pure events)
         while True:
             reply = self._inbox.get(timeout=30)
-            if reply.get("type") in ("applied", "chrome_applied"):
+            if reply.get("type") in ("applied", "perception_applied"):
                 return reply
             # push async events back for read_event consumers — keep simple: return only rpc
             self._inbox.put(reply)

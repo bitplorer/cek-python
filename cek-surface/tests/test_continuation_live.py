@@ -24,7 +24,7 @@ def _memory_surface() -> Surface:
         if msg.get("type") == "apply":
             ops = (msg.get("result") or {}).get("ops") or []
             return [{"type": "applied", "receipt": {"landed": ops, "failed": []}, "world": {"n": len(ops)}}]
-        return [{"type": "chrome_applied", "world": {}}]
+        return [{"type": "perception_applied", "world": {}}]
 
     mem.peer_handler = handler
     s.peer = PeerSession(carrier=mem)
