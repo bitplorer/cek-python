@@ -202,12 +202,8 @@
         const taught = await teach(data.result.error || data.result.kind);
         statusEl.textContent = data.result.error || data.result.kind;
         showError(taught);
-        if ((data.result.error || '').toLowerCase().includes('once')) {
-          onceSpent = true;
-          buyOnce.disabled = true;
-          buyOnce.textContent = 'Once used';
-        }
       }
+      return data;
     }
 
     const peer = mountBrowserPeer({
@@ -245,9 +241,13 @@
       buyOnce.disabled = true;
       try {
         const cap = await mintCap('cart.add', { id: 'sku-2', title: 'Widget Pro', price: 29.99 }, true);
-        await hostSubmit('cart.add', { id: 'sku-2', title: 'Widget Pro', price: 29.99 }, cap);
-        onceSpent = true;
-        buyOnce.textContent = 'Once used';
+        const data = await hostSubmit('cart.add', { id: 'sku-2', title: 'Widget Pro', price: 29.99 }, cap);
+        if (data?.result?.kind === 'ok') {
+          onceSpent = true;
+          buyOnce.textContent = 'Once used';
+        } else {
+          buyOnce.disabled = false;
+        }
       } catch (err) {
         buyOnce.disabled = false;
         showError(String(err.message || err));

@@ -44,7 +44,7 @@ const CATALOG_SET = pairSet(CATALOG_PAIRS);
 let sessionStamp = null;
 const drivers = new Map();
 
-// Phase 2 sample driver — not core S. Only fires if stamp contains the pair.
+// Sample driver. Not Baseline. It runs only when the stamp contains the pair.
 registerDriver("demo.echo", "ping", (world, p) => {
   world.kv.set("echo:last", p.value ?? p.message ?? true);
   world.log.push({ message: `echo:${p.value ?? p.message ?? "ping"}`, level: "info", t: Date.now() });

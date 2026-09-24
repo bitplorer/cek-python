@@ -66,6 +66,40 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
   const ir = createPeerIR({ coalesceMs });
   ir.bindWorld(w);
   let lastContinuations = [];
+  const armedTimers = new Map();
+
+  function storeObject() {
+    const store = {};
+    if (w.kv && typeof w.kv.forEach === "function") {
+      w.kv.forEach((value, key) => {
+        store[key] = value;
+      });
+    }
+    return store;
+  }
+
+  // A timer continuation is an event the Peer can observe. The Cap is already
+  // minted. Submitting it is not a mint.
+  function armContinuations(conts) {
+    if (typeof submitIntent !== "function") return;
+    for (const cont of conts || []) {
+      const eventName = String(cont?.event || "");
+      if (!eventName.startsWith("timer.fired")) continue;
+      const prev = armedTimers.get(eventName);
+      if (prev) clearTimeout(prev);
+      const ms = Number(cont.static_args?.ms ?? 0);
+      const handle = setTimeout(() => {
+        armedTimers.delete(eventName);
+        const id = eventName.includes(":") ? eventName.slice(eventName.indexOf(":") + 1) : undefined;
+        const args = resolveContinuationArgs(cont, {
+          store: storeObject(),
+          event: { type: "timer.fired", id },
+        });
+        submitIntent(cont.action, args, cont.cap);
+      }, Number.isFinite(ms) && ms > 0 ? ms : 0);
+      armedTimers.set(eventName, handle);
+    }
+  }
 
   function paint(op) {
     if (typeof document === "undefined" || op.ns !== "ui.dom") return;
@@ -103,6 +137,9 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
       if (typeof send === "function") send({ type: "stamp_ack", pairs: msg.pairs || [] });
     } else if (msg.type === "apply") {
       const receipt = applyResult(msg.result);
+      if (msg.result?.kind === "ok") {
+        armContinuations(msg.continuations || msg.result?.continuations || lastContinuations);
+      }
       if (typeof send === "function") send({ type: "applied", receipt, world: snapshot() });
     } else if (msg.type === "perception") {
       const c = msg.perception || {};

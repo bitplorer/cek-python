@@ -433,6 +433,12 @@ class Surface:
         self.last_continuations = remaining
         return cont
 
+    def _published_continuations(self, continuations) -> list:
+        """Caps minted by this handling only. An older row stays for handle_event."""
+        if not continuations:
+            return []
+        return self.continuation_dicts()
+
     def _deliver(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]:
         if continuations:
             self.last_continuations = [
@@ -443,8 +449,9 @@ class Surface:
         reply = peer.apply_result(result)
         self.last_world = reply.get("world") or {}
         payload = result.to_dict()
-        # A refusal must not send Caps from an earlier event.
-        conts = self.continuation_dicts() if result.ok else []
+        # Publish only the continuations this handling minted.
+        # A later success must not resend an earlier once-Cap.
+        conts = self._published_continuations(continuations) if result.ok else []
         if conts:
             payload["continuations"] = conts
         out: dict[str, Any] = {
@@ -467,7 +474,7 @@ class Surface:
         reply = await peer.async_apply_result(result)
         self.last_world = reply.get("world") or {}
         payload = result.to_dict()
-        conts = self.continuation_dicts() if result.ok else []
+        conts = self._published_continuations(continuations) if result.ok else []
         if conts:
             payload["continuations"] = conts
         out: dict[str, Any] = {
