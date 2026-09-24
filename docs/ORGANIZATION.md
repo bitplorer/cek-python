@@ -86,7 +86,7 @@ export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
 | Concern | Package |
 |---------|---------|
 | Cap mint / verify / once | **cek-host** |
-| Declared catalog (Python bind) | **cek-host.legal** (`LEGAL_PAIRS`; re-exported by cek-surface.catalog) |
+| Declared catalog (Python bind) | **cek-host.legal** (`CATALOG_PAIRS`; re-exported by cek-surface.catalog) |
 | Isolated Domain decls | **cek-contract** `domain.rs` |
 | Domain+driver structure gate | **cek-host.structure** / **cek-contract** `structure.rs` |
 | Bundled runtime stdlibs | `cek_surface/stdlibs/*.stdlib.json` (`search`, `demo.echo`) |
@@ -94,7 +94,7 @@ export CEK_PEER_PYO3=$PWD/../cek-runtime/target/release/libcek_peer_pyo3.so
 | Peer wrap (opt-in) | `carrier_kind="kernel"` → in-process `cek_peer_pyo3` (same `cek-peer-kernel`). `CEK_KERNEL_CARRIER=subprocess` → `cek apply`, not the default |
 | Host wrap (opt-in) | **cek_host.rust_wrap.RustHostKernel** → `cek host-json` |
 | Action handlers, Op constructors | **cek-surface** |
-| Peer apply drivers, Peer IR | **cek-surface/js** (`apply_s.mjs` honors stamp) |
+| Peer apply drivers, Peer IR | **cek-surface/js** (`apply_catalog.mjs` honors stamp) |
 | Carrier transport | **cek-surface** (`open_carrier`) |
 | Durable lineage stores (full) | cek-runtime Rust / future cek-host backends |
 | Law text | **cek-framework** |

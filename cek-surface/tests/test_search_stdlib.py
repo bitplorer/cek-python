@@ -10,15 +10,15 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_host import Host, IllegalOp
-from cek_host.legal import LEGAL_PAIRS, is_legal
+from cek_host.catalog import CATALOG_PAIRS, in_catalog
 from cek_surface import Op, Surface, search_clear, search_hits
 from cek_surface.domain_loader import load_bundled
 from cek_surface.domain_stdlib import REGISTRY, agree, stamp_from_agreement
 
 
 def test_search_not_in_s():
-    assert not is_legal("search", "hits")
-    assert ("search", "hits") not in LEGAL_PAIRS
+    assert not in_catalog("search", "hits")
+    assert ("search", "hits") not in CATALOG_PAIRS
 
 
 def test_load_bundled_search():
@@ -39,7 +39,7 @@ def test_stamp_and_project():
     r = h.submit(action="q", args={}, cap=h.mint("q"), project_ops=[op.to_dict()])
     assert r.kind == "ok"
     assert r.ops[0]["ns"] == "search"
-    h.stamp = LEGAL_PAIRS
+    h.stamp = CATALOG_PAIRS
     r2 = h.submit(action="q", args={}, cap=h.mint("q"), project_ops=[op.to_dict()])
     assert r2.kind == "dispatch_error"
 

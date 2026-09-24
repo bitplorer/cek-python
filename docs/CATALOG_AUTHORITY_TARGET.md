@@ -18,13 +18,13 @@ The letter **S** was a nickname for the declared catalog. It was not "shared wor
 | **FQ** | `ns.name` display/serialization only. Never the identity key. | wire |
 | **Baseline** | `("kv","set")` `("kv","delete")` `("log","append")`. Never grows. | core |
 | **UI seed** | `("ui.dom","morph")` `("ui.dom","restore")`. Domain pack `ui.dom`. | core |
-| **declared catalog** | Baseline ∪ UI seed. Five pairs. Python: `LEGAL_PAIRS`. JS frozen spelling: `S_PAIRS`. There is no law noun "S". | `cek-contract` + `cek_host.legal` |
+| **declared catalog** | Baseline ∪ UI seed. Five pairs. Python: `CATALOG_PAIRS`. JS name: `CATALOG_PAIRS`. There is no law noun "S". | `cek-contract` + `cek_host.catalog` |
 | **domain stdlib** | Versioned runtime module with seed pairs. Core ones: `baseline`, `ui`. | runtime (`cek_surface`) |
 | **session stamp** | Closed pair set for **one session**. Subset of the declared catalog, or that catalog plus an agreed extension. | Host builds, Peer honors |
 | **Host runtime** | Language port of decide (Python `cek-host`). | not the Rust kernel unless wrap is used |
 | **Host kernel** | Rust `cek-host-kernel` (reference decide). | `cek-runtime` |
 | **Peer kernel** | Rust `cek-peer-kernel` (reference apply). | `cek-runtime` |
-| **Peer runtime** | Language port / carrier that **wraps** apply (JS `apply_s`, or `cek_peer_pyo3`). | must not reimplement decide |
+| **Peer runtime** | Language port / carrier that **wraps** apply (JS `apply_catalog.mjs`, or `cek_peer_pyo3`). | must not reimplement decide |
 
 ## Pair identity
 
@@ -34,7 +34,7 @@ Tokens: lowercase ASCII letters and digits only. Dots belong in `ns`, never in `
 
 ## Two legality questions (do not mix)
 
-1. **Is it in the declared catalog?** — `is_legal`. This is not "lawful for this session".
+1. **Is it in the declared catalog?** — `in_catalog`. This is not "lawful for this session".
 2. **Is it in this session's stamp?** — what Host may project and what a JS Peer may apply. `in_stamp`.
 
 - No stamp + `open` → declared catalog (Baseline ∪ UI seed).
@@ -58,7 +58,7 @@ There is no on-the-wire `agree` message. Version intersection happens in the Hos
 
 | Path | Applies |
 |------|---------|
-| JS `apply_s.mjs` | Stamp ∩ (built-in catalog drivers ∪ `registerDriver`). Filename is a frozen spelling. |
+| JS `apply_catalog.mjs` | Stamp ∩ (built-in catalog drivers ∪ `registerDriver`). Filename is a name. |
 | Rust `cek-peer-kernel` / `cek_peer_pyo3` / subprocess `cek apply` | **Declared catalog only** (Baseline or Baseline+UI profile). Extensions are skipped. |
 | Memory carrier | Echoes ops (tests). Not a kernel. |
 

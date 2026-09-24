@@ -16,7 +16,7 @@ from .ops import Op, as_wire
 from .policy import SurfacePolicy
 from .session import PeerSession
 from .stamp import pairs_as_wire
-from cek_host.legal import default_stamp_pairs
+from cek_host.catalog import default_stamp_pairs
 
 
 Handler = Callable[["Ctx"], Union[list[Op], Awaitable[list[Op]]]]

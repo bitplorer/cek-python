@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from cek_host.legal import (
+from cek_host.catalog import (
     BASELINE_PAIRS,
     default_stamp_pairs,
     in_stamp,

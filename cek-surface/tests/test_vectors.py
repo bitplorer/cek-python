@@ -176,7 +176,7 @@ def run_case(case: dict) -> None:
         return
 
     if cid == "illegal_pair_rejected":
-        from cek_host.legal import IllegalOp, is_legal, project_wire
+        from cek_host.catalog import IllegalOp, in_catalog, project_wire
 
         for ns, name in case["illegal"]:
             try:
@@ -184,7 +184,7 @@ def run_case(case: dict) -> None:
                 raise AssertionError(f"Op({ns},{name}) must raise")
             except ValueError as e:
                 assert "illegal" in str(e)
-            assert not is_legal(ns, name)
+            assert not in_catalog(ns, name)
         wire = [{"ns": ns, "name": name, "payload": {}} for ns, name in case["illegal"]]
         try:
             project_wire(wire, unknown="strict")

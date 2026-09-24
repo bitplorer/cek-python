@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_host import Host, IllegalOp
-from cek_host.legal import BASELINE_PAIRS, LEGAL_PAIRS, project_wire
+from cek_host.catalog import BASELINE_PAIRS, CATALOG_PAIRS, project_wire
 from cek_host.structure import StructureError
 from cek_surface import Op, Surface
 from cek_surface.agreement import negotiate
@@ -60,7 +60,7 @@ def test_version_match_extends_stamp():
     )
     assert {a.name for a in agr.accepted} >= {"baseline", "ui", "demo.echo"}
     assert ("demo.echo", "ping") in agr.stamp
-    assert LEGAL_PAIRS <= agr.stamp
+    assert CATALOG_PAIRS <= agr.stamp
 
 
 def test_host_projects_extension_only_on_stamp():
@@ -77,11 +77,11 @@ def test_host_projects_extension_only_on_stamp():
 
 
 def test_op_stamped_constructor():
-    stamp = LEGAL_PAIRS | {("demo.echo", "ping")}
+    stamp = CATALOG_PAIRS | {("demo.echo", "ping")}
     op = OpCls.stamped("demo.echo", "ping", {"value": 1}, stamp)
     assert op.ns == "demo.echo"
     try:
-        OpCls.stamped("demo.echo", "ping", {}, LEGAL_PAIRS)
+        OpCls.stamped("demo.echo", "ping", {}, CATALOG_PAIRS)
         raise AssertionError("unstamped extension must fail")
     except ValueError:
         pass
@@ -113,7 +113,7 @@ def test_reject_core_overwrite_and_bad_structure():
 
 def test_surface_use_stdlibs_default_still_s():
     s = Surface(carrier_kind="memory")
-    assert s.stamp == LEGAL_PAIRS
+    assert s.stamp == CATALOG_PAIRS
     s.load_stdlib_dir(str(STDLIB_DIR))
     s.use_stdlibs(["baseline", "ui", "demo.echo"])
     assert ("demo.echo", "ping") in s.stamp
@@ -125,7 +125,7 @@ def test_project_wire_extension_tolerant():
         {"ns": "kv", "name": "set", "payload": {"key": "a", "value": 1}},
         {"ns": "demo.echo", "name": "ping", "payload": {}},
     ]
-    stamp = LEGAL_PAIRS | {("demo.echo", "ping")}
+    stamp = CATALOG_PAIRS | {("demo.echo", "ping")}
     assert len(project_wire(ops, stamp=stamp)) == 2
     try:
         project_wire(ops, unknown="strict")

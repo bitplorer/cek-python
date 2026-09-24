@@ -6,18 +6,18 @@
 
 import { createInterface } from "node:readline";
 import { createPeerIR } from "./peer_ir.mjs";
-import { applyResultS, createWorld, snapshotS, setStamp, getStamp } from "./apply_s.mjs";
+import { applyResult as applyWorld, createWorld, snapshotWorld, setStamp, getStamp } from "./apply_catalog.mjs";
 
 const ir = createPeerIR({ coalesceMs: 50 });
 const world = createWorld();
 ir.bindWorld(world);
 
 function snapshot() {
-  return snapshotS(world, { perception: ir.snapshotPerception() });
+  return snapshotWorld(world, { perception: ir.snapshotPerception() });
 }
 
 function applyResult(result) {
-  return applyResultS(world, result, { before: () => ir.beforeAuthorityApply() });
+  return applyWorld(world, result, { before: () => ir.beforeAuthorityApply() });
 }
 
 function stampPairs() {

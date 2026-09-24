@@ -7,7 +7,7 @@
  */
 
 import { createPeerIR } from "./peer_ir.mjs";
-import { applyS, createWorld, snapshotS, setStamp } from "./apply_s.mjs";
+import { applyOp as applyCatalogOp, createWorld, snapshotWorld, setStamp } from "./apply_catalog.mjs";
 
 export function createBrowserWorld() {
   return createWorld();
@@ -76,7 +76,7 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
   }
 
   function applyOp(op) {
-    applyS(w, op);
+    applyCatalogOp(w, op);
     paint(op);
   }
 
@@ -115,7 +115,7 @@ export function mountBrowserPeer({ send, submitIntent, coalesceMs = 50, world = 
   }
 
   function snapshot() {
-    return snapshotS(w, {
+    return snapshotWorld(w, {
       perception: ir.snapshotPerception(),
       continuations: lastContinuations,
     });
