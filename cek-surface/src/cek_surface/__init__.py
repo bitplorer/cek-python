@@ -20,14 +20,14 @@ from .ops import (
     search_hits,
     search_clear,
 )
-from .catalog import LEGAL_FQS, LEGAL_PAIRS, IllegalOp, is_legal, project
+from .catalog import CATALOG_FQS, CATALOG_PAIRS, IllegalOp, in_catalog, project
 from .policy import PolicyDecision, SurfacePolicy
 from .session import PeerSession
 from .surface import Ctx, Surface
 from .host import ActionContext, Intent, Result
 
 __all__ = [
-    "Op", "plan", "as_wire", "LEGAL_FQS", "LEGAL_PAIRS", "IllegalOp", "is_legal", "project",
+    "Op", "plan", "as_wire", "CATALOG_FQS", "CATALOG_PAIRS", "IllegalOp", "in_catalog", "project",
     "signal_set", "navigate_to", "set_loading", "form_errors", "clear_form_errors",
     "search_hits", "search_clear",
     "Surface", "Ctx",

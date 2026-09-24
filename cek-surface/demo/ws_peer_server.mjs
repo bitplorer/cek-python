@@ -23,8 +23,8 @@ try {
 }
 
 const { createPeerIR } = await import(pathToFileURL(path.join(root, "js/peer_ir.mjs")).href);
-const { applyResultS, createWorld, snapshotS } = await import(
-  pathToFileURL(path.join(root, "js/apply_s.mjs")).href
+const { applyResult: applyWorld, createWorld, snapshotWorld } = await import(
+  pathToFileURL(path.join(root, "js/apply_catalog.mjs")).href
 );
 
 const world = createWorld();
@@ -32,11 +32,11 @@ const ir = createPeerIR({ coalesceMs: 50 });
 ir.bindWorld(world);
 
 function snapshot() {
-  return snapshotS(world, { perception: ir.snapshotPerception() });
+  return snapshotWorld(world, { perception: ir.snapshotPerception() });
 }
 
 function applyResult(result) {
-  return applyResultS(world, result, { before: () => ir.beforeAuthorityApply() });
+  return applyWorld(world, result, { before: () => ir.beforeAuthorityApply() });
 }
 
 const port = Number(process.env.PORT || 8766);

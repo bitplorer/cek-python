@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Sequence
 
-from .catalog import LEGAL_FQS, fq_of, is_legal, project
-from cek_host.legal import name_is_token
+from .catalog import CATALOG_FQS, fq_of, in_catalog, project
+from cek_host.catalog import name_is_token
 from cek_host.structure import StructureError, validate_pair
 
 
@@ -26,7 +26,7 @@ class Op:
         if stamp is not None:
             if (ns, name) not in stamp:
                 raise ValueError(f"illegal pair: {fq_of(ns, name)} — absent from session stamp")
-        elif not is_legal(ns, name):
+        elif not in_catalog(ns, name):
             raise ValueError(f"illegal pair: {fq_of(ns, name)}")
         self.ns = ns
         self.name = name
@@ -182,7 +182,7 @@ __all__ = [
     "Op",
     "plan",
     "as_wire",
-    "LEGAL_FQS",
+    "CATALOG_FQS",
     "signal_set",
     "navigate_to",
     "set_loading",

@@ -1,7 +1,6 @@
 /**
  * Apply one op from the declared catalog, plus stamped extensions.
- * File name apply_s.mjs and export S_PAIRS are frozen spellings.
- * "S" is not a law noun. The set is Baseline ∪ UI seed.
+ * The set is Baseline ∪ the UI seed. Pair identity is (ns, name).
  * Pair identity: (ns, name), name is one token.
  * No mint. No recipes. Undeclared / unstamped pair throws.
  *
@@ -9,7 +8,7 @@
  * structure-valid extension pairs; those need a registered driver.
  */
 
-export const S_PAIRS = [
+export const CATALOG_PAIRS = [
   ["kv", "set"],
   ["kv", "delete"],
   ["log", "append"],
@@ -41,7 +40,7 @@ function nameIsToken(name) {
   return !!name && name === name.toLowerCase() && !name.includes(".") && /^[a-z0-9]+$/.test(name);
 }
 
-const S_SET = pairSet(S_PAIRS);
+const CATALOG_SET = pairSet(CATALOG_PAIRS);
 let sessionStamp = null;
 const drivers = new Map();
 
@@ -91,7 +90,7 @@ export function setStamp(pairs) {
   for (const p of pairs) {
     const ns = String(Array.isArray(p) ? p[0] : p.ns);
     const name = String(Array.isArray(p) ? p[1] : p.name);
-    if (S_SET.has(keyOf(ns, name))) {
+    if (CATALOG_SET.has(keyOf(ns, name))) {
       next.add(keyOf(ns, name));
       continue;
     }
@@ -108,7 +107,7 @@ export function clearStamp() {
 }
 
 export function stampAllows(ns, name) {
-  const table = sessionStamp || S_SET;
+  const table = sessionStamp || CATALOG_SET;
   return table.has(keyOf(ns, name));
 }
 
@@ -151,7 +150,7 @@ function applyBuiltin(world, ns, name, p) {
   return false;
 }
 
-export function applyS(world, op) {
+export function applyOp(world, op) {
   const p = op.payload || {};
   const ns = String(op.ns || "");
   const name = String(op.name || "");
@@ -170,13 +169,13 @@ export function applyS(world, op) {
   throw new Error(`illegal pair: ${ns}.${name} — no driver`);
 }
 
-export function applyResultS(world, result, { before } = {}) {
+export function applyResult(world, result, { before } = {}) {
   const receipt = { landed: [], failed: [] };
   if (!result || result.kind !== "ok") return receipt;
   if (typeof before === "function") before();
   for (const op of result.ops || []) {
     try {
-      applyS(world, op);
+      applyOp(world, op);
       receipt.landed.push(op);
     } catch (e) {
       receipt.failed.push({ op, error: String(e) });
@@ -185,7 +184,7 @@ export function applyResultS(world, result, { before } = {}) {
   return receipt;
 }
 
-export function snapshotS(world, extra = {}) {
+export function snapshotWorld(world, extra = {}) {
   return {
     kv: Object.fromEntries(world.kv),
     ui: Object.fromEntries(world.ui),

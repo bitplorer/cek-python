@@ -11,19 +11,19 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_host import Host, IllegalOp, explain
-from cek_host.legal import (
+from cek_host.catalog import (
     BASELINE_PAIRS,
     DOMAIN_PACKS,
-    LEGAL_FQS,
-    LEGAL_PAIRS,
-    is_legal,
+    CATALOG_FQS,
+    CATALOG_PAIRS,
+    in_catalog,
     pack_is_scoped,
     project,
     project_wire,
 )
 from cek_surface import Op
-from cek_surface.catalog import LEGAL_FQS as SURF_FQS
-from cek_surface.catalog import LEGAL_PAIRS as SURF_PAIRS
+from cek_surface.catalog import CATALOG_FQS as SURF_FQS
+from cek_surface.catalog import CATALOG_PAIRS as SURF_PAIRS
 
 
 DECLARED = frozenset(
@@ -50,10 +50,10 @@ def rust_declared_pairs() -> set[tuple[str, str]]:
 
 
 def test_declared_catalog_is_exactly_five_pairs():
-    assert LEGAL_PAIRS == DECLARED
+    assert CATALOG_PAIRS == DECLARED
     assert SURF_PAIRS == DECLARED
-    assert LEGAL_FQS == SURF_FQS
-    assert LEGAL_FQS == frozenset(f"{n}.{m}" for n, m in DECLARED)
+    assert CATALOG_FQS == SURF_FQS
+    assert CATALOG_FQS == frozenset(f"{n}.{m}" for n, m in DECLARED)
 
 
 def test_python_s_matches_rust_decls():
@@ -96,13 +96,13 @@ def test_illegal_constructors_raise():
             raise AssertionError(f"expected raise for {ns}.{name}")
         except ValueError as e:
             assert "illegal" in str(e)
-        assert not is_legal(ns, name)
+        assert not in_catalog(ns, name)
 
 
 def test_split_alias_is_not_legal():
-    assert is_legal("ui.dom", "morph")
-    assert not is_legal("ui", "dom.morph")
-    assert ("ui", "dom.morph") not in LEGAL_PAIRS
+    assert in_catalog("ui.dom", "morph")
+    assert not in_catalog("ui", "dom.morph")
+    assert ("ui", "dom.morph") not in CATALOG_PAIRS
 
 
 def test_project_strict_raises_on_unknown():

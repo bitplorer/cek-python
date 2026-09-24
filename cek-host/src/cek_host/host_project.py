@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .legal import project_wire
+from .catalog import project_wire
 
 
 def project_action(action: str, args: dict[str, Any]) -> list[dict[str, Any]]:

@@ -4,7 +4,7 @@ The law has no noun "S". This module has three sets:
 
 - Baseline: kv set/delete, log append. Never grows.
 - UI seed: ui.dom morph/restore. The document pack this Host and Peer ship.
-- Declared catalog: Baseline ∪ UI seed. Python name: LEGAL_PAIRS.
+- Declared catalog: Baseline ∪ UI seed. Python name: CATALOG_PAIRS.
 
 A session stamp is a different set: only those pairs, for this session.
 Undeclared pair is not in the catalog. `ui` + `dom.morph` is not `ui.dom.morph`.
@@ -33,7 +33,7 @@ DOMAIN_PACKS: dict[str, tuple[tuple[str, str], ...]] = {
 DOMAIN_PAIRS: frozenset[tuple[str, str]] = frozenset(
     p for pairs in DOMAIN_PACKS.values() for p in pairs
 )
-LEGAL_PAIRS: frozenset[tuple[str, str]] = BASELINE_PAIRS | DOMAIN_PAIRS
+CATALOG_PAIRS: frozenset[tuple[str, str]] = BASELINE_PAIRS | DOMAIN_PAIRS
 """Declared catalog. Not a session stamp. Not the letter S."""
 
 
@@ -55,7 +55,7 @@ def fq_of(ns: str, name: str) -> str:
 
 BASELINE_FQS: frozenset[str] = frozenset(fq_of(*p) for p in BASELINE_PAIRS)
 DOMAIN_FQS: frozenset[str] = frozenset(fq_of(*p) for p in DOMAIN_PAIRS)
-LEGAL_FQS: frozenset[str] = BASELINE_FQS | DOMAIN_FQS
+CATALOG_FQS: frozenset[str] = BASELINE_FQS | DOMAIN_FQS
 
 _PAIR_TO_PACK: dict[tuple[str, str], str] = {
     pair: pack for pack, pairs in DOMAIN_PACKS.items() for pair in pairs
@@ -74,9 +74,9 @@ def is_domain_pair(ns: str, name: str) -> bool:
     return name_is_token(name) and (ns, name) in DOMAIN_PAIRS
 
 
-def is_legal(ns: str, name: str) -> bool:
+def in_catalog(ns: str, name: str) -> bool:
     """True when the pair is in the declared catalog. Not "lawful for this session"."""
-    return name_is_token(name) and (ns, name) in LEGAL_PAIRS
+    return name_is_token(name) and (ns, name) in CATALOG_PAIRS
 
 
 def pack_of_pair(ns: str, name: str) -> str | None:
@@ -117,7 +117,7 @@ def default_stamp_pairs() -> frozenset[tuple[str, str]]:
     """
     if is_strict():
         return BASELINE_PAIRS
-    return LEGAL_PAIRS
+    return CATALOG_PAIRS
 
 
 def normalize_stamp(
@@ -139,7 +139,7 @@ def normalize_stamp(
             ns, name = str(item.get("ns") or ""), str(item.get("name") or "")
         else:
             ns, name = item[0], item[1]
-        if is_legal(ns, name):
+        if in_catalog(ns, name):
             out.add((ns, name))
             continue
         if not allow_extension:

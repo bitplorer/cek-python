@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable
 
-from cek_host.legal import BASELINE_PAIRS, DOMAIN_PACKS, LEGAL_PAIRS, is_legal, name_is_token
+from cek_host.catalog import BASELINE_PAIRS, DOMAIN_PACKS, CATALOG_PAIRS, in_catalog, name_is_token
 from cek_host.structure import StructureError, validate_pair
 
 
@@ -73,7 +73,7 @@ class Registry:
             if not name_is_token(name):
                 raise StructureError(f"{stdlib.name}: name must be a token: {name!r}")
             validate_pair(ns, name)
-            if stdlib.core and not is_legal(ns, name):
+            if stdlib.core and not in_catalog(ns, name):
                 raise StructureError(f"core stdlib {stdlib.name} has undeclared pair {ns}.{name}")
         if stdlib.name in self._items and self._items[stdlib.name].core and not stdlib.core:
             raise StructureError(f"cannot overwrite core stdlib {stdlib.name}")
@@ -148,4 +148,4 @@ def default_agreement_stamp() -> frozenset[tuple[str, str]]:
     return stamp_from_agreement(agree(["baseline", "ui"], ["baseline", "ui"]))
 
 
-assert default_agreement_stamp() == LEGAL_PAIRS
+assert default_agreement_stamp() == CATALOG_PAIRS

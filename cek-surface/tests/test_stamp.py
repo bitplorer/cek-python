@@ -1,4 +1,4 @@
-"""Session stamp + domain-stdlib agreement. Pair identity. Via negativa."""
+"""Session stamp and domain-stdlib agreement. Pair identity is (ns, name)."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_host import Host, IllegalOp
-from cek_host.legal import (
+from cek_host.catalog import (
     BASELINE_PAIRS,
-    LEGAL_PAIRS,
+    CATALOG_PAIRS,
     default_stamp_pairs,
     in_stamp,
     normalize_stamp,
@@ -31,7 +31,7 @@ from cek_surface.stamp import pairs_as_wire
 
 
 def test_default_agreement_is_s():
-    assert default_agreement_stamp() == LEGAL_PAIRS
+    assert default_agreement_stamp() == CATALOG_PAIRS
     assert len(default_agreement_stamp()) == 5
 
 
@@ -163,7 +163,7 @@ def test_strict_mode_default_stamp_is_baseline():
         from cek_host.catalog_mode import get_catalog_mode
         from importlib import reload
         import cek_host.catalog_mode as cm
-        import cek_host.legal as legal
+        import cek_host.catalog as legal
 
         reload(cm)
         reload(legal)
@@ -184,7 +184,7 @@ def test_strict_mode_default_stamp_is_baseline():
             os.environ["CEK_CATALOG_MODE"] = prev
         from importlib import reload
         import cek_host.catalog_mode as cm
-        import cek_host.legal as legal
+        import cek_host.catalog as legal
 
         reload(cm)
         reload(legal)

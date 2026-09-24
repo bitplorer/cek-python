@@ -12,13 +12,13 @@ from .doctor import DEMO_SECRET, MIN_SECRET_LEN, DoctorReport, doctor
 from .explain import Explanation, explain
 from .host import Host, KernelResult, LAW_GENERATION
 from .idem import FileIdemBackend, IdemConflict, IdemBackend, MemoryIdemBackend
-from .legal import (
+from .catalog import (
     IllegalOp,
-    LEGAL_FQS,
-    LEGAL_PAIRS,
+    CATALOG_FQS,
+    CATALOG_PAIRS,
     default_stamp_pairs,
     in_stamp,
-    is_legal,
+    in_catalog,
     normalize_stamp,
     project_wire,
 )
@@ -66,9 +66,9 @@ __all__ = [
     "MIN_SECRET_LEN",
     "LAW_GENERATION",
     "project_wire",
-    "is_legal",
-    "LEGAL_FQS",
-    "LEGAL_PAIRS",
+    "in_catalog",
+    "CATALOG_FQS",
+    "CATALOG_PAIRS",
     "IllegalOp",
     "default_stamp_pairs",
     "normalize_stamp",
