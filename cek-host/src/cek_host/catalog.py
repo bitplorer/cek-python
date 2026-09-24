@@ -9,8 +9,8 @@ The law has no noun "S". This module has three sets:
 A session stamp is a different set: only those pairs, for this session.
 Undeclared pair is not in the catalog. `ui` + `dom.morph` is not `ui.dom.morph`.
 
-Host `project_wire(..., unknown="strict")` **raises** `IllegalOp`.
-A non-empty illegal batch must never become `kind=ok` with empty ops.
+Host `project_wire(..., unknown="strict")` **raises** `UndeclaredPair`.
+A non-empty undeclared batch must never become `kind=ok` with empty ops.
 """
 
 from __future__ import annotations
@@ -37,13 +37,13 @@ CATALOG_PAIRS: frozenset[tuple[str, str]] = BASELINE_PAIRS | DOMAIN_PAIRS
 """Declared catalog. Not a session stamp. Not the letter S."""
 
 
-class IllegalOp(ValueError):
+class UndeclaredPair(ValueError):
     """Undeclared `(ns, name)`. Host maps this to `dispatch_error`."""
 
     def __init__(self, ns: str, name: str, detail: str = ""):
         self.ns = ns
         self.name = name
-        msg = f"illegal pair: {ns}.{name}"
+        msg = f"undeclared pair: {ns}.{name}"
         if detail:
             msg = f"{msg} — {detail}"
         super().__init__(msg)
@@ -177,7 +177,7 @@ def project_wire(
     unknown: str = "strict",
     stamp: Iterable[tuple[str, str] | dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Keep session-legal pairs. Strict unknown raises `IllegalOp` (never silent ok+[]).
+    """Keep pairs that are in the session stamp. An unknown pair raises `UndeclaredPair` (never silent ok+[]).
 
     With a stamp: membership in the stamp is the only legality.
     Without a stamp: default_stamp_pairs() (declared catalog, or Baseline in strict).
@@ -190,7 +190,7 @@ def project_wire(
         if session_legal(ns, name, closed):
             out.append(op)
         elif unknown == "strict":
-            raise IllegalOp(ns, name, "absent from session stamp" if closed is not None else "")
+            raise UndeclaredPair(ns, name, "absent from session stamp" if closed is not None else "")
     return out
 
 
@@ -212,14 +212,14 @@ def project(
             if closed is None or in_stamp(closed, ns, name):
                 out.append(op)
             elif unknown == "strict":
-                raise IllegalOp(ns, name, "absent from session stamp")
+                raise UndeclaredPair(ns, name, "absent from session stamp")
             continue
         pack = pack_of_pair(ns, name)
         if pack is not None and pack in allowed:
             if closed is None or in_stamp(closed, ns, name):
                 out.append(op)
             elif unknown == "strict":
-                raise IllegalOp(ns, name, "absent from session stamp")
+                raise UndeclaredPair(ns, name, "absent from session stamp")
             continue
         if pack is not None:
             continue
@@ -228,5 +228,5 @@ def project(
             out.append(op)
             continue
         if unknown == "strict":
-            raise IllegalOp(ns, name)
+            raise UndeclaredPair(ns, name)
     return out

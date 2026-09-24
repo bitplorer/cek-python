@@ -1,7 +1,7 @@
-"""Taught kernel carrier — in-process cek_peer_pyo3. No second Peer kernel.
+"""In-process peer — cek_peer_pyo3. No second peer.
 
 Live B-set (kv.*, log.append, ui.dom.*) runs when the PyO3 module is present.
-Fail-closed and leftover-teaching assertions always run (CI stays green).
+Fail-closed assertions always run.
 """
 
 from __future__ import annotations
@@ -159,7 +159,7 @@ def _clear_fake_mod() -> None:
     sys.modules.pop("cek_peer_pyo3", None)
 
 
-def test_taught_path_fails_closed_without_pyo3():
+def test_in_process_peer_fails_closed_without_pyo3():
     _clear_fake_mod()
     env = os.environ.get("CEK_PEER_PYO3")
     carrier = os.environ.get("CEK_KERNEL_CARRIER")
@@ -198,7 +198,7 @@ def test_taught_path_fails_closed_without_pyo3():
             os.environ["CEK_KERNEL_CARRIER"] = carrier
 
 
-def test_bin_path_is_leftover_only():
+def test_bin_path_requires_subprocess():
     carrier = os.environ.get("CEK_KERNEL_CARRIER")
     os.environ.pop("CEK_KERNEL_CARRIER", None)
     try:
@@ -218,7 +218,7 @@ def test_bin_path_is_leftover_only():
             os.environ["CEK_KERNEL_CARRIER"] = carrier
 
 
-def test_taught_lifecycle_and_return_contract():
+def test_in_process_lifecycle_and_return_contract():
     env = os.environ.get("CEK_PEER_PYO3")
     os.environ.pop("CEK_PEER_PYO3", None)
     _install_fake_mod()
@@ -276,7 +276,7 @@ def test_kernel_peer_source_has_no_mint():
     assert "construct" in text and "bind" in text and "release" in text
 
 
-def test_taught_default_is_not_subprocess():
+def test_default_backend_is_in_process():
     text = (ROOT / "src" / "cek_surface" / "kernel_peer.py").read_text(encoding="utf-8")
     assert "in-process" in text
     assert "backend=\"subprocess\"" in text or "backend='subprocess'" in text
@@ -321,35 +321,35 @@ def test_live_b_set_when_pyo3_present():
     print("kernel peer live B-set ok")
 
 
-def test_parity_vs_subprocess_leftover_when_both_present():
+def test_parity_vs_subprocess_when_both_present():
     if not _have_pyo3():
-        print("kernel peer leftover parity skip (no cek_peer_pyo3)")
+        print("kernel peer parity skip (no cek_peer_pyo3)")
         return
     from cek_host.rust_wrap import find_cek_bin
 
     exe = find_cek_bin()
     if not exe:
-        print("kernel peer leftover parity skip (no cek binary)")
+        print("kernel peer parity skip (no cek binary)")
         return
     for case in B_SET:
-        taught = apply_via_kernel(case["result"], profile=case["profile"])
-        leftover = apply_via_kernel(
+        in_process = apply_via_kernel(case["result"], profile=case["profile"])
+        via_subprocess = apply_via_kernel(
             case["result"],
             profile=case["profile"],
             backend="subprocess",
             bin_path=exe,
         )
-        assert json.dumps(taught, sort_keys=True) == json.dumps(leftover, sort_keys=True), case["id"]
-    print("kernel peer leftover parity ok")
+        assert json.dumps(in_process, sort_keys=True) == json.dumps(via_subprocess, sort_keys=True), case["id"]
+    print("kernel peer parity ok")
 
 
 if __name__ == "__main__":
-    test_taught_path_fails_closed_without_pyo3()
-    test_bin_path_is_leftover_only()
-    test_taught_lifecycle_and_return_contract()
+    test_in_process_peer_fails_closed_without_pyo3()
+    test_bin_path_requires_subprocess()
+    test_in_process_lifecycle_and_return_contract()
     test_open_carrier_kernel_kind()
     test_kernel_peer_source_has_no_mint()
-    test_taught_default_is_not_subprocess()
+    test_default_backend_is_in_process()
     test_live_b_set_when_pyo3_present()
-    test_parity_vs_subprocess_leftover_when_both_present()
+    test_parity_vs_subprocess_when_both_present()
     print("kernel peer ok")

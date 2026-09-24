@@ -1,8 +1,8 @@
 """Phase 3 — wrap Rust kernels.
 
-Peer apply is taught through `cek_peer_pyo3` (see test_kernel_peer.py).
-This file keeps Host wrap (`cek host-json`) and the leftover subprocess
-Peer door (`backend="subprocess"`). Skip (exit 0) if `cek` is not built.
+In-process apply is cek_peer_pyo3 (see test_kernel_peer.py).
+This file keeps the Host wrap (`cek host-json`) and subprocess
+`cek apply` (`backend="subprocess"`). Skip if `cek` is not built.
 """
 
 from __future__ import annotations
@@ -21,9 +21,9 @@ from cek_surface.kernel_peer import KernelPeerCarrier, apply_via_kernel
 def test_find_or_skip():
     exe = find_cek_bin()
     if not exe:
-        print("phase3 wrap skip (no cek binary; leftover Host/Peer doors)")
+        print("phase3 wrap skip (no cek binary)")
         return
-    # Leftover Peer door: kv.set lands (taught path is test_kernel_peer)
+    # Subprocess peer: kv.set lands. In-process path is test_kernel_peer.
     resp = apply_via_kernel(
         {
             "kind": "ok",
@@ -64,7 +64,7 @@ def test_find_or_skip():
     assert applied["type"] == "applied"
     assert applied["world"]["kv"]["z"] == 9
     c.close()
-    print("phase3 wrap ok (leftover subprocess + Host wrap)")
+    print("phase3 wrap ok (subprocess + Host wrap)")
 
 
 if __name__ == "__main__":

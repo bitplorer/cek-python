@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_host import Host, IllegalOp
+from cek_host import Host, UndeclaredPair
 from cek_host.catalog import BASELINE_PAIRS, CATALOG_PAIRS, project_wire
 from cek_host.structure import StructureError
 from cek_surface import Op, Surface
@@ -130,7 +130,7 @@ def test_project_wire_extension_tolerant():
     try:
         project_wire(ops, unknown="strict")
         raise AssertionError("no stamp → extension illegal")
-    except IllegalOp:
+    except UndeclaredPair:
         pass
 
 

@@ -28,11 +28,11 @@ The letter **S** was a nickname for the declared catalog. It was not "shared wor
 
 ## Pair identity
 
-`("ui.dom", "morph")` is legal. `("ui", "dom.morph")` is not — same FQ string, different pair.
+`("ui.dom", "morph")` is in the catalog. `("ui", "dom.morph")` is not — same FQ string, different pair.
 
 Tokens: lowercase ASCII letters and digits only. Dots belong in `ns`, never in `name`.
 
-## Two legality questions (do not mix)
+## Two questions (do not mix)
 
 1. **Is it in the declared catalog?** — `in_catalog`. This is not "lawful for this session".
 2. **Is it in this session's stamp?** — what Host may project and what a JS Peer may apply. `in_stamp`.

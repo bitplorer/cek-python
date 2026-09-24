@@ -25,9 +25,9 @@ class Op:
     ):
         if stamp is not None:
             if (ns, name) not in stamp:
-                raise ValueError(f"illegal pair: {fq_of(ns, name)} — absent from session stamp")
+                raise ValueError(f"undeclared pair: {fq_of(ns, name)} — absent from session stamp")
         elif not in_catalog(ns, name):
-            raise ValueError(f"illegal pair: {fq_of(ns, name)}")
+            raise ValueError(f"undeclared pair: {fq_of(ns, name)}")
         self.ns = ns
         self.name = name
         self.payload = payload or {}
@@ -36,7 +36,7 @@ class Op:
     def stamped(ns: str, name: str, payload: dict[str, Any] | None, stamp: frozenset) -> "Op":
         """Compose an extension pair that is present on the session stamp."""
         if not name_is_token(name):
-            raise ValueError(f"illegal pair: {fq_of(ns, name)}")
+            raise ValueError(f"undeclared pair: {fq_of(ns, name)}")
         try:
             validate_pair(ns, name)
         except StructureError as e:

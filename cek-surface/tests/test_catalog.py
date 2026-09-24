@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_host import Host, IllegalOp, explain
+from cek_host import Host, UndeclaredPair, explain
 from cek_host.catalog import (
     BASELINE_PAIRS,
     DOMAIN_PACKS,
@@ -56,7 +56,7 @@ def test_declared_catalog_is_exactly_five_pairs():
     assert CATALOG_FQS == frozenset(f"{n}.{m}" for n, m in DECLARED)
 
 
-def test_python_s_matches_rust_decls():
+def test_python_catalog_matches_rust_decls():
     rust = rust_declared_pairs()
     assert rust == set(DECLARED), (sorted(rust), sorted(DECLARED))
 
@@ -95,7 +95,7 @@ def test_illegal_constructors_raise():
             Op(ns, name, {})
             raise AssertionError(f"expected raise for {ns}.{name}")
         except ValueError as e:
-            assert "illegal" in str(e)
+            assert "undeclared" in str(e)
         assert not in_catalog(ns, name)
 
 
@@ -113,12 +113,12 @@ def test_project_strict_raises_on_unknown():
     try:
         project_wire(legal + bad, unknown="strict")
         raise AssertionError("strict mixed batch must raise")
-    except IllegalOp as e:
+    except UndeclaredPair as e:
         assert e.ns == "nav" and e.name == "push"
     try:
         project_wire(legal + alias, unknown="strict")
         raise AssertionError("split-alias must raise")
-    except IllegalOp:
+    except UndeclaredPair:
         pass
     assert project_wire(legal + bad, unknown="tolerant") == legal
     assert project(legal + alias, packs=["ui.dom"], unknown="tolerant") == legal
@@ -139,11 +139,11 @@ def test_host_illegal_project_ops_is_dispatch_error():
     )
     assert mixed.kind == "dispatch_error"
     assert mixed.ops == []
-    assert "illegal" in (mixed.error or "")
+    assert "undeclared" in (mixed.error or "")
     empty = h.submit(action="ping", args={}, cap=h.mint("ping"), project_ops=[])
     assert empty.kind == "ok" and empty.ops == []
-    taught = explain(mixed.error)
-    assert taught.code == "illegal_op"
+    explained = explain(mixed.error)
+    assert explained.code == "undeclared_pair"
 
 
 def test_baseline_pairs_untouched():
@@ -152,7 +152,7 @@ def test_baseline_pairs_untouched():
 
 if __name__ == "__main__":
     test_declared_catalog_is_exactly_five_pairs()
-    test_python_s_matches_rust_decls()
+    test_python_catalog_matches_rust_decls()
     test_packs_are_scoped()
     test_constructors_emit_s_only()
     test_illegal_constructors_raise()
