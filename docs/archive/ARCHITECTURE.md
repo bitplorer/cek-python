@@ -68,9 +68,9 @@ Sole legal wire names — **pair identity**, not concatenated FQ:
 | Baseline | `kv.set`, `kv.delete`, `log.append` | eternal (CORE 11) |
 | `ui.dom` | `ui.dom.morph`, `ui.dom.restore` | Domain (CORE 16: not frozen) |
 
-Decls live in `cek-contract` (`baseline.rs` + `domain.rs`). Python binds them in `cek_host.legal` (Surface re-exports). Undeclared pair is illegal. `("ui", "dom.morph")` is not `("ui.dom", "morph")`.
+Decls live in `cek-contract` (`baseline.rs` + `domain.rs`). Python binds them in `cek_host.catalog` (Surface re-exports). An undeclared pair is refused. `("ui", "dom.morph")` is not `("ui.dom", "morph")`.
 
-Host macros (`navigate_to`, `signal_set`, `set_loading`, `form_errors`) expand in Python to S only. They never appear as Peer recipes. Events (`timer.fired`, `http.response`) are perception, not Ops.
+Host macros (`navigate_to`, `signal_set`, `set_loading`, `form_errors`) expand in Python to declared-catalog ops only. They never appear as Peer recipes. Events (`timer.fired`, `http.response`) are perception, not Ops.
 
 Phase 2 (not shipped): `ui.shell`, `ui.tabs`, families/presets.
 
