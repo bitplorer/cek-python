@@ -83,6 +83,9 @@ def test_live_continuation_via_injected_event():
         assert all(fq in {"kv.set", "kv.delete", "log.append", "ui.dom.morph", "ui.dom.restore"} for fq in fqs)
         assert "timer.set" not in fqs
         assert out.get("continuations")
+        later = s.submit("cart.clear", {}, auto_mint=True, drain_async=False)
+        assert later["result"]["kind"] == "ok"
+        assert later.get("continuations") == []
         r = s.handle_event({"type": "timer.fired", "id": "search-debounce"})
         assert r is not None and r.kind == "ok"
         hits = s.store.get("search.results") or []
