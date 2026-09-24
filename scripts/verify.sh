@@ -15,6 +15,7 @@ fi
 python3 -c "from cek_host import Host; from cek_surface import Surface, Op; print('import ok')"
 python3 -c "from cek_host.cap import args_hash; assert args_hash({'sku':'abc-123','qty':2})=='96e4f83e3793b646323a67f314b51044'; print('oracle ok')"
 python3 cek-surface/tests/test_core.py
+python3 cek-surface/tests/test_public_020.py
 python3 cek-surface/tests/test_catalog.py
 python3 cek-surface/tests/test_composition.py
 python3 cek-surface/tests/test_stamp.py

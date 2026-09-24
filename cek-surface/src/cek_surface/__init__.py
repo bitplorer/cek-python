@@ -26,6 +26,8 @@ from .session import PeerSession
 from .surface import Ctx, Surface
 from .host import ActionContext, Intent, Result
 
+__version__ = "0.2.0"
+
 __all__ = [
     "Op", "plan", "as_wire", "CATALOG_FQS", "CATALOG_PAIRS", "UndeclaredPair", "in_catalog", "project",
     "signal_set", "navigate_to", "set_loading", "form_errors", "clear_form_errors",

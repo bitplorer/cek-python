@@ -1,6 +1,6 @@
 """cek-host — Python Host runtime (language port of decide).
 
-Public surface is stable. Implementation lives in host.py.
+Public surface since 0.2.0. ``cek_host.legal`` is not installed.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ from .lineage import (
 from .once import FileOnceBackend, MemoryOnceBackend, OnceBackend, OnceUsed, StoreDown
 from .rust_wrap import RustHostKernel, find_cek_bin
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
 __all__ = [
     "Host",
