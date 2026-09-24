@@ -19,7 +19,7 @@ python -m cek_host create-app ./hello-cek && python ./hello-cek/app.py
 
 **Start here:** [START.md](./START.md)
 
-Tree **0.2.0**. `cek-host` and `cek-surface` publish together. 0.1.3 is the `cek_host.legal` wheel and does not install. See [CHANGELOG.md](./CHANGELOG.md).
+Tree **0.2.0**. `cek-host` and `cek-surface` publish together. Versions before 0.2.0 are yanked: they teach `cek_host.legal`. pip will not select them. An exact pin still installs that old law. See [CHANGELOG.md](./CHANGELOG.md).
 
 ## Shop
 

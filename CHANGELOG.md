@@ -2,7 +2,11 @@
 
 ## 0.2.0 — 2026-09-24
 
-Breaking. `cek-host` and `cek-surface` publish together. 0.1.3 stays on PyPI and is not this law.
+Breaking. `cek-host` and `cek-surface` publish together.
+
+Versions before 0.2.0 (`0.1.0`, `0.1.2`, `0.1.3`) are yanked on both packages.
+They teach `cek_host.legal` and the noun "S". pip will not select them.
+An exact pin (`==0.1.3`) still installs that old law. Do not use it.
 
 ### Removed
 
