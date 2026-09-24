@@ -489,7 +489,8 @@ class Host:
             except LineageError as e:
                 return KernelResult("dispatch_error", [], str(e))
             except StoreDown as e:
-                return KernelResult("dispatch_error", [], str(e))
+                # Store down is an authority refusal (CORE 20), same as once/idem.
+                return _refuse(str(e))
 
         if idempotency_key is not None:
             try:

@@ -293,7 +293,7 @@ def test_lineage_down_does_not_burn_once():
         cap=cap,
         activity_id="act-down",
     )
-    assert r.kind == "dispatch_error" and r.ops == []
+    assert r.kind == "authority_refusal" and r.ops == []
     assert "store down" in (r.error or "")
     again = h.submit(
         action="kv.write",
@@ -301,7 +301,7 @@ def test_lineage_down_does_not_burn_once():
         cap=cap,
         activity_id="act-down",
     )
-    assert again.kind == "dispatch_error"
+    assert again.kind == "authority_refusal"
     assert "already used" not in (again.error or "")
 
 
