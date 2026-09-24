@@ -66,7 +66,7 @@ So: Host can *project* a stamped extension; only a Peer **runtime with a driver*
 
 ## Phase 3 wrap (honest)
 
-Taught Python kernel carrier: `carrier_kind="kernel"` → in-process `cek_peer_pyo3` (`PeerAbi` construct → bind → apply → release; same JSON as wasm). Fail closed if the module is missing.
+In-process peer: `carrier_kind="kernel"` → `cek_peer_pyo3` (`PeerAbi` construct → bind → apply → release; same JSON as wasm). Fail closed if the module is missing.
 
 **Not the default:** `CEK_KERNEL_CARRIER=subprocess` / `backend="subprocess"` shells `cek apply`. `cek host-json` / `RustHostKernel` remain the Host wrap. These are ports of the same kernels, not a third kernel.
 

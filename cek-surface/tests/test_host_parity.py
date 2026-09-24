@@ -1,6 +1,6 @@
-"""A (demo) ≡ B (adapt) on refuse / once / sealed-args / oracle.
+"""Host.demo and Host(mode="production") are the same Cap machine.
 
-W4 / G2 / G3. Same Cap machine, two factory paths.
+Refuse, once, and sealed-args do not change with the factory.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ OPS = [{"ns": "log", "name": "append", "payload": {"message": "x"}}]
 
 def _pair():
     a = Host.demo(secret=SECRET)
-    b = Host.lab(secret=SECRET, once=MemoryOnceBackend())
+    b = Host(secret=SECRET, mode="production", once=MemoryOnceBackend())
     return a, b
 
 

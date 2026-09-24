@@ -90,7 +90,7 @@ def test_scope_deny_and_blank():
 
 def test_store_down_fail_closed():
     once = MemoryOnceBackend(down=True)
-    h = Host.lab(SECRET, once=once)
+    h = Host(SECRET, mode="production", once=once)
     cap = h.mint("ping", once=True)
     r = h.submit(action="ping", args={}, cap=cap, project_ops=OPS)
     assert r.kind == "authority_refusal" and r.ops == []
