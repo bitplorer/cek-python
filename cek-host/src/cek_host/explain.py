@@ -177,11 +177,11 @@ _CATALOG: tuple[tuple[tuple[str, ...], Explanation], ...] = (
         ),
     ),
     (
-        ("short secret", "secret too short", "default secret", "demo secret"),
+        ("short secret", "secret too short", "default secret", "dev secret"),
         Explanation(
             "short_secret",
             "default or short secret",
-            "The hardcoded demo secret is not a security domain.",
+            "The hardcoded dev secret is not a security domain.",
             "Host.production(secret=secrets.token_bytes(32), once=FileOnceBackend(path)).",
             "G8",
         ),

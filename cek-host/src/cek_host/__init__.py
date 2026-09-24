@@ -8,7 +8,7 @@ from __future__ import annotations
 from .bound import BoundAsk
 from .cap import CapError, CapService, args_hash, resource_of, scope_allows
 from .digest import result_digest
-from .doctor import DEMO_SECRET, MIN_SECRET_LEN, DoctorReport, doctor
+from .doctor import DEV_SECRET, MIN_SECRET_LEN, DoctorReport, doctor
 from .explain import Explanation, explain
 from .host import Host, KernelResult, LAW_GENERATION
 from .idem import FileIdemBackend, IdemConflict, IdemBackend, MemoryIdemBackend
@@ -62,7 +62,7 @@ __all__ = [
     "Explanation",
     "doctor",
     "DoctorReport",
-    "DEMO_SECRET",
+    "DEV_SECRET",
     "MIN_SECRET_LEN",
     "LAW_GENERATION",
     "project_wire",

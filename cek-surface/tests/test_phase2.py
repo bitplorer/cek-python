@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
 from cek_host import (
-    DEMO_SECRET,
+    DEV_SECRET,
     FileIdemBackend,
     FileLineageBackend,
     FileOnceBackend,
@@ -231,8 +231,8 @@ def test_production_refuses_memory_idem_and_lineage():
     except ValueError as e:
         assert "memory" in str(e)
     try:
-        Host.production(DEMO_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
-        raise AssertionError("demo secret must fail")
+        Host.production(DEV_SECRET, MemoryOnceBackend(), allow_memory_stores=True)
+        raise AssertionError("dev secret must fail")
     except ValueError as e:
         assert "secret" in str(e)
 

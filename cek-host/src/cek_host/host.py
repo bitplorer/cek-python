@@ -14,7 +14,7 @@ from .cap import CapError, CapService
 from .digest import result_digest
 from .host_project import resolve_ops
 from .host_verify import check_ed25519, check_generation
-from .doctor import DEMO_SECRET, MIN_SECRET_LEN, DoctorReport, doctor
+from .doctor import DEV_SECRET, MIN_SECRET_LEN, DoctorReport, doctor
 from .explain import Explanation, explain
 from .idem import FileIdemBackend, IdemConflict, IdemBackend, MemoryIdemBackend
 from .lineage import (
@@ -71,13 +71,13 @@ class Host:
 
     def __init__(
         self,
-        secret: bytes = DEMO_SECRET,
+        secret: bytes = DEV_SECRET,
         require_cap: bool = True,
         *,
         once: OnceBackend | None = None,
         idem: IdemBackend | None = None,
         lineage: LineageBackend | None = None,
-        mode: str = "demo",
+        mode: str = "dev",
         allow_memory_stores: bool = False,
         ttl_s: int = 3600,
         ed25519_seed: bytes | None = None,
@@ -85,8 +85,8 @@ class Host:
         accepted_generations: list[str] | None = None,
     ) -> None:
         # Deployment. Channel words adapt and require are not Host modes.
-        if mode not in ("demo", "production"):
-            raise ValueError("Host.mode must be demo|production")
+        if mode not in ("dev", "production"):
+            raise ValueError("Host.mode must be dev|production")
         self.secret = secret
         self.require_cap = require_cap
         self.mode = mode
@@ -111,8 +111,8 @@ class Host:
         self.stamp: frozenset[tuple[str, str]] | None = None
 
     @classmethod
-    def demo(cls, **kw: Any) -> Host:
-        kw.setdefault("mode", "demo")
+    def dev(cls, **kw: Any) -> Host:
+        kw.setdefault("mode", "dev")
         return cls(**kw)
 
     @classmethod
@@ -131,8 +131,8 @@ class Host:
         """Refuses default secret and memory stores unless allow_memory_stores."""
         if not require_cap:
             raise ValueError("production requires require_cap=True")
-        if secret == DEMO_SECRET:
-            raise ValueError("production refuses the default demo secret")
+        if secret == DEV_SECRET:
+            raise ValueError("production refuses the default dev secret")
         if len(secret) < MIN_SECRET_LEN:
             raise ValueError(f"production secret must be ≥ {MIN_SECRET_LEN} bytes")
         if isinstance(once, MemoryOnceBackend) and not allow_memory_stores:

@@ -44,7 +44,7 @@ def test_explain_top_failures():
 def test_cli_explain_and_version():
     assert cli_main(["version"]) == 0
     assert cli_main(["explain", "once cap already used"]) == 0
-    assert cli_main(["check", "--production-demo"]) == 0
+    assert cli_main(["check", "--misconfigured"]) == 0
 
 
 def test_create_app_runs():

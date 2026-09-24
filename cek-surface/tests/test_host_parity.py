@@ -1,4 +1,4 @@
-"""Host.demo and Host(mode="production") are the same Cap machine.
+"""Host.dev and Host(mode="production") are the same Cap machine.
 
 Refuse, once, and sealed-args do not change with the factory.
 """
@@ -20,7 +20,7 @@ OPS = [{"ns": "log", "name": "append", "payload": {"message": "x"}}]
 
 
 def _pair():
-    a = Host.demo(secret=SECRET)
+    a = Host.dev(secret=SECRET)
     b = Host(secret=SECRET, mode="production", once=MemoryOnceBackend())
     return a, b
 

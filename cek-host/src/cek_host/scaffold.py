@@ -19,7 +19,7 @@ from pathlib import Path
 from cek_host import FileOnceBackend, Host, doctor, explain
 from cek_surface import Op, Surface
 
-# Real secret. Never commit a demo secret. production() refuses the default.
+# Real secret. Never commit the dev secret. production() refuses the default.
 SECRET = {secret!r}
 ONCE = Path(__file__).with_name("once.json")
 
