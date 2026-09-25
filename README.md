@@ -38,6 +38,7 @@ python -m cek_host doctor --fail
 
 | Doc | Role |
 |-----|------|
+| **[docs/PLACE.md](./docs/PLACE.md)** | Where cek-host and cek-surface sit, and the doors they have |
 | **[START.md](./START.md)** | First morph |
 | [docs/CATALOG_AUTHORITY_TARGET.md](./docs/CATALOG_AUTHORITY_TARGET.md) | Glossary (pair / declared catalog / session stamp) |
 | [docs/COMPOSITION.md](./docs/COMPOSITION.md) | Host compose + Peer IR |
