@@ -1,6 +1,6 @@
 # Publish cek-host + cek-surface to production PyPI via Trusted Publishing.
 #
-# One-time setup (see docs/PYPI_SETUP.md):
+# One-time setup (see docs/archive/PYPI_SETUP.md):
 #   GitHub Environments: pypi-host, pypi-surface
 #   pypi.org Trusted Publishers must match env names.
 #
@@ -72,3 +72,5 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist-surface/
+          # One tag publishes both packages; an unbumped package is already on the index.
+          skip-existing: true

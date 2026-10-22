@@ -1,6 +1,8 @@
 {
  "cek_host.__main__": {
-  "consumers": [],
+  "consumers": [
+   "cek-surface/tests/test_cek_bin.py"
+  ],
   "doc": "",
   "exported_as": [],
   "features": [

@@ -32,14 +32,16 @@ def _own_scripts() -> set[Path]:
     return scripts
 
 
-def _is_python_cli(path: str) -> bool:
+def _is_python_cli(path: str, own: set[Path]) -> bool:
     """True for cek-host's own `cek` script, never the Rust cek-cli.
 
     The RECORD check covers this environment; the text check covers a
     cek-host script installed by another environment (pipx, a second venv).
+    A Windows `cek.exe` launcher from another environment is not caught:
+    its script is compressed inside the launcher.
     """
     resolved = Path(path).resolve()
-    if resolved in _own_scripts():
+    if resolved in own:
         return True
     try:
         with open(resolved, "rb") as f:
@@ -52,9 +54,10 @@ def find_cek_bin() -> str | None:
     env = os.environ.get("CEK_BIN")
     if env and Path(env).is_file():
         return env
+    own = _own_scripts()
     for d in os.environ.get("PATH", os.defpath).split(os.pathsep):
         which = shutil.which("cek", path=d)
-        if which and not _is_python_cli(which):
+        if which and not _is_python_cli(which, own):
             return which
     here = Path(__file__).resolve()
     for root in (here.parents[4] / "cek-runtime", here.parents[3] / "cek-runtime"):

@@ -80,7 +80,7 @@
     "doc": "True for cek-host's own `cek` script, never the Rust cek-cli.",
     "kind": "function",
     "public": false,
-    "signature": "(path: str) -> bool"
+    "signature": "(path: str, own: set[Path]) -> bool"
    },
    "_own_scripts": {
     "doc": "Console scripts that cek-host installed.",

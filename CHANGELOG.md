@@ -2,7 +2,7 @@
 
 ## 0.2.1 — unreleased
 
-Patch. `cek-host` and `cek-surface` publish together. Nothing is removed.
+Patch to `cek-host` only. `cek-surface` stays at 0.2.0; upgrading `cek-host` fixes its subprocess carrier. Nothing is removed.
 
 ### Fixed
 
@@ -15,10 +15,6 @@ Patch. `cek-host` and `cek-surface` publish together. Nothing is removed.
 ### Deprecated
 
 - Console script `cek`. It still works in 0.2.x and prints a one-line notice to stderr. It is removed in 0.3.0. Use `cek-host`. The name `cek` belongs to the Rust cek-cli.
-
-### Changed
-
-- `cek-surface` requires `cek-host>=0.2.1`.
 
 ## 0.2.0 — 2026-09-24
 

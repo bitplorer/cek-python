@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT.parent / "cek-host" / "src"))
 
-from cek_host.cli import deprecated_main
+from cek_host.cli import deprecated_main, main
 from cek_host.rust_wrap import RustHostKernel, find_cek_bin
 
 FAKE_RUST = """#!/bin/sh
@@ -101,7 +101,28 @@ def test_cek_script_warns_deprecated():
     assert line.count("\n") == 1 and "0.3.0" in line and "cek-host" in line, line
 
 
+def test_help_names_invoked_script():
+    old_argv = sys.argv
+    try:
+        for argv0, entry, prog in (
+            ("/venv/bin/cek", deprecated_main, "cek"),
+            ("/venv/bin/cek-host", main, "cek-host"),
+            ("/src/cek_host/__main__.py", main, "cek-host"),
+        ):
+            sys.argv = [argv0, "--help"]
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+                try:
+                    entry()
+                except SystemExit as e:
+                    assert e.code == 0
+            assert out.getvalue().startswith(f"usage: {prog} "), (argv0, out.getvalue())
+    finally:
+        sys.argv = old_argv
+
+
 if __name__ == "__main__":
     test_rust_cek_wins_both_orders()
     test_cek_script_warns_deprecated()
+    test_help_names_invoked_script()
     print("cek bin ok")

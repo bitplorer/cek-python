@@ -8,8 +8,10 @@ from pathlib import Path
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Help and errors name the script that ran: `cek` (0.2.0 name) or `cek-host`.
+    prog = Path(sys.argv[0]).stem
     p = argparse.ArgumentParser(
-        prog="cek-host",
+        prog=prog if prog in ("cek", "cek-host") else "cek-host",
         description="CEK Host — mint/verify Caps. check · explain · create-app",
     )
     sub = p.add_subparsers(dest="cmd")
