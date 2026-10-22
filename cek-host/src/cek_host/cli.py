@@ -9,7 +9,7 @@ from pathlib import Path
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
-        prog="cek",
+        prog="cek-host",
         description="CEK Host — mint/verify Caps. check · explain · create-app",
     )
     sub = p.add_subparsers(dest="cmd")
@@ -76,6 +76,15 @@ def main(argv: list[str] | None = None) -> int:
 
     p.print_help()
     return 2
+
+
+def deprecated_main() -> int:
+    """`cek` console script. The name belongs to the Rust cek-cli."""
+    print(
+        "cek: this command is deprecated and will be removed in 0.3.0; use cek-host",
+        file=sys.stderr,
+    )
+    return main()
 
 
 if __name__ == "__main__":

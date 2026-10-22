@@ -38,9 +38,11 @@
    "charter public_api cek_host:args_hash",
    "charter public_api cek_surface.continuation:match_continuation",
    "charter public_api cek_surface.continuation:resolve_args",
-   "cli cek check",
    "cli cek doctor",
    "cli cek explain",
+   "cli cek-host create-app",
+   "cli cek-host doctor",
+   "cli cek-host explain",
    "public_api cek_host:CATALOG_FQS",
    "public_api cek_host:CapError",
    "public_api cek_host:DEV_SECRET",
@@ -100,7 +102,7 @@
    "docs/PLACE.md: module `cek_host.legal`"
   ],
   "summary": {
-   "claims": 46,
+   "claims": 54,
    "docs": 11,
    "unresolved": 12
   }
@@ -338,7 +340,8 @@
    "cek_host.__main__"
   ],
   "scripts": {
-   "cek": "cek_host.cli:main"
+   "cek": "cek_host.cli:deprecated_main",
+   "cek-host": "cek_host.cli:main"
   }
  },
  "external_usage": {
@@ -485,7 +488,7 @@
     "cek_host.explain",
     "cek_host.scaffold"
    ],
-   "purpose": "The cek CLI (check, explain, create-app, version), doctor go/no-go findings, teaching explanations and the one-file app scaffold.",
+   "purpose": "The cek-host CLI (check, explain, create-app, version; `cek` is its deprecated alias), doctor go/no-go findings, teaching explanations and the one-file app scaffold.",
    "symbols": [
     "cek_host.cli:main",
     "cek_host.doctor:DEV_SECRET",
@@ -514,6 +517,7 @@
     "cek_host.rust_wrap:host_json"
    ],
    "tests": [
+    "cek-surface/tests/test_cek_bin.py",
     "cek-surface/tests/test_phase3_wrap.py"
    ]
   },

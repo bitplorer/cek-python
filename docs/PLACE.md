@@ -1,6 +1,6 @@
 # Place in the stack
 
-This repo publishes two libraries on one tag. Both are 0.2.0. Versions before 0.2.0 teach `cek_host.legal` and are yanked. An exact pin still installs that old law.
+This repo publishes two libraries on one tag. Both are 0.2.1. Versions before 0.2.0 teach `cek_host.legal` and are yanked. An exact pin still installs that old law.
 
 The picture is the same in every repo. A missing line is a missing door. Dashed lines are history.
 
@@ -24,7 +24,7 @@ Applying peer effects. A second catalog. Modes other than dev and prod. The old 
 
 ## Install
 
-pip install cek-host. Version 0.2.0, published with cek-surface from this repo.
+pip install cek-host. Version 0.2.1, published with cek-surface from this repo.
 
 ## Doors
 
@@ -116,7 +116,7 @@ A private copy of the catalog machine. Host modes named demo and production.
 
 ## Install
 
-pip install cek-surface. Version 0.2.0. Depends on cek-host. Same tag.
+pip install cek-surface. Version 0.2.1. Depends on cek-host. Same tag.
 
 ## Doors
 

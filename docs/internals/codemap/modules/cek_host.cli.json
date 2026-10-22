@@ -1,6 +1,7 @@
 {
  "cek_host.cli": {
   "consumers": [
+   "cek-surface/tests/test_cek_bin.py",
    "cek-surface/tests/test_explain_doctor.py"
   ],
   "doc": "cek CLI — never silent (G7 / Vercel DX).",
@@ -42,9 +43,16 @@
   "layer": "host-tooling",
   "path": "cek-host/src/cek_host/cli.py",
   "public": [
+   "deprecated_main",
    "main"
   ],
   "symbols": {
+   "deprecated_main": {
+    "doc": "`cek` console script. The name belongs to the Rust cek-cli.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> int"
+   },
    "main": {
     "doc": "",
     "kind": "function",

@@ -2,6 +2,11 @@
  "docs/PLACE.md": {
   "claims": [
    {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek-host"
+   },
+   {
     "kind": "module",
     "resolved": false,
     "text": "cek_host.legal"

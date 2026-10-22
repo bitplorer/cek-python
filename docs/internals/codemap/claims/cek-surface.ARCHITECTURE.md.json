@@ -7,6 +7,11 @@
     "text": "cek apply"
    },
    {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek-host"
+   },
+   {
     "kind": "import",
     "resolved": true,
     "text": "cek_surface:Surface"

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cek-host"
-version = "0.2.0"
+version = "0.2.1"
 description = "CEK Host runtime — Cap mint/verify, project Ops (authority only)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,7 +13,8 @@ authors = [{ name = "bitplorer" }]
 dependencies = []
 
 [project.scripts]
-cek = "cek_host.cli:main"
+cek = "cek_host.cli:deprecated_main"
+cek-host = "cek_host.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/bitplorer/cek-python"

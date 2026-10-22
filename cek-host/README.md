@@ -28,6 +28,9 @@ Pair = `(ns, name)`. Session stamp = this session. FQ is display only. There is 
 ```bash
 pip install cek-host
 python -m cek_host explain "once cap already used"
+cek-host check --fail              # same CLI as python -m cek_host
 ```
+
+The `cek` console script is deprecated and is removed in 0.3.0. Use `cek-host`. The name `cek` belongs to the Rust cek-cli.
 
 Law: [cek-framework](https://github.com/bitplorer/cek-framework) · Kernels: [cek-runtime](https://github.com/bitplorer/cek-runtime) · Surface: `pip install cek-surface`

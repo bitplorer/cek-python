@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.2.1 — unreleased
+
+Patch. `cek-host` and `cek-surface` publish together. Nothing is removed.
+
+### Fixed
+
+- `find_cek_bin` no longer returns cek-host's own `cek` console script. It skips that script wherever it sits on PATH and finds the Rust `cek` from cek-runtime's cek-cli. Before, `RustHostKernel` and `CEK_KERNEL_CARRIER=subprocess` could run the Python CLI and fail with "invalid choice". `CEK_BIN` still wins.
+
+### Added
+
+- Console script `cek-host`. It runs the same CLI as `python -m cek_host`.
+
+### Deprecated
+
+- Console script `cek`. It still works in 0.2.x and prints a one-line notice to stderr. It is removed in 0.3.0. Use `cek-host`. The name `cek` belongs to the Rust cek-cli.
+
+### Changed
+
+- `cek-surface` requires `cek-host>=0.2.1`.
+
 ## 0.2.0 — 2026-09-24
 
 Breaking. `cek-host` and `cek-surface` publish together.

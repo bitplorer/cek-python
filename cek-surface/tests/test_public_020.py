@@ -27,8 +27,8 @@ PRESENT = (
 
 
 def test_version_is_020() -> None:
-    assert cek_host.__version__ == "0.2.0"
-    assert cek_surface.__version__ == "0.2.0"
+    assert cek_host.__version__ == "0.2.1"
+    assert cek_surface.__version__ == "0.2.1"
 
 
 def test_legal_module_is_gone() -> None:

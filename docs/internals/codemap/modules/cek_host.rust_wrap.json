@@ -1,6 +1,7 @@
 {
  "cek_host.rust_wrap": {
   "consumers": [
+   "cek-surface/tests/test_cek_bin.py",
    "cek-surface/tests/test_kernel_peer.py",
    "cek-surface/tests/test_phase3_wrap.py",
    "docs/ORGANIZATION.md"
@@ -27,6 +28,7 @@
    "module_level": {
     "stdlib": [
      "__future__",
+     "importlib",
      "json",
      "os",
      "pathlib",
@@ -73,6 +75,18 @@
      }
     },
     "public": true
+   },
+   "_is_python_cli": {
+    "doc": "True for cek-host's own `cek` script, never the Rust cek-cli.",
+    "kind": "function",
+    "public": false,
+    "signature": "(path: str) -> bool"
+   },
+   "_own_scripts": {
+    "doc": "Console scripts that cek-host installed.",
+    "kind": "function",
+    "public": false,
+    "signature": "() -> set[Path]"
    },
    "find_cek_bin": {
     "doc": "",
