@@ -33,6 +33,9 @@ jobs:
       - name: import smoke
         working-directory: cek-python
         run: python -c "from cek_host import Host; from cek_surface import Surface, Op; print('ok')"
+      - name: check code map is fresh
+        working-directory: cek-python
+        run: python scripts/codemap.py --check
       - name: test suite
         working-directory: cek-python
         run: sh scripts/verify.sh

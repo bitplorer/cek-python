@@ -1,0 +1,20 @@
+{
+ "cek_surface/js/peer.mjs": {
+  "consumers": [
+   "cek-surface/demo/browser_shop.html",
+   "cek-surface/demo/http_host.py",
+   "cek-surface/demo/ws_peer_server.mjs",
+   "cek-surface/tests/test_browser_continuation.mjs",
+   "docs/COMPOSITION.md",
+   "docs/ORGANIZATION.md"
+  ],
+  "features": [
+   "carriers-and-peer-ir"
+  ],
+  "layer": "surface-peer",
+  "path": "cek-surface/src/cek_surface/js/peer.mjs",
+  "referenced_by": [
+   "cek_surface.carrier"
+  ]
+ }
+}

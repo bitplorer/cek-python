@@ -1,0 +1,55 @@
+{
+ "cek_host.host_project": {
+  "consumers": [],
+  "doc": "Project kernel actions → wire Ops. Surface always passes project_ops.",
+  "exported_as": [],
+  "features": [
+   "submit-result"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/host_project.py",
+  "public": [
+   "project_action",
+   "resolve_ops"
+  ],
+  "symbols": {
+   "project_action": {
+    "doc": "Kernel actions only.",
+    "kind": "function",
+    "public": true,
+    "signature": "(action: str, args: dict[str, Any]) -> list[dict[str, Any]]"
+   },
+   "resolve_ops": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(action: str, args: dict[str, Any], project_ops: list[dict[str, Any]] | None, stamp: frozenset[tuple[str, str]] | None) -> list[dict[str, Any]]"
+   }
+  }
+ }
+}

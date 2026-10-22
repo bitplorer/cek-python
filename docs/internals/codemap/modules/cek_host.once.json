@@ -1,0 +1,196 @@
+{
+ "cek_host.once": {
+  "consumers": [
+   "cek-surface/tests/test_hardening.py",
+   "cek-surface/tests/test_host_parity.py",
+   "cek-surface/tests/test_phase2.py",
+   "docs/archive/PERFORMANCE.md"
+  ],
+  "doc": "OnceBackend — durable-or-memory single-use store.",
+  "exported_as": [
+   "cek_host:FileOnceBackend",
+   "cek_host:MemoryOnceBackend",
+   "cek_host:OnceBackend",
+   "cek_host:OnceUsed",
+   "cek_host:StoreDown"
+  ],
+  "features": [
+   "once-single-use"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_host.cli"
+   ],
+   "module_level": [
+    "cek_host",
+    "cek_host.cap",
+    "cek_host.host",
+    "cek_host.idem",
+    "cek_host.lineage"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "fcntl"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "json",
+     "os",
+     "pathlib",
+     "threading",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/once.py",
+  "public": [
+   "FileOnceBackend",
+   "MemoryOnceBackend",
+   "OnceBackend",
+   "OnceUsed",
+   "StoreDown"
+  ],
+  "symbols": {
+   "FileOnceBackend": {
+    "bases": [],
+    "doc": "JSON set on disk. flock + temp+rename. Fail closed if unreadable/unwritable.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, path: str | os.PathLike[str]) -> None"
+     },
+     "_flock": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_funlock": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_load": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> set[str]"
+     },
+     "_save": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, used: set[str]) -> None"
+     },
+     "commit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, jti: str) -> None"
+     },
+     "ensure_available": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, jti: str) -> None"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     }
+    },
+    "public": true
+   },
+   "MemoryOnceBackend": {
+    "bases": [],
+    "doc": "In-process set. Demo only — multi-worker replay succeeds.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, down: bool=False) -> None"
+     },
+     "commit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, jti: str) -> None"
+     },
+     "ensure_available": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, jti: str) -> None"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "mark_down": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, down: bool=True) -> None"
+     }
+    },
+    "public": true
+   },
+   "OnceBackend": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "commit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, jti: str) -> None"
+     },
+     "ensure_available": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, jti: str) -> None"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     }
+    },
+    "public": true
+   },
+   "OnceUsed": {
+    "bases": [
+     "Exception"
+    ],
+    "doc": "jti already committed.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "StoreDown": {
+    "bases": [
+     "Exception"
+    ],
+    "doc": "Required once-store is unavailable. Host must refuse (K6).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   }
+  }
+ }
+}

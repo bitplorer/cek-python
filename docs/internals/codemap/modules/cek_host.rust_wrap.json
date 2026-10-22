@@ -1,0 +1,91 @@
+{
+ "cek_host.rust_wrap": {
+  "consumers": [
+   "cek-surface/tests/test_kernel_peer.py",
+   "cek-surface/tests/test_phase3_wrap.py",
+   "docs/ORGANIZATION.md"
+  ],
+  "doc": "Host wrap — decide via the Rust host-kernel (`cek host-json`).",
+  "exported_as": [
+   "cek_host:RustHostKernel",
+   "cek_host:find_cek_bin"
+  ],
+  "features": [
+   "host-wrap"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_surface.kernel_peer"
+   ],
+   "module_level": [
+    "cek_host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "json",
+     "os",
+     "pathlib",
+     "shutil",
+     "subprocess",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-wrap",
+  "path": "cek-host/src/cek_host/rust_wrap.py",
+  "public": [
+   "RustHostKernel",
+   "find_cek_bin",
+   "host_json"
+  ],
+  "symbols": {
+   "RustHostKernel": {
+    "bases": [],
+    "doc": "Thin wrap of cek-host-kernel. Caps are Rust Cap objects (JSON).",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, bin_path: str | None=None) -> None"
+     },
+     "mint": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, *, once: bool=False, **kw: Any) -> dict[str, Any]"
+     },
+     "submit_intent": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, intent: dict[str, Any]) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "find_cek_bin": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> str | None"
+   },
+   "host_json": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(payload: dict[str, Any], *, bin_path: str | None=None) -> dict[str, Any]"
+   }
+  }
+ }
+}

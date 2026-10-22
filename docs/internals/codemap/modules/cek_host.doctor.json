@@ -1,0 +1,166 @@
+{
+ "cek_host.doctor": {
+  "consumers": [
+   "cek-surface/tests/test_explain_doctor.py",
+   "cek-surface/tests/test_hardening.py",
+   "cek-surface/tests/test_phase2.py"
+  ],
+  "doc": "doctor() — go or no-go for this Host.",
+  "exported_as": [
+   "cek_host:DEV_SECRET",
+   "cek_host:DoctorReport",
+   "cek_host:MIN_SECRET_LEN",
+   "cek_host:doctor"
+  ],
+  "features": [
+   "host-tooling"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_host.cli"
+   ],
+   "module_level": [
+    "cek_host",
+    "cek_host.host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "importlib.resources",
+     "json",
+     "pathlib",
+     "sys"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "importlib",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host",
+    "cek_surface",
+    "cek_surface.kernel"
+   ],
+   "module_level": [],
+   "type_checking": [
+    "cek_host"
+   ]
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/doctor.py",
+  "public": [
+   "DEV_SECRET",
+   "DoctorReport",
+   "Finding",
+   "MIN_SECRET_LEN",
+   "VECTOR_PACK_VERSION",
+   "doctor"
+  ],
+  "symbols": {
+   "DoctorReport": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "ok": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> bool"
+     },
+     "to_text": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     }
+    },
+    "public": true
+   },
+   "Finding": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "line": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     }
+    },
+    "public": true
+   },
+   "_finding_d4": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "() -> Finding"
+   },
+   "_finding_embedded": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "() -> Finding"
+   },
+   "_finding_idem": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(host: Host) -> Finding"
+   },
+   "_finding_lineage": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(host: Host) -> Finding"
+   },
+   "_finding_once": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(host: Host) -> Finding"
+   },
+   "_finding_secret": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(secret: bytes) -> Finding"
+   },
+   "_finding_store": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(host: Host, kind: str, label: str) -> Finding"
+   },
+   "_finding_vectors": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "() -> Finding"
+   },
+   "doctor": {
+    "doc": "Inspect a Host (or the dev defaults) plus the install graph.",
+    "kind": "function",
+    "public": true,
+    "signature": "(host: Host | None=None, *, fail: bool=False) -> DoctorReport"
+   }
+  }
+ }
+}

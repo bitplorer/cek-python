@@ -1,0 +1,58 @@
+{
+ "cek_host.host_verify": {
+  "consumers": [],
+  "doc": "Cap verify — generation + Ed25519. No once. No project.",
+  "exported_as": [],
+  "features": [
+   "verify-policy"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host.ed25519"
+   ],
+   "module_level": [
+    "cek_host.cap",
+    "cek_host.digest"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/host_verify.py",
+  "public": [
+   "check_ed25519",
+   "check_generation"
+  ],
+  "symbols": {
+   "check_ed25519": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(claims: dict[str, Any], *, seed: bytes | None, trust: list[bytes]) -> None"
+   },
+   "check_generation": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(claims: dict[str, Any], accepted: list[str]) -> None"
+   }
+  }
+ }
+}

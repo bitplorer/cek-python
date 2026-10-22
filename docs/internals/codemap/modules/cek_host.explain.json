@@ -1,0 +1,87 @@
+{
+ "cek_host.explain": {
+  "consumers": [
+   "cek-surface/demo/http_host.py",
+   "cek-surface/tests/test_catalog.py",
+   "cek-surface/tests/test_explain_doctor.py"
+  ],
+  "doc": "Errors that teach — G6.",
+  "exported_as": [
+   "cek_host:Explanation",
+   "cek_host:explain"
+  ],
+  "features": [
+   "host-tooling"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_host.cli",
+    "cek_surface.surface"
+   ],
+   "module_level": [
+    "cek_host",
+    "cek_host.host",
+    "cek_surface.kernel"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/explain.py",
+  "public": [
+   "Explanation",
+   "catalog",
+   "explain"
+  ],
+  "symbols": {
+   "Explanation": {
+    "bases": [],
+    "decorators": [
+     "dataclass(frozen=True)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, str]"
+     }
+    },
+    "public": true
+   },
+   "catalog": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> list[Explanation]"
+   },
+   "explain": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(error: str | None) -> Explanation"
+   }
+  }
+ }
+}

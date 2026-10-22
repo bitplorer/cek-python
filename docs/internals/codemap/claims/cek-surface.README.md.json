@@ -1,0 +1,41 @@
+{
+ "cek-surface/README.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek apply"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_host:Host"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface.domain_loader:load_bundled"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Op"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Surface"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:search_hits"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "cek_surface.domain_loader"
+   }
+  ]
+ }
+}

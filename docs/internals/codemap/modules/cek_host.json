@@ -1,0 +1,116 @@
+{
+ "cek_host": {
+  "consumers": [
+   "cek-surface/demo/http_host.py",
+   "cek-surface/tests/test_async.py",
+   "cek-surface/tests/test_catalog.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_contract_vectors.py",
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_explain_doctor.py",
+   "cek-surface/tests/test_hardening.py",
+   "cek-surface/tests/test_host_parity.py",
+   "cek-surface/tests/test_layer_honesty.py",
+   "cek-surface/tests/test_phase2.py",
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_public_020.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/ORGANIZATION.md",
+   "docs/archive/PERFORMANCE.md",
+   "scripts/consumer_smoke_testpypi.sh"
+  ],
+  "doc": "cek-host — Python Host runtime (language port of decide).",
+  "exported_as": [
+   "cek_host:__version__"
+  ],
+  "features": [],
+  "imported_by": {
+   "function_level": [
+    "cek_host.cli",
+    "cek_host.doctor"
+   ],
+   "module_level": [
+    "cek_surface.host",
+    "cek_surface.kernel"
+   ],
+   "type_checking": [
+    "cek_host.doctor"
+   ]
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.bound",
+    "cek_host.cap",
+    "cek_host.catalog",
+    "cek_host.digest",
+    "cek_host.doctor",
+    "cek_host.explain",
+    "cek_host.host",
+    "cek_host.idem",
+    "cek_host.lineage",
+    "cek_host.once",
+    "cek_host.rust_wrap"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-root",
+  "path": "cek-host/src/cek_host/__init__.py",
+  "public": [
+   "BoundAsk",
+   "CATALOG_FQS",
+   "CATALOG_PAIRS",
+   "CapError",
+   "CapService",
+   "DEV_SECRET",
+   "DoctorReport",
+   "Explanation",
+   "FileIdemBackend",
+   "FileLineageBackend",
+   "FileOnceBackend",
+   "Host",
+   "IdemBackend",
+   "IdemConflict",
+   "KernelResult",
+   "LAW_GENERATION",
+   "LineageBackend",
+   "LineageError",
+   "MIN_SECRET_LEN",
+   "MemoryIdemBackend",
+   "MemoryLineageBackend",
+   "MemoryOnceBackend",
+   "OnceBackend",
+   "OnceUsed",
+   "ReverseOutcome",
+   "RustHostKernel",
+   "StoreDown",
+   "UndeclaredPair",
+   "__version__",
+   "args_hash",
+   "default_stamp_pairs",
+   "doctor",
+   "explain",
+   "find_cek_bin",
+   "in_catalog",
+   "in_stamp",
+   "normalize_stamp",
+   "project_wire",
+   "resource_of",
+   "result_digest",
+   "scope_allows"
+  ],
+  "symbols": {}
+ }
+}

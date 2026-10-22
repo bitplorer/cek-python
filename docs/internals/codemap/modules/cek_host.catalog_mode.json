@@ -1,0 +1,57 @@
+{
+ "cek_host.catalog_mode": {
+  "consumers": [
+   "cek-surface/tests/test_stamp.py"
+  ],
+  "doc": "Catalog mode — which pairs a missing session stamp stands for.",
+  "exported_as": [],
+  "features": [
+   "declared-catalog"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "os",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-catalog",
+  "path": "cek-host/src/cek_host/catalog_mode.py",
+  "public": [
+   "CatalogMode",
+   "get_catalog_mode",
+   "is_strict"
+  ],
+  "symbols": {
+   "get_catalog_mode": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> CatalogMode"
+   },
+   "is_strict": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> bool"
+   }
+  }
+ }
+}

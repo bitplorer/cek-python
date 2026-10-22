@@ -1,0 +1,168 @@
+# Domain charter (curated): what cek-python (cek-host + cek-surface) is the
+# single source of truth for, the narrow public surface built on it, what it
+# must not own, which foreign distributions (and names) it may use, and the
+# law it implements. scripts/codemap.py validates every reference and folds
+# the charter into codemap/index.json. A new import of another distribution,
+# or of a name not listed under its depends_on entry, fails
+# `codemap.py --check`, so coupling is a conscious edit here.
+# Sources: README.md, START.md, docs/PLACE.md, docs/ORGANIZATION.md,
+# cek-surface/ARCHITECTURE.md. See CODEMAP.md.
+
+domain = "cek-python is the Python port of the CEK Host (cek-host: mint, verify, once, idempotency, lineage, Result.ops) and of the surface that composes Ops and carries them to a Peer (cek-surface)."
+
+# Names the READMEs and START.md teach, plus the names the libraries above
+# import (ux-channel's cek door: python/src/ux_channel/cek/; cek-hw's
+# demos/host_plug.py). Several of the latter sit below the package root.
+public_api = [
+  "cek_host:Host",
+  "cek_host:CapService",
+  "cek_host:FileOnceBackend",
+  "cek_host:MemoryOnceBackend",
+  "cek_host:UndeclaredPair",
+  "cek_host:CATALOG_PAIRS",
+  "cek_host:in_catalog",
+  "cek_host:args_hash",
+  "cek_host:explain",
+  "cek_host:doctor",
+  "cek_host.catalog:BASELINE_PAIRS",
+  "cek_host.catalog:in_catalog",
+  "cek_host.catalog:normalize_stamp",
+  "cek_host.catalog:project_wire",
+  "cek_host.rust_wrap:find_cek_bin",
+  "cek_surface:Surface",
+  "cek_surface:Op",
+  "cek_surface:plan",
+  "cek_surface:navigate_to",
+  "cek_surface:set_loading",
+  "cek_surface:signal_set",
+  "cek_surface:form_errors",
+  "cek_surface:search_hits",
+  "cek_surface:open_carrier",
+  "cek_surface:load_host_kernel",
+  "cek_surface.continuation:Continuation",
+  "cek_surface.continuation:match_continuation",
+  "cek_surface.continuation:mint_continuation",
+  "cek_surface.continuation:resolve_args",
+  "cek_surface.domain_loader:load_bundled",
+]
+
+# ------------------------------------------------------------------ cek-host
+
+[[owns]]
+concept = "cap-authority"
+modules = ["cek_host.cap", "cek_host.host_verify", "cek_host.ed25519", "cek_host.bound"]
+symbols = ["cek_host:CapService", "cek_host.host:Host.mint", "cek_host.host:Host.check"]
+
+[[owns]]
+concept = "single-use-and-idempotency"
+modules = ["cek_host.once", "cek_host.idem"]
+symbols = ["cek_host:OnceBackend", "cek_host:IdemBackend", "cek_host:StoreDown"]
+
+[[owns]]
+concept = "lineage-and-reverse"
+modules = ["cek_host.lineage"]
+symbols = ["cek_host:LineageBackend", "cek_host.host:Host.end_activity", "cek_host.host:Host.report_receipt"]
+
+[[owns]]
+concept = "result-packaging"
+modules = ["cek_host.host", "cek_host.host_project", "cek_host.digest"]
+symbols = ["cek_host:Host", "cek_host:KernelResult", "cek_host:result_digest"]
+
+# One Python table. cek_surface.catalog re-exports it and never redefines it.
+[[owns]]
+concept = "declared-catalog"
+modules = ["cek_host.catalog", "cek_host.catalog_mode", "cek_host.structure"]
+symbols = ["cek_host:CATALOG_PAIRS", "cek_host:UndeclaredPair", "cek_host:in_catalog", "cek_host:project_wire"]
+
+[[owns]]
+concept = "host-diagnostics"
+modules = ["cek_host.doctor", "cek_host.explain", "cek_host.cli", "cek_host.scaffold"]
+symbols = ["cek_host:doctor", "cek_host:explain", "cek_host.cli:main"]
+
+# --------------------------------------------------------------- cek-surface
+
+[[owns]]
+concept = "op-composition"
+modules = ["cek_surface.ops", "cek_surface.policy", "cek_surface.surface"]
+symbols = ["cek_surface:Op", "cek_surface:plan", "cek_surface:Surface"]
+
+[[owns]]
+concept = "session-stamp-and-domain-stdlibs"
+modules = ["cek_surface.stamp", "cek_surface.domain_stdlib", "cek_surface.domain_loader", "cek_surface.agreement"]
+symbols = ["cek_surface.agreement:negotiate", "cek_surface.surface:Surface.use_stdlibs"]
+
+[[owns]]
+concept = "continuation-envelopes"
+modules = ["cek_surface.continuation"]
+symbols = ["cek_surface:Continuation", "cek_surface.surface:Surface.mint_continuation"]
+
+# Transport only: a carrier moves apply / perception / events. It never decides.
+[[owns]]
+concept = "carriers-and-peer-ir"
+modules = ["cek_surface.carrier", "cek_surface.session", "cek_surface.kernel_peer"]
+symbols = ["cek_surface:open_carrier", "cek_surface:PeerSession"]
+
+# Concepts cek-python must NOT own (docs/PLACE.md "Refuses",
+# docs/ORGANIZATION.md, cek-surface/ARCHITECTURE.md "Non-goals"). `keywords`
+# drive a warning-only heuristic: any module or top-level symbol whose name
+# contains one as a whole word is listed under `non_goal_warnings`.
+[[non_goals]]
+concept = "law-text"
+owner = "cek-framework"
+keywords = ["axiom", "axioms", "charter"]
+
+[[non_goals]]
+concept = "reference-kernels-and-contract"
+owner = "cek-runtime"
+keywords = ["crate", "cargo", "contract"]
+
+[[non_goals]]
+concept = "wire-channel-and-ux"
+owner = "ux-channel"
+keywords = ["channel", "codec"]
+
+[[non_goals]]
+concept = "html-construction"
+owner = "ux-dom"
+keywords = ["html", "tag", "document"]
+
+[[non_goals]]
+concept = "hardware-apply"
+owner = "cek-hw"
+keywords = ["gpio", "hw"]
+
+# Foreign distributions cek-python may use, and exactly which of their names.
+# cek-surface[ws] extra; imported lazily inside WebSocketCarrier only.
+[[depends_on]]
+distribution = "websockets"
+imports = "websockets"
+names = ["websockets"]
+
+# Built from cek-runtime (ports/cek-peer-pyo3), not a pip dependency; imported
+# lazily by carrier_kind="kernel" and fails closed when missing.
+[[depends_on]]
+distribution = "cek-peer-pyo3"
+imports = "cek_peer_pyo3"
+names = ["cek_peer_pyo3"]
+
+# The law both packages bind (README.md "Law"). Concept ids are cek-framework
+# CORE chapter paths. cek-host: 06 (Host role), 08, 09, 11 (Baseline, law
+# generation), 14 (fail closed), 21, 22, 25, 26. cek-surface: 06 (Peer side:
+# carriers apply only, never mint), 11 (profile / session stamp), 17 (domain
+# stdlibs as L5 extensions), 21 (Intent, Op constructors).
+# Not implemented: CORE/10-trace, CORE/27-recovery-cap, and the Context verbs
+# of CORE/07 (inject / limit / isolate).
+[law]
+url = "https://github.com/bitplorer/cek-framework"
+concepts = [
+  "CORE/06-host-peer",
+  "CORE/08-cap",
+  "CORE/09-lineage-reverse",
+  "CORE/11-baseline-profile",
+  "CORE/14-security-model",
+  "CORE/17-extensibility",
+  "CORE/21-intent-result-ops",
+  "CORE/22-sealed-args",
+  "CORE/25-landed-and-receipts",
+  "CORE/26-idempotency",
+]

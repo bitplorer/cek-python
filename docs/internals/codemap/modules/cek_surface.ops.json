@@ -1,0 +1,234 @@
+{
+ "cek_surface.ops": {
+  "consumers": [
+   "cek-surface/demo/app.py",
+   "cek-surface/demo/bench_load_chaos.py",
+   "cek-surface/demo/shop_app.py",
+   "cek-surface/tests/test_async.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_catalog.py",
+   "cek-surface/tests/test_composition.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_host_kernel.py",
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_roadmap.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/COMPOSITION.md",
+   "docs/ORGANIZATION.md",
+   "docs/archive/PACKAGING.md",
+   "scripts/consumer_smoke_testpypi.sh",
+   "scripts/verify.sh"
+  ],
+  "doc": "Op constructors — emit only declared-catalog pairs (catalog.py).",
+  "exported_as": [
+   "cek_surface:Op",
+   "cek_surface:as_wire",
+   "cek_surface:clear_form_errors",
+   "cek_surface:form_errors",
+   "cek_surface:navigate_to",
+   "cek_surface:plan",
+   "cek_surface:search_clear",
+   "cek_surface:search_hits",
+   "cek_surface:set_loading",
+   "cek_surface:signal_set"
+  ],
+  "features": [
+   "op-composition"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.kernel",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog",
+    "cek_host.structure",
+    "cek_surface.catalog"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/ops.py",
+  "public": [
+   "CATALOG_FQS",
+   "Op",
+   "as_wire",
+   "clear_form_errors",
+   "form_errors",
+   "navigate_to",
+   "plan",
+   "project_ops",
+   "search_clear",
+   "search_hits",
+   "set_loading",
+   "signal_set"
+  ],
+  "symbols": {
+   "Op": {
+    "bases": [],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, ns: str, name: str, payload: dict[str, Any] | None=None, *, stamp: frozenset | None=None)"
+     },
+     "__repr__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "fq": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "kv_delete": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(key: str, prior: Any | None=None) -> Op"
+     },
+     "kv_set": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(key: str, value: Any) -> Op"
+     },
+     "log_append": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(message: str, *, level: str='info', fields: Mapping[str, Any] | None=None) -> Op"
+     },
+     "stamped": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Compose an extension pair that is present on the session stamp.",
+      "kind": "function",
+      "signature": "(ns: str, name: str, payload: dict[str, Any] | None, stamp: frozenset) -> 'Op'"
+     },
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     },
+     "ui_morph": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(target: str, patch: Any, snapshot: Any | None=None) -> Op"
+     },
+     "ui_restore": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(target: str, snapshot: Any) -> Op"
+     }
+    },
+    "public": true
+   },
+   "_nonempty": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(v: Any, label: str) -> None"
+   },
+   "as_wire": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: Sequence[Op]) -> list[dict[str, Any]]"
+   },
+   "clear_form_errors": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(form_id: str, fields: Sequence[str]) -> list[Op]"
+   },
+   "form_errors": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(form_id: str, errors: Mapping[str, str]) -> list[Op]"
+   },
+   "navigate_to": {
+    "doc": "Not nav.*. Store location in kv + log.",
+    "kind": "function",
+    "public": true,
+    "signature": "(path: str, *, title: str | None=None, replace: bool=False) -> list[Op]"
+   },
+   "plan": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*ops: Op) -> list[Op]"
+   },
+   "project_ops": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: Sequence[Op] | Sequence[dict[str, Any]], *, packs: Sequence[str] | None=None, unknown: str='strict') -> list[dict[str, Any]]"
+   },
+   "search_clear": {
+    "doc": "search.clear — runtime stdlib pair.",
+    "kind": "function",
+    "public": true,
+    "signature": "(target: str, *, stamp: frozenset) -> Op"
+   },
+   "search_hits": {
+    "doc": "search.hits — runtime stdlib pair. Requires search on the session stamp.",
+    "kind": "function",
+    "public": true,
+    "signature": "(target: str, items: Sequence[Any], q: str='', *, stamp: frozenset) -> Op"
+   },
+   "set_loading": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(region: str, busy: bool, status: str | None=None) -> list[Op]"
+   },
+   "signal_set": {
+    "doc": "Not a Domain pack. Macro → kv.set(\"signal:{path}\").",
+    "kind": "function",
+    "public": true,
+    "signature": "(path: str, value: Any) -> Op"
+   }
+  }
+ }
+}

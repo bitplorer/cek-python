@@ -1,0 +1,21 @@
+{
+ "cek-surface/ARCHITECTURE.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek apply"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Surface"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:open_carrier"
+   }
+  ]
+ }
+}

@@ -1,0 +1,82 @@
+{
+ "cek_surface.host": {
+  "consumers": [
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_layer_honesty.py",
+   "docs/archive/SHIPPED.md",
+   "docs/archive/S_TIER_SCORECARD.md"
+  ],
+  "doc": "Intent / Result types. Authority is cek_host.Host (D3).",
+  "exported_as": [
+   "cek_surface:ActionContext",
+   "cek_surface:Intent"
+  ],
+  "features": [
+   "surface-runtime"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-kernel",
+  "path": "cek-surface/src/cek_surface/host.py",
+  "public": [
+   "ActionContext",
+   "Intent",
+   "Result"
+  ],
+  "symbols": {
+   "ActionContext": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "Intent": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "from_dict": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, d: dict[str, Any]) -> Intent"
+     }
+    },
+    "public": true
+   }
+  }
+ }
+}

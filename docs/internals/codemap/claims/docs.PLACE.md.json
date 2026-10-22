@@ -1,0 +1,11 @@
+{
+ "docs/PLACE.md": {
+  "claims": [
+   {
+    "kind": "module",
+    "resolved": false,
+    "text": "cek_host.legal"
+   }
+  ]
+ }
+}

@@ -1,0 +1,82 @@
+{
+ "cek_surface.domain_loader": {
+  "consumers": [
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "docs/archive/PHASES.md"
+  ],
+  "doc": "Load domain-stdlib JSON files from a directory.",
+  "exported_as": [],
+  "features": [
+   "stamp-and-stdlibs"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_surface.surface"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "json",
+     "pathlib"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.structure",
+    "cek_surface.domain_stdlib"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/domain_loader.py",
+  "public": [
+   "bundled_dir",
+   "load_bundled",
+   "load_dir",
+   "load_file",
+   "parse_stdlib"
+  ],
+  "symbols": {
+   "bundled_dir": {
+    "doc": "Stdlibs shipped inside the cek_surface package.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> Path"
+   },
+   "load_bundled": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, registry: Registry | None=None) -> list[DomainStdlib]"
+   },
+   "load_dir": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(directory: Path | str, *, registry: Registry | None=None) -> list[DomainStdlib]"
+   },
+   "load_file": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(path: Path, *, registry: Registry | None=None) -> DomainStdlib"
+   },
+   "parse_stdlib": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(doc: dict) -> DomainStdlib"
+   }
+  }
+ }
+}

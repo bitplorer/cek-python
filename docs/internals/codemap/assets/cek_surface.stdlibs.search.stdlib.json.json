@@ -1,0 +1,11 @@
+{
+ "cek_surface/stdlibs/search.stdlib.json": {
+  "consumers": [],
+  "features": [
+   "stamp-and-stdlibs"
+  ],
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/stdlibs/search.stdlib.json",
+  "referenced_by": []
+ }
+}

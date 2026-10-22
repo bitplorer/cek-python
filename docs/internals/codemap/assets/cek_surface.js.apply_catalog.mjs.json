@@ -1,0 +1,15 @@
+{
+ "cek_surface/js/apply_catalog.mjs": {
+  "consumers": [
+   "cek-surface/demo/ws_peer_server.mjs",
+   "docs/CATALOG_AUTHORITY_TARGET.md",
+   "docs/ORGANIZATION.md"
+  ],
+  "features": [
+   "carriers-and-peer-ir"
+  ],
+  "layer": "surface-peer",
+  "path": "cek-surface/src/cek_surface/js/apply_catalog.mjs",
+  "referenced_by": []
+ }
+}

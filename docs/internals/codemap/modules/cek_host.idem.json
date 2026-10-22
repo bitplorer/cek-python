@@ -1,0 +1,197 @@
+{
+ "cek_host.idem": {
+  "consumers": [
+   "cek-surface/tests/test_phase2.py"
+  ],
+  "doc": "IdemBackend — same key + same digest replays; different body refuses (I5, I6, I18).",
+  "exported_as": [
+   "cek_host:FileIdemBackend",
+   "cek_host:IdemBackend",
+   "cek_host:IdemConflict",
+   "cek_host:MemoryIdemBackend"
+  ],
+  "features": [
+   "idempotency-bind"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "fcntl"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "json",
+     "os",
+     "pathlib",
+     "threading",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.digest",
+    "cek_host.once"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/idem.py",
+  "public": [
+   "FileIdemBackend",
+   "IdemBackend",
+   "IdemConflict",
+   "MemoryIdemBackend",
+   "digest_of_ok"
+  ],
+  "symbols": {
+   "FileIdemBackend": {
+    "bases": [],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, path: str | os.PathLike[str]) -> None"
+     },
+     "_flock": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_funlock": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_load": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     },
+     "_save": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: dict[str, Any]) -> None"
+     },
+     "forget": {
+      "doc": "Remove a key this attempt stored. A refused decide must not replay.",
+      "kind": "function",
+      "signature": "(self, key: str) -> None"
+     },
+     "get": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str) -> dict[str, Any] | None"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "put_or_check": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str, digest: str, result: dict[str, Any]) -> dict[str, Any] | None"
+     }
+    },
+    "public": true
+   },
+   "IdemBackend": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "get": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str) -> dict[str, Any] | None"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "put_or_check": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str, digest: str, result: dict[str, Any]) -> dict[str, Any] | None"
+     }
+    },
+    "public": true
+   },
+   "IdemConflict": {
+    "bases": [
+     "Exception"
+    ],
+    "doc": "Same idempotency key, different body.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "MemoryIdemBackend": {
+    "bases": [],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, down: bool=False) -> None"
+     },
+     "forget": {
+      "doc": "Remove a key this attempt stored. A refused decide must not replay.",
+      "kind": "function",
+      "signature": "(self, key: str) -> None"
+     },
+     "get": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str) -> dict[str, Any] | None"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "mark_down": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, down: bool=True) -> None"
+     },
+     "put_or_check": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str, digest: str, result: dict[str, Any]) -> dict[str, Any] | None"
+     }
+    },
+    "public": true
+   },
+   "digest_of_ok": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: list[Any]) -> str"
+   }
+  }
+ }
+}

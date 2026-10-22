@@ -1,0 +1,1041 @@
+{
+ "assets": {
+  "cek_surface/js/apply_catalog.mjs": "surface-peer",
+  "cek_surface/js/browser_peer.mjs": "surface-peer",
+  "cek_surface/js/peer.mjs": "surface-peer",
+  "cek_surface/js/peer_ir.mjs": "surface-peer",
+  "cek_surface/stdlibs/demo.echo.stdlib.json": "compose",
+  "cek_surface/stdlibs/search.stdlib.json": "compose"
+ },
+ "coupling": {
+  "cek-peer-pyo3": {
+   "distinct_names": 1,
+   "hard_coupling": [],
+   "import_sites": 2,
+   "importing_modules": [
+    "cek_surface.kernel_peer"
+   ],
+   "port_candidates": []
+  },
+  "websockets": {
+   "distinct_names": 1,
+   "hard_coupling": [],
+   "import_sites": 1,
+   "importing_modules": [
+    "cek_surface.carrier"
+   ],
+   "port_candidates": []
+  }
+ },
+ "cycles_module_level": [],
+ "doc_claims": {
+  "code_ahead": [
+   "charter public_api cek_host.catalog:BASELINE_PAIRS",
+   "charter public_api cek_host.catalog:normalize_stamp",
+   "charter public_api cek_host.catalog:project_wire",
+   "charter public_api cek_host.rust_wrap:find_cek_bin",
+   "charter public_api cek_host:MemoryOnceBackend",
+   "charter public_api cek_host:args_hash",
+   "charter public_api cek_surface.continuation:match_continuation",
+   "charter public_api cek_surface.continuation:resolve_args",
+   "cli cek check",
+   "cli cek doctor",
+   "cli cek explain",
+   "public_api cek_host:CATALOG_FQS",
+   "public_api cek_host:CapError",
+   "public_api cek_host:DEV_SECRET",
+   "public_api cek_host:DoctorReport",
+   "public_api cek_host:Explanation",
+   "public_api cek_host:FileIdemBackend",
+   "public_api cek_host:FileLineageBackend",
+   "public_api cek_host:IdemBackend",
+   "public_api cek_host:IdemConflict",
+   "public_api cek_host:KernelResult",
+   "public_api cek_host:LAW_GENERATION",
+   "public_api cek_host:LineageBackend",
+   "public_api cek_host:LineageError",
+   "public_api cek_host:MIN_SECRET_LEN",
+   "public_api cek_host:MemoryIdemBackend",
+   "public_api cek_host:MemoryLineageBackend",
+   "public_api cek_host:MemoryOnceBackend",
+   "public_api cek_host:OnceUsed",
+   "public_api cek_host:ReverseOutcome",
+   "public_api cek_host:StoreDown",
+   "public_api cek_host:__version__",
+   "public_api cek_host:args_hash",
+   "public_api cek_host:default_stamp_pairs",
+   "public_api cek_host:find_cek_bin",
+   "public_api cek_host:normalize_stamp",
+   "public_api cek_host:project_wire",
+   "public_api cek_host:resource_of",
+   "public_api cek_host:result_digest",
+   "public_api cek_host:scope_allows",
+   "public_api cek_surface:ActionContext",
+   "public_api cek_surface:CATALOG_FQS",
+   "public_api cek_surface:CapError",
+   "public_api cek_surface:CekHostPyKernel",
+   "public_api cek_surface:Ctx",
+   "public_api cek_surface:HostKernel",
+   "public_api cek_surface:KernelResult",
+   "public_api cek_surface:PeerSession",
+   "public_api cek_surface:PolicyDecision",
+   "public_api cek_surface:SurfacePolicy",
+   "public_api cek_surface:as_wire",
+   "public_api cek_surface:clear_form_errors",
+   "public_api cek_surface:match_continuation",
+   "public_api cek_surface:resolve_args"
+  ],
+  "docs_ahead": [
+   "HANDOFF.md: cli `cek apply`",
+   "README.md: cli `cek apply`",
+   "README.md: module `cek_host.legal`",
+   "cek-surface/ARCHITECTURE.md: cli `cek apply`",
+   "cek-surface/README.md: cli `cek apply`",
+   "docs/CATALOG_AUTHORITY_TARGET.md: cli `cek apply`",
+   "docs/CATALOG_AUTHORITY_TARGET.md: cli `cek host-json`",
+   "docs/ORGANIZATION.md: cli `cek apply`",
+   "docs/ORGANIZATION.md: cli `cek host-json`",
+   "docs/ORGANIZATION.md: env `TWINE_PASSWORD`",
+   "docs/ORGANIZATION.md: env `TWINE_USERNAME`",
+   "docs/PLACE.md: module `cek_host.legal`"
+  ],
+  "summary": {
+   "claims": 46,
+   "docs": 11,
+   "unresolved": 12
+  }
+ },
+ "domain": {
+  "depends_on": {
+   "cek-peer-pyo3": {
+    "imports": [
+     "cek_peer_pyo3"
+    ],
+    "names": [
+     "cek_peer_pyo3"
+    ]
+   },
+   "websockets": {
+    "imports": [
+     "websockets"
+    ],
+    "names": [
+     "websockets"
+    ]
+   }
+  },
+  "domain": "cek-python is the Python port of the CEK Host (cek-host: mint, verify, once, idempotency, lineage, Result.ops) and of the surface that composes Ops and carries them to a Peer (cek-surface).",
+  "law": {
+   "concepts": [
+    "CORE/06-host-peer",
+    "CORE/08-cap",
+    "CORE/09-lineage-reverse",
+    "CORE/11-baseline-profile",
+    "CORE/14-security-model",
+    "CORE/17-extensibility",
+    "CORE/21-intent-result-ops",
+    "CORE/22-sealed-args",
+    "CORE/25-landed-and-receipts",
+    "CORE/26-idempotency"
+   ],
+   "url": "https://github.com/bitplorer/cek-framework"
+  },
+  "non_goals": {
+   "hardware-apply": {
+    "keywords": [
+     "gpio",
+     "hw"
+    ],
+    "owner": "cek-hw"
+   },
+   "html-construction": {
+    "keywords": [
+     "document",
+     "html",
+     "tag"
+    ],
+    "owner": "ux-dom"
+   },
+   "law-text": {
+    "keywords": [
+     "axiom",
+     "axioms",
+     "charter"
+    ],
+    "owner": "cek-framework"
+   },
+   "reference-kernels-and-contract": {
+    "keywords": [
+     "cargo",
+     "contract",
+     "crate"
+    ],
+    "owner": "cek-runtime"
+   },
+   "wire-channel-and-ux": {
+    "keywords": [
+     "channel",
+     "codec"
+    ],
+    "owner": "ux-channel"
+   }
+  },
+  "owns": {
+   "cap-authority": {
+    "modules": [
+     "cek_host.bound",
+     "cek_host.cap",
+     "cek_host.ed25519",
+     "cek_host.host_verify"
+    ],
+    "symbols": [
+     "cek_host.host:Host.check",
+     "cek_host.host:Host.mint",
+     "cek_host:CapService"
+    ]
+   },
+   "carriers-and-peer-ir": {
+    "modules": [
+     "cek_surface.carrier",
+     "cek_surface.kernel_peer",
+     "cek_surface.session"
+    ],
+    "symbols": [
+     "cek_surface:PeerSession",
+     "cek_surface:open_carrier"
+    ]
+   },
+   "continuation-envelopes": {
+    "modules": [
+     "cek_surface.continuation"
+    ],
+    "symbols": [
+     "cek_surface.surface:Surface.mint_continuation",
+     "cek_surface:Continuation"
+    ]
+   },
+   "declared-catalog": {
+    "modules": [
+     "cek_host.catalog",
+     "cek_host.catalog_mode",
+     "cek_host.structure"
+    ],
+    "symbols": [
+     "cek_host:CATALOG_PAIRS",
+     "cek_host:UndeclaredPair",
+     "cek_host:in_catalog",
+     "cek_host:project_wire"
+    ]
+   },
+   "host-diagnostics": {
+    "modules": [
+     "cek_host.cli",
+     "cek_host.doctor",
+     "cek_host.explain",
+     "cek_host.scaffold"
+    ],
+    "symbols": [
+     "cek_host.cli:main",
+     "cek_host:doctor",
+     "cek_host:explain"
+    ]
+   },
+   "lineage-and-reverse": {
+    "modules": [
+     "cek_host.lineage"
+    ],
+    "symbols": [
+     "cek_host.host:Host.end_activity",
+     "cek_host.host:Host.report_receipt",
+     "cek_host:LineageBackend"
+    ]
+   },
+   "op-composition": {
+    "modules": [
+     "cek_surface.ops",
+     "cek_surface.policy",
+     "cek_surface.surface"
+    ],
+    "symbols": [
+     "cek_surface:Op",
+     "cek_surface:Surface",
+     "cek_surface:plan"
+    ]
+   },
+   "result-packaging": {
+    "modules": [
+     "cek_host.digest",
+     "cek_host.host",
+     "cek_host.host_project"
+    ],
+    "symbols": [
+     "cek_host:Host",
+     "cek_host:KernelResult",
+     "cek_host:result_digest"
+    ]
+   },
+   "session-stamp-and-domain-stdlibs": {
+    "modules": [
+     "cek_surface.agreement",
+     "cek_surface.domain_loader",
+     "cek_surface.domain_stdlib",
+     "cek_surface.stamp"
+    ],
+    "symbols": [
+     "cek_surface.agreement:negotiate",
+     "cek_surface.surface:Surface.use_stdlibs"
+    ]
+   },
+   "single-use-and-idempotency": {
+    "modules": [
+     "cek_host.idem",
+     "cek_host.once"
+    ],
+    "symbols": [
+     "cek_host:IdemBackend",
+     "cek_host:OnceBackend",
+     "cek_host:StoreDown"
+    ]
+   }
+  },
+  "public_api": [
+   "cek_host.catalog:BASELINE_PAIRS",
+   "cek_host.catalog:in_catalog",
+   "cek_host.catalog:normalize_stamp",
+   "cek_host.catalog:project_wire",
+   "cek_host.rust_wrap:find_cek_bin",
+   "cek_host:CATALOG_PAIRS",
+   "cek_host:CapService",
+   "cek_host:FileOnceBackend",
+   "cek_host:Host",
+   "cek_host:MemoryOnceBackend",
+   "cek_host:UndeclaredPair",
+   "cek_host:args_hash",
+   "cek_host:doctor",
+   "cek_host:explain",
+   "cek_host:in_catalog",
+   "cek_surface.continuation:Continuation",
+   "cek_surface.continuation:match_continuation",
+   "cek_surface.continuation:mint_continuation",
+   "cek_surface.continuation:resolve_args",
+   "cek_surface.domain_loader:load_bundled",
+   "cek_surface:Op",
+   "cek_surface:Surface",
+   "cek_surface:form_errors",
+   "cek_surface:load_host_kernel",
+   "cek_surface:navigate_to",
+   "cek_surface:open_carrier",
+   "cek_surface:plan",
+   "cek_surface:search_hits",
+   "cek_surface:set_loading",
+   "cek_surface:signal_set"
+  ]
+ },
+ "entry_points": {
+  "asgi": [],
+  "entry_points": {},
+  "main_modules": [
+   "cek_host.__main__"
+  ],
+  "scripts": {
+   "cek": "cek_host.cli:main"
+  }
+ },
+ "external_usage": {
+  "cek-peer-pyo3": [
+   "cek_peer_pyo3"
+  ],
+  "websockets": [
+   "websockets"
+  ]
+ },
+ "features": {
+  "cap-mint-verify": {
+   "docs": [
+    "START.md",
+    "cek-host/README.md",
+    "docs/INVARIANTS.md"
+   ],
+   "modules": [
+    "cek_host.cap",
+    "cek_host.digest",
+    "cek_host.host"
+   ],
+   "purpose": "Mint HMAC Caps bound to an action, sealed args, a validity window and optional subject, scopes and once; verify them and attenuate (narrow only).",
+   "symbols": [
+    "cek_host.cap:CapError",
+    "cek_host.cap:CapService",
+    "cek_host.cap:CapService.attenuate",
+    "cek_host.cap:CapService.mint",
+    "cek_host.cap:CapService.verify",
+    "cek_host.cap:resource_of",
+    "cek_host.cap:scope_allows",
+    "cek_host.digest:args_hash",
+    "cek_host.host:Host.attenuate",
+    "cek_host.host:Host.check",
+    "cek_host.host:Host.mint"
+   ],
+   "tests": [
+    "cek-surface/tests/test_contract_vectors.py",
+    "cek-surface/tests/test_core.py",
+    "cek-surface/tests/test_hardening.py"
+   ]
+  },
+  "carriers-and-peer-ir": {
+   "assets": [
+    "cek_surface/js/apply_catalog.mjs",
+    "cek_surface/js/browser_peer.mjs",
+    "cek_surface/js/peer.mjs",
+    "cek_surface/js/peer_ir.mjs"
+   ],
+   "docs": [
+    "cek-surface/ARCHITECTURE.md",
+    "docs/COMPOSITION.md"
+   ],
+   "modules": [
+    "cek_surface.carrier",
+    "cek_surface.session",
+    "cek_surface.surface"
+   ],
+   "purpose": "Plug-and-play carriers (subprocess NDJSON, memory, WebSocket) move apply, stamp, perception and events; the JS Peer applies the stamped pairs and paints perception only.",
+   "symbols": [
+    "cek_surface.carrier:Carrier",
+    "cek_surface.carrier:MemoryCarrier",
+    "cek_surface.carrier:SubprocessNdjsonCarrier",
+    "cek_surface.carrier:WebSocketCarrier",
+    "cek_surface.carrier:open_carrier",
+    "cek_surface.session:PeerSession",
+    "cek_surface.surface:Surface.filter_cached",
+    "cek_surface.surface:Surface.mark_pending",
+    "cek_surface.surface:Surface.perception",
+    "cek_surface.surface:Surface.preview"
+   ],
+   "tests": [
+    "cek-surface/tests/test_carrier_ir.py",
+    "cek-surface/tests/test_continuation_live.py",
+    "cek-surface/tests/test_vectors.py"
+   ]
+  },
+  "continuations": {
+   "assets": [
+    "cek_surface/js/browser_peer.mjs"
+   ],
+   "docs": [
+    "cek-surface/ARCHITECTURE.md",
+    "docs/COMPOSITION.md"
+   ],
+   "modules": [
+    "cek_surface.continuation",
+    "cek_surface.surface"
+   ],
+   "purpose": "The Host pre-mints attenuated continuation Caps with Intent templates; the Peer fills declared slots and the Host verifies again; a refusal never arms a new once-Cap.",
+   "symbols": [
+    "cek_surface.continuation:Continuation",
+    "cek_surface.continuation:match_continuation",
+    "cek_surface.continuation:mint_continuation",
+    "cek_surface.continuation:resolve_args",
+    "cek_surface.surface:Surface.mint_continuation"
+   ],
+   "tests": [
+    "cek-surface/tests/test_browser_continuation.mjs",
+    "cek-surface/tests/test_carrier_ir.py",
+    "cek-surface/tests/test_continuation_bag.py",
+    "cek-surface/tests/test_continuation_live.py"
+   ]
+  },
+  "declared-catalog": {
+   "docs": [
+    "cek-host/README.md",
+    "docs/CATALOG_AUTHORITY_TARGET.md"
+   ],
+   "modules": [
+    "cek_host.catalog",
+    "cek_host.catalog_mode",
+    "cek_host.structure",
+    "cek_surface.catalog"
+   ],
+   "purpose": "The declared catalog (Baseline plus UI seed, five pairs) keyed by (ns, name); undeclared pairs raise UndeclaredPair; open or strict catalog mode.",
+   "symbols": [
+    "cek_host.catalog:BASELINE_PAIRS",
+    "cek_host.catalog:CATALOG_PAIRS",
+    "cek_host.catalog:UndeclaredPair",
+    "cek_host.catalog:default_stamp_pairs",
+    "cek_host.catalog:in_catalog",
+    "cek_host.catalog:in_stamp",
+    "cek_host.catalog:project_wire",
+    "cek_host.catalog_mode:get_catalog_mode",
+    "cek_host.structure:validate_pair",
+    "cek_surface.catalog:CATALOG_PAIRS"
+   ],
+   "tests": [
+    "cek-surface/tests/test_catalog.py",
+    "cek-surface/tests/test_public_020.py",
+    "cek-surface/tests/test_stamp.py"
+   ]
+  },
+  "host-tooling": {
+   "docs": [
+    "README.md",
+    "START.md"
+   ],
+   "modules": [
+    "cek_host.__main__",
+    "cek_host.cli",
+    "cek_host.doctor",
+    "cek_host.explain",
+    "cek_host.scaffold"
+   ],
+   "purpose": "The cek CLI (check, explain, create-app, version), doctor go/no-go findings, teaching explanations and the one-file app scaffold.",
+   "symbols": [
+    "cek_host.cli:main",
+    "cek_host.doctor:DEV_SECRET",
+    "cek_host.doctor:DoctorReport",
+    "cek_host.doctor:doctor",
+    "cek_host.explain:Explanation",
+    "cek_host.explain:explain",
+    "cek_host.scaffold:create_app"
+   ],
+   "tests": [
+    "cek-surface/tests/test_explain_doctor.py"
+   ]
+  },
+  "host-wrap": {
+   "docs": [
+    "docs/CATALOG_AUTHORITY_TARGET.md",
+    "docs/ORGANIZATION.md"
+   ],
+   "modules": [
+    "cek_host.rust_wrap"
+   ],
+   "purpose": "Opt-in Host wrap: RustHostKernel decides through the Rust cek host-json binary instead of the Python port.",
+   "symbols": [
+    "cek_host.rust_wrap:RustHostKernel",
+    "cek_host.rust_wrap:find_cek_bin",
+    "cek_host.rust_wrap:host_json"
+   ],
+   "tests": [
+    "cek-surface/tests/test_phase3_wrap.py"
+   ]
+  },
+  "idempotency-bind": {
+   "docs": [
+    "docs/INVARIANTS.md"
+   ],
+   "modules": [
+    "cek_host.host",
+    "cek_host.idem"
+   ],
+   "purpose": "Same idempotency key and same body replays the stored Result; a different body refuses; an empty key refuses.",
+   "symbols": [
+    "cek_host.host:Host._forget_idem",
+    "cek_host.idem:FileIdemBackend",
+    "cek_host.idem:IdemBackend",
+    "cek_host.idem:IdemConflict",
+    "cek_host.idem:MemoryIdemBackend",
+    "cek_host.idem:digest_of_ok"
+   ],
+   "tests": [
+    "cek-surface/tests/test_contract_vectors.py",
+    "cek-surface/tests/test_phase2.py"
+   ]
+  },
+  "in-process-peer": {
+   "docs": [
+    "cek-surface/ARCHITECTURE.md",
+    "docs/CATALOG_AUTHORITY_TARGET.md"
+   ],
+   "modules": [
+    "cek_surface.carrier",
+    "cek_surface.kernel_peer"
+   ],
+   "purpose": "carrier_kind=\"kernel\" applies through the in-process Rust peer cek_peer_pyo3 (or, opt-in, subprocess cek apply) and fails closed when it is missing.",
+   "symbols": [
+    "cek_surface.kernel_peer:KernelPeerCarrier",
+    "cek_surface.kernel_peer:apply_via_kernel",
+    "cek_surface.kernel_peer:find_cek_peer_pyo3",
+    "cek_surface.kernel_peer:load_cek_peer_pyo3"
+   ],
+   "tests": [
+    "cek-surface/tests/test_kernel_peer.py",
+    "cek-surface/tests/test_phase3_wrap.py"
+   ]
+  },
+  "lineage-reverse": {
+   "docs": [
+    "START.md",
+    "docs/INVARIANTS.md"
+   ],
+   "modules": [
+    "cek_host.host",
+    "cek_host.lineage"
+   ],
+   "purpose": "Commit lineage per Activity, take Peer receipts, and on end reverse landed-first or list the op as non-reversible.",
+   "symbols": [
+    "cek_host.host:Host.end_activity",
+    "cek_host.host:Host.report_receipt",
+    "cek_host.lineage:FileLineageBackend",
+    "cek_host.lineage:LineageBackend",
+    "cek_host.lineage:MemoryLineageBackend",
+    "cek_host.lineage:ReverseOutcome",
+    "cek_host.lineage:inverse_ops",
+    "cek_host.lineage:reverse_activity"
+   ],
+   "tests": [
+    "cek-surface/tests/test_continuation_bag.py",
+    "cek-surface/tests/test_contract_vectors.py",
+    "cek-surface/tests/test_phase2.py"
+   ]
+  },
+  "once-single-use": {
+   "docs": [
+    "CHANGELOG.md",
+    "docs/INVARIANTS.md"
+   ],
+   "modules": [
+    "cek_host.host",
+    "cek_host.once"
+   ],
+   "purpose": "A once-Cap is consumed before lineage or an idempotent record; a second use refuses and a store that is down fails closed.",
+   "symbols": [
+    "cek_host.cap:CapService.commit_once",
+    "cek_host.host:Host._finish",
+    "cek_host.once:FileOnceBackend",
+    "cek_host.once:MemoryOnceBackend",
+    "cek_host.once:OnceBackend",
+    "cek_host.once:OnceUsed",
+    "cek_host.once:StoreDown"
+   ],
+   "tests": [
+    "cek-surface/tests/test_continuation_bag.py",
+    "cek-surface/tests/test_hardening.py",
+    "cek-surface/tests/test_host_parity.py"
+   ]
+  },
+  "op-composition": {
+   "docs": [
+    "docs/COMPOSITION.md"
+   ],
+   "modules": [
+    "cek_surface.ops",
+    "cek_surface.policy"
+   ],
+   "purpose": "Op constructors and macros that emit only declared-catalog (or stamped) pairs, plus the L6 SurfacePolicy rate and op checks.",
+   "symbols": [
+    "cek_surface.ops:Op",
+    "cek_surface.ops:as_wire",
+    "cek_surface.ops:clear_form_errors",
+    "cek_surface.ops:form_errors",
+    "cek_surface.ops:navigate_to",
+    "cek_surface.ops:plan",
+    "cek_surface.ops:search_clear",
+    "cek_surface.ops:search_hits",
+    "cek_surface.ops:set_loading",
+    "cek_surface.ops:signal_set",
+    "cek_surface.policy:PolicyDecision",
+    "cek_surface.policy:SurfacePolicy"
+   ],
+   "tests": [
+    "cek-surface/tests/test_composition.py",
+    "cek-surface/tests/test_roadmap.py",
+    "cek-surface/tests/test_vectors.py"
+   ]
+  },
+  "stamp-and-stdlibs": {
+   "assets": [
+    "cek_surface/stdlibs/demo.echo.stdlib.json",
+    "cek_surface/stdlibs/search.stdlib.json"
+   ],
+   "docs": [
+    "cek-surface/README.md",
+    "docs/CATALOG_AUTHORITY_TARGET.md"
+   ],
+   "modules": [
+    "cek_surface.agreement",
+    "cek_surface.domain_loader",
+    "cek_surface.domain_stdlib",
+    "cek_surface.stamp",
+    "cek_surface.surface"
+   ],
+   "purpose": "Domain stdlibs extend the catalog at runtime; Host and Peer agree on shared versions and the Host stamps the closed pair set for the session.",
+   "symbols": [
+    "cek_surface.agreement:negotiate",
+    "cek_surface.domain_loader:load_bundled",
+    "cek_surface.domain_loader:load_dir",
+    "cek_surface.domain_loader:parse_stdlib",
+    "cek_surface.domain_stdlib:DomainStdlib",
+    "cek_surface.domain_stdlib:Registry",
+    "cek_surface.domain_stdlib:agree",
+    "cek_surface.domain_stdlib:stamp_from_agreement",
+    "cek_surface.stamp:pairs_as_wire",
+    "cek_surface.stamp:pairs_from_wire",
+    "cek_surface.surface:Surface.use_stdlibs"
+   ],
+   "tests": [
+    "cek-surface/tests/test_phase2_stdlibs.py",
+    "cek-surface/tests/test_search_stdlib.py",
+    "cek-surface/tests/test_stamp.py"
+   ]
+  },
+  "submit-result": {
+   "docs": [
+    "START.md",
+    "cek-host/README.md",
+    "docs/INVARIANTS.md"
+   ],
+   "modules": [
+    "cek_host.digest",
+    "cek_host.host",
+    "cek_host.host_project"
+   ],
+   "purpose": "Host.submit and async_submit verify, project and package a Result {kind, ops, error, digest}; a refusal carries ops: [] and the digest is cek1: SHA-256.",
+   "symbols": [
+    "cek_host.digest:result_digest",
+    "cek_host.host:Host",
+    "cek_host.host:Host.async_submit",
+    "cek_host.host:Host.dev",
+    "cek_host.host:Host.prod",
+    "cek_host.host:Host.submit",
+    "cek_host.host:Host.submit_ops",
+    "cek_host.host:KernelResult",
+    "cek_host.host_project:resolve_ops"
+   ],
+   "tests": [
+    "cek-surface/tests/test_async.py",
+    "cek-surface/tests/test_core.py",
+    "cek-surface/tests/test_host_parity.py",
+    "cek-surface/tests/test_vectors.py"
+   ]
+  },
+  "surface-runtime": {
+   "docs": [
+    "START.md",
+    "cek-surface/ARCHITECTURE.md",
+    "cek-surface/README.md"
+   ],
+   "modules": [
+    "cek_surface.cap",
+    "cek_surface.host",
+    "cek_surface.kernel",
+    "cek_surface.surface"
+   ],
+   "purpose": "Surface registers @action handlers, composes list[Op], has the Host kernel authorize them and delivers the Result to the Peer, sync or async.",
+   "symbols": [
+    "cek_surface.host:ActionContext",
+    "cek_surface.host:Intent",
+    "cek_surface.kernel:CekHostPyKernel",
+    "cek_surface.kernel:HostKernel",
+    "cek_surface.kernel:load_host_kernel",
+    "cek_surface.surface:Ctx",
+    "cek_surface.surface:Surface",
+    "cek_surface.surface:Surface.action",
+    "cek_surface.surface:Surface.async_submit",
+    "cek_surface.surface:Surface.drain_events",
+    "cek_surface.surface:Surface.handle_event",
+    "cek_surface.surface:Surface.on",
+    "cek_surface.surface:Surface.submit"
+   ],
+   "tests": [
+    "cek-surface/tests/test_async.py",
+    "cek-surface/tests/test_core.py",
+    "cek-surface/tests/test_host_kernel.py",
+    "cek-surface/tests/test_http_host.py",
+    "cek-surface/tests/test_layer_honesty.py"
+   ]
+  },
+  "verify-policy": {
+   "docs": [
+    "docs/INVARIANTS.md"
+   ],
+   "modules": [
+    "cek_host.bound",
+    "cek_host.ed25519",
+    "cek_host.host",
+    "cek_host.host_verify"
+   ],
+   "purpose": "Post-Cap verify gates: accepted law generations, Ed25519 signatures when the Host holds a seed, and the BoundAsk token that only exists after verify.",
+   "symbols": [
+    "cek_host.bound:BoundAsk",
+    "cek_host.ed25519:public_key",
+    "cek_host.ed25519:sign",
+    "cek_host.ed25519:verify",
+    "cek_host.host:Host._verify",
+    "cek_host.host_verify:check_ed25519",
+    "cek_host.host_verify:check_generation"
+   ],
+   "tests": [
+    "cek-surface/tests/test_contract_vectors.py",
+    "cek-surface/tests/test_phase2.py"
+   ]
+  }
+ },
+ "generator": {
+  "name": "codemap",
+  "sha256": "1bbab847a5bef52397c7afdec2f57840aa0469f8e15849902b56183a75e93803",
+  "version": "2.0.0"
+ },
+ "layer_exceptions": [
+  "cek_host.doctor -> cek_host",
+  "cek_host.doctor -> cek_surface",
+  "cek_host.doctor -> cek_surface.kernel"
+ ],
+ "layer_graph": {
+  "compose": [
+   "host-catalog"
+  ],
+  "host-authority": [
+   "host-catalog",
+   "host-root",
+   "surface-kernel",
+   "surface-root"
+  ],
+  "host-root": [
+   "host-authority",
+   "host-catalog",
+   "host-wrap"
+  ],
+  "host-tooling": [
+   "host-authority",
+   "host-root"
+  ],
+  "surface": [
+   "compose",
+   "host-authority",
+   "host-catalog",
+   "surface-kernel",
+   "surface-peer"
+  ],
+  "surface-kernel": [
+   "compose",
+   "host-authority",
+   "host-root"
+  ],
+  "surface-peer": [
+   "host-wrap"
+  ],
+  "surface-root": [
+   "compose",
+   "surface",
+   "surface-kernel",
+   "surface-peer"
+  ]
+ },
+ "layer_rules": {
+  "compose": [
+   "host-catalog"
+  ],
+  "host-authority": [
+   "host-catalog"
+  ],
+  "host-catalog": [],
+  "host-root": [
+   "host-authority",
+   "host-catalog",
+   "host-wrap"
+  ],
+  "host-tooling": [
+   "host-authority",
+   "host-root"
+  ],
+  "host-wrap": [],
+  "surface": [
+   "compose",
+   "host-authority",
+   "host-catalog",
+   "surface-kernel",
+   "surface-peer"
+  ],
+  "surface-kernel": [
+   "compose",
+   "host-authority",
+   "host-root"
+  ],
+  "surface-peer": [
+   "host-wrap"
+  ],
+  "surface-root": [
+   "compose",
+   "surface",
+   "surface-kernel",
+   "surface-peer"
+  ]
+ },
+ "layer_violations": [],
+ "layers": {
+  "cek_host": "host-root",
+  "cek_host.__main__": "host-tooling",
+  "cek_host.bound": "host-authority",
+  "cek_host.cap": "host-authority",
+  "cek_host.catalog": "host-catalog",
+  "cek_host.catalog_mode": "host-catalog",
+  "cek_host.cli": "host-tooling",
+  "cek_host.digest": "host-authority",
+  "cek_host.doctor": "host-authority",
+  "cek_host.ed25519": "host-authority",
+  "cek_host.explain": "host-authority",
+  "cek_host.host": "host-authority",
+  "cek_host.host_project": "host-authority",
+  "cek_host.host_verify": "host-authority",
+  "cek_host.idem": "host-authority",
+  "cek_host.lineage": "host-authority",
+  "cek_host.once": "host-authority",
+  "cek_host.rust_wrap": "host-wrap",
+  "cek_host.scaffold": "host-tooling",
+  "cek_host.structure": "host-catalog",
+  "cek_surface": "surface-root",
+  "cek_surface.agreement": "compose",
+  "cek_surface.cap": "surface-kernel",
+  "cek_surface.carrier": "surface-peer",
+  "cek_surface.catalog": "compose",
+  "cek_surface.continuation": "compose",
+  "cek_surface.domain_loader": "compose",
+  "cek_surface.domain_stdlib": "compose",
+  "cek_surface.host": "surface-kernel",
+  "cek_surface.js": "surface-peer",
+  "cek_surface.kernel": "surface-kernel",
+  "cek_surface.kernel_peer": "surface-peer",
+  "cek_surface.ops": "compose",
+  "cek_surface.policy": "compose",
+  "cek_surface.session": "surface-peer",
+  "cek_surface.stamp": "compose",
+  "cek_surface.stdlibs": "compose",
+  "cek_surface.surface": "surface"
+ },
+ "modules": {
+  "cek_host": "host-root",
+  "cek_host.__main__": "host-tooling",
+  "cek_host.bound": "host-authority",
+  "cek_host.cap": "host-authority",
+  "cek_host.catalog": "host-catalog",
+  "cek_host.catalog_mode": "host-catalog",
+  "cek_host.cli": "host-tooling",
+  "cek_host.digest": "host-authority",
+  "cek_host.doctor": "host-authority",
+  "cek_host.ed25519": "host-authority",
+  "cek_host.explain": "host-authority",
+  "cek_host.host": "host-authority",
+  "cek_host.host_project": "host-authority",
+  "cek_host.host_verify": "host-authority",
+  "cek_host.idem": "host-authority",
+  "cek_host.lineage": "host-authority",
+  "cek_host.once": "host-authority",
+  "cek_host.rust_wrap": "host-wrap",
+  "cek_host.scaffold": "host-tooling",
+  "cek_host.structure": "host-catalog",
+  "cek_surface": "surface-root",
+  "cek_surface.agreement": "compose",
+  "cek_surface.cap": "surface-kernel",
+  "cek_surface.carrier": "surface-peer",
+  "cek_surface.catalog": "compose",
+  "cek_surface.continuation": "compose",
+  "cek_surface.domain_loader": "compose",
+  "cek_surface.domain_stdlib": "compose",
+  "cek_surface.host": "surface-kernel",
+  "cek_surface.kernel": "surface-kernel",
+  "cek_surface.kernel_peer": "surface-peer",
+  "cek_surface.ops": "compose",
+  "cek_surface.policy": "compose",
+  "cek_surface.session": "surface-peer",
+  "cek_surface.stamp": "compose",
+  "cek_surface.surface": "surface"
+ },
+ "narrative_docs": [
+  "cek-surface/ARCHITECTURE.md",
+  "docs/CATALOG_AUTHORITY_TARGET.md",
+  "docs/ORGANIZATION.md"
+ ],
+ "non_goal_warnings": [],
+ "packages": {
+  "cek_host": "cek-host/src/cek_host",
+  "cek_surface": "cek-surface/src/cek_surface"
+ },
+ "projects": [
+  "cek-host/pyproject.toml",
+  "cek-surface/pyproject.toml",
+  "pyproject.toml"
+ ],
+ "public_api": {
+  "cek_host": {
+   "BoundAsk": "cek_host.bound",
+   "CATALOG_FQS": "cek_host.catalog",
+   "CATALOG_PAIRS": "cek_host.catalog",
+   "CapError": "cek_host.cap",
+   "CapService": "cek_host.cap",
+   "DEV_SECRET": "cek_host.doctor",
+   "DoctorReport": "cek_host.doctor",
+   "Explanation": "cek_host.explain",
+   "FileIdemBackend": "cek_host.idem",
+   "FileLineageBackend": "cek_host.lineage",
+   "FileOnceBackend": "cek_host.once",
+   "Host": "cek_host.host",
+   "IdemBackend": "cek_host.idem",
+   "IdemConflict": "cek_host.idem",
+   "KernelResult": "cek_host.host",
+   "LAW_GENERATION": "cek_host.host",
+   "LineageBackend": "cek_host.lineage",
+   "LineageError": "cek_host.lineage",
+   "MIN_SECRET_LEN": "cek_host.doctor",
+   "MemoryIdemBackend": "cek_host.idem",
+   "MemoryLineageBackend": "cek_host.lineage",
+   "MemoryOnceBackend": "cek_host.once",
+   "OnceBackend": "cek_host.once",
+   "OnceUsed": "cek_host.once",
+   "ReverseOutcome": "cek_host.lineage",
+   "RustHostKernel": "cek_host.rust_wrap",
+   "StoreDown": "cek_host.once",
+   "UndeclaredPair": "cek_host.catalog",
+   "__version__": "cek_host",
+   "args_hash": "cek_host.digest",
+   "default_stamp_pairs": "cek_host.catalog",
+   "doctor": "cek_host.doctor",
+   "explain": "cek_host.explain",
+   "find_cek_bin": "cek_host.rust_wrap",
+   "in_catalog": "cek_host.catalog",
+   "in_stamp": "cek_host.catalog",
+   "normalize_stamp": "cek_host.catalog",
+   "project_wire": "cek_host.catalog",
+   "resource_of": "cek_host.cap",
+   "result_digest": "cek_host.digest",
+   "scope_allows": "cek_host.cap"
+  },
+  "cek_surface": {
+   "ActionContext": "cek_surface.host",
+   "CATALOG_FQS": "cek_host.catalog",
+   "CATALOG_PAIRS": "cek_host.catalog",
+   "CapError": "cek_host.cap",
+   "CapService": "cek_host.cap",
+   "Carrier": "cek_surface.carrier",
+   "CekHostPyKernel": "cek_surface.kernel",
+   "Continuation": "cek_surface.continuation",
+   "Ctx": "cek_surface.surface",
+   "HostKernel": "cek_surface.kernel",
+   "Intent": "cek_surface.host",
+   "KernelResult": "cek_host.host",
+   "MemoryCarrier": "cek_surface.carrier",
+   "Op": "cek_surface.ops",
+   "PeerSession": "cek_surface.session",
+   "PolicyDecision": "cek_surface.policy",
+   "Result": "cek_host.host",
+   "SubprocessNdjsonCarrier": "cek_surface.carrier",
+   "Surface": "cek_surface.surface",
+   "SurfacePolicy": "cek_surface.policy",
+   "UndeclaredPair": "cek_host.catalog",
+   "WebSocketCarrier": "cek_surface.carrier",
+   "as_wire": "cek_surface.ops",
+   "clear_form_errors": "cek_surface.ops",
+   "form_errors": "cek_surface.ops",
+   "in_catalog": "cek_host.catalog",
+   "load_host_kernel": "cek_surface.kernel",
+   "match_continuation": "cek_surface.continuation",
+   "navigate_to": "cek_surface.ops",
+   "open_carrier": "cek_surface.carrier",
+   "plan": "cek_surface.ops",
+   "project": "cek_host.catalog",
+   "resolve_args": "cek_surface.continuation",
+   "search_clear": "cek_surface.ops",
+   "search_hits": "cek_surface.ops",
+   "set_loading": "cek_surface.ops",
+   "signal_set": "cek_surface.ops"
+  }
+ },
+ "schema": 2
+}

@@ -1,0 +1,32 @@
+{
+ "cek_host.__main__": {
+  "consumers": [],
+  "doc": "",
+  "exported_as": [],
+  "features": [
+   "host-tooling"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.cli"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-tooling",
+  "path": "cek-host/src/cek_host/__main__.py",
+  "public": [],
+  "symbols": {}
+ }
+}

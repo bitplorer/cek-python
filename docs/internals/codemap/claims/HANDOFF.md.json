@@ -1,0 +1,21 @@
+{
+ "HANDOFF.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek apply"
+   },
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "CEK_BIN"
+   },
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "CEK_PEER_PYO3"
+   }
+  ]
+ }
+}

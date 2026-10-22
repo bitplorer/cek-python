@@ -1,0 +1,124 @@
+# Repo-level dev tooling only. This file is not a package and is never built:
+# cek-host and cek-surface are built from their own directories
+# (cek-host/pyproject.toml, cek-surface/pyproject.toml), so nothing here ships.
+
+[tool.codemap]
+# One map for both published packages. Entry points are read from each
+# package's own pyproject.toml (the nearest one above each package directory).
+packages = ["cek-host/src/cek_host", "cek-surface/src/cek_surface"]
+out_dir = "docs/internals/codemap"
+features = "docs/internals/features.toml"
+domain = "docs/internals/domain.toml"
+assets = [
+  "cek-surface/src/cek_surface/js/*.mjs",
+  "cek-surface/src/cek_surface/stdlibs/*.json",
+]
+narrative = [
+  "cek-surface/ARCHITECTURE.md",
+  "docs/CATALOG_AUTHORITY_TARGET.md",
+  "docs/ORGANIZATION.md",
+]
+# Docs whose reference-style claims are indexed and resolved against the code
+# (findings only, never failed; see "Doc claims" in ux-dom's CODEMAP.md).
+claims_docs = [
+  "README.md",
+  "START.md",
+  "HANDOFF.md",
+  "cek-host/README.md",
+  "cek-surface/README.md",
+  "cek-surface/ARCHITECTURE.md",
+  "docs",
+]
+# History: the archive names retired code on purpose.
+claims_exclude = ["docs/archive"]
+# The map's own doc names modules only to describe the map.
+self_files = ["docs/internals/CODEMAP.md"]
+# Rule-breaking edges accepted on purpose: "importer -> imported". Say why.
+layer_exceptions = [
+  # doctor() probes the install graph: it fails if cek_surface.kernel still
+  # exports EmbeddedHostKernel (D3). Lazy and guarded by ImportError, so
+  # cek-host stays installable alone.
+  "cek_host.doctor -> cek_surface",
+  "cek_host.doctor -> cek_surface.kernel",
+  # doctor() builds a default Host through the package root, lazily, because
+  # cek_host.host imports doctor at module level (DEV_SECRET, MIN_SECRET_LEN).
+  "cek_host.doctor -> cek_host",
+]
+
+[tool.codemap.consumers]
+"cek-surface/demo" = [".py", ".mjs", ".html"]
+"cek-surface/tests" = [".py", ".mjs"]
+docs = [".md"]
+scripts = [".sh"]
+
+[tool.codemap.public_api]
+rule = "all_or_derived"
+packages = ["cek_host", "cek_surface"]
+
+# Module prefix -> layer (longest prefix wins; a package root matches only its
+# own __init__). From docs/ORGANIZATION.md ("What goes where") and
+# cek-surface/ARCHITECTURE.md ("Product boundary"):
+# host-catalog   = pair identity, Baseline + UI seed, structure gate
+# host-authority = the Cap machine: mint, verify, once, idem, lineage, Result
+# host-wrap      = opt-in Rust Host wrap (`cek host-json`)
+# host-tooling   = the `cek` CLI and the create-app scaffold
+# compose        = Op constructors, session stamp, domain stdlibs, policy,
+#                  continuation envelopes
+# surface-kernel = the Host-kernel boundary (Caps re-exported, never owned)
+# surface-peer   = carriers and the in-process peer: transport, not a decider
+# surface        = the Surface runtime that ties them together
+[tool.codemap.layers]
+"cek_host" = "host-root"
+"cek_host.__main__" = "host-tooling"
+"cek_host.bound" = "host-authority"
+"cek_host.cap" = "host-authority"
+"cek_host.catalog" = "host-catalog"
+"cek_host.catalog_mode" = "host-catalog"
+"cek_host.cli" = "host-tooling"
+"cek_host.digest" = "host-authority"
+"cek_host.doctor" = "host-authority"
+"cek_host.ed25519" = "host-authority"
+"cek_host.explain" = "host-authority"
+"cek_host.host" = "host-authority"
+"cek_host.host_project" = "host-authority"
+"cek_host.host_verify" = "host-authority"
+"cek_host.idem" = "host-authority"
+"cek_host.lineage" = "host-authority"
+"cek_host.once" = "host-authority"
+"cek_host.rust_wrap" = "host-wrap"
+"cek_host.scaffold" = "host-tooling"
+"cek_host.structure" = "host-catalog"
+"cek_surface" = "surface-root"
+"cek_surface.agreement" = "compose"
+"cek_surface.cap" = "surface-kernel"
+"cek_surface.carrier" = "surface-peer"
+"cek_surface.catalog" = "compose"
+"cek_surface.continuation" = "compose"
+"cek_surface.domain_loader" = "compose"
+"cek_surface.domain_stdlib" = "compose"
+"cek_surface.host" = "surface-kernel"
+"cek_surface.js" = "surface-peer"
+"cek_surface.kernel" = "surface-kernel"
+"cek_surface.kernel_peer" = "surface-peer"
+"cek_surface.ops" = "compose"
+"cek_surface.policy" = "compose"
+"cek_surface.session" = "surface-peer"
+"cek_surface.stamp" = "compose"
+"cek_surface.stdlibs" = "compose"
+"cek_surface.surface" = "surface"
+
+# Layer -> other layers it may import at module or function level (own layer
+# always allowed; TYPE_CHECKING exempt). No host-* layer may import a surface
+# layer: cek-host installs alone and cek-surface depends on it, never the
+# reverse. Carriers reach only the Rust wrap locator, never the Cap machine.
+[tool.codemap.layer_rules]
+host-catalog = []
+host-authority = ["host-catalog"]
+host-wrap = []
+host-tooling = ["host-authority", "host-root"]
+host-root = ["host-authority", "host-catalog", "host-wrap"]
+compose = ["host-catalog"]
+surface-kernel = ["compose", "host-authority", "host-root"]
+surface-peer = ["host-wrap"]
+surface = ["compose", "host-authority", "host-catalog", "surface-kernel", "surface-peer"]
+surface-root = ["compose", "surface", "surface-kernel", "surface-peer"]

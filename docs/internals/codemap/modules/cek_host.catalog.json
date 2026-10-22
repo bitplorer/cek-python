@@ -1,0 +1,201 @@
+{
+ "cek_host.catalog": {
+  "consumers": [
+   "cek-surface/tests/test_catalog.py",
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/CATALOG_AUTHORITY_TARGET.md",
+   "docs/ORGANIZATION.md",
+   "docs/archive/ARCHITECTURE.md",
+   "docs/archive/README.md"
+  ],
+  "doc": "Declared catalog — pair identity, not concatenated FQ.",
+  "exported_as": [
+   "cek_host:CATALOG_FQS",
+   "cek_host:CATALOG_PAIRS",
+   "cek_host:UndeclaredPair",
+   "cek_host:default_stamp_pairs",
+   "cek_host:in_catalog",
+   "cek_host:in_stamp",
+   "cek_host:normalize_stamp",
+   "cek_host:project_wire",
+   "cek_surface:CATALOG_FQS",
+   "cek_surface:CATALOG_PAIRS",
+   "cek_surface:UndeclaredPair",
+   "cek_surface:in_catalog",
+   "cek_surface:project"
+  ],
+  "features": [
+   "declared-catalog"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.host_project",
+    "cek_surface.catalog",
+    "cek_surface.domain_stdlib",
+    "cek_surface.ops",
+    "cek_surface.stamp",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog_mode",
+    "cek_host.structure"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-catalog",
+  "path": "cek-host/src/cek_host/catalog.py",
+  "public": [
+   "BASELINE_FQS",
+   "BASELINE_PAIRS",
+   "CATALOG_FQS",
+   "CATALOG_PAIRS",
+   "DOMAIN_FQS",
+   "DOMAIN_PACKS",
+   "DOMAIN_PAIRS",
+   "UndeclaredPair",
+   "UnknownMode",
+   "default_stamp_pairs",
+   "fq_of",
+   "in_catalog",
+   "in_session",
+   "in_stamp",
+   "is_baseline",
+   "is_domain_pair",
+   "name_is_token",
+   "normalize_stamp",
+   "pack_is_scoped",
+   "pack_of",
+   "pack_of_pair",
+   "pair_from_fq",
+   "project",
+   "project_wire"
+  ],
+  "symbols": {
+   "UndeclaredPair": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "Undeclared `(ns, name)`. Host maps this to `dispatch_error`.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, ns: str, name: str, detail: str='')"
+     }
+    },
+    "public": true
+   },
+   "default_stamp_pairs": {
+    "doc": "Stamp installed when nobody agreed one yet.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> frozenset[tuple[str, str]]"
+   },
+   "fq_of": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str) -> str"
+   },
+   "in_catalog": {
+    "doc": "True when the pair is in the declared catalog. Not \"lawful for this session\".",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str) -> bool"
+   },
+   "in_session": {
+    "doc": "Stamp membership when this session has a stamp.",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str, stamp: frozenset[tuple[str, str]] | None) -> bool"
+   },
+   "in_stamp": {
+    "doc": "Pair identity membership. Concatenation is never the key.",
+    "kind": "function",
+    "public": true,
+    "signature": "(stamp: frozenset[tuple[str, str]], ns: str, name: str) -> bool"
+   },
+   "is_baseline": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str) -> bool"
+   },
+   "is_domain_pair": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str) -> bool"
+   },
+   "name_is_token": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(name: str) -> bool"
+   },
+   "normalize_stamp": {
+    "doc": "Close a stamp.",
+    "kind": "function",
+    "public": true,
+    "signature": "(pairs: Iterable[tuple[str, str] | dict[str, Any]] | None, *, allow_extension: bool=True) -> frozenset[tuple[str, str]]"
+   },
+   "pack_is_scoped": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(pack: str) -> bool"
+   },
+   "pack_of": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(fq: str) -> str | None"
+   },
+   "pack_of_pair": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str) -> str | None"
+   },
+   "pair_from_fq": {
+    "doc": "Last-dot split. Prefer (ns, name) directly. Display/legacy only.",
+    "kind": "function",
+    "public": true,
+    "signature": "(fq: str) -> tuple[str, str] | None"
+   },
+   "project": {
+    "doc": "Declared catalog ∩ profile packs. Declared-but-not-in-profile is skipped. Undeclared: raise or skip.",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: Iterable[dict[str, Any]], *, packs: Iterable[str] | None=None, unknown: UnknownMode='strict', stamp: Iterable[tuple[str, str] | dict[str, Any]] | None=None) -> list[dict[str, Any]]"
+   },
+   "project_wire": {
+    "doc": "Keep pairs that are in the session stamp. An unknown pair raises `UndeclaredPair` (never silent ok+[]).",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: Iterable[dict[str, Any]], *, unknown: str='strict', stamp: Iterable[tuple[str, str] | dict[str, Any]] | None=None) -> list[dict[str, Any]]"
+   }
+  }
+ }
+}

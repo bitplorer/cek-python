@@ -1,0 +1,14 @@
+{
+ "cek_surface/js/peer_ir.mjs": {
+  "consumers": [
+   "cek-surface/demo/ws_peer_server.mjs",
+   "docs/COMPOSITION.md"
+  ],
+  "features": [
+   "carriers-and-peer-ir"
+  ],
+  "layer": "surface-peer",
+  "path": "cek-surface/src/cek_surface/js/peer_ir.mjs",
+  "referenced_by": []
+ }
+}

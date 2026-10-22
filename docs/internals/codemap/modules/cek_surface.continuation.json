@@ -1,0 +1,99 @@
+{
+ "cek_surface.continuation": {
+  "consumers": [
+   "cek-surface/demo/app.py",
+   "cek-surface/demo/shop_app.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_composition.py",
+   "cek-surface/tests/test_roadmap.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/COMPOSITION.md"
+  ],
+  "doc": "Continuation envelopes — pre-authorized next Intent templates.",
+  "exported_as": [
+   "cek_surface:Continuation",
+   "cek_surface:match_continuation",
+   "cek_surface:resolve_args"
+  ],
+  "features": [
+   "continuations"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/continuation.py",
+  "public": [
+   "Continuation",
+   "match_continuation",
+   "mint_continuation",
+   "resolve_args"
+  ],
+  "symbols": {
+   "Continuation": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "Attached to Result metadata (not an Op).",
+    "kind": "class",
+    "methods": {
+     "from_dict": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, d: dict[str, Any]) -> Continuation"
+     },
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "match_continuation": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(continuations: list[Continuation] | list[dict[str, Any]], event: dict[str, Any]) -> Continuation | None"
+   },
+   "mint_continuation": {
+    "doc": "Host-side pre-mint. The JS peer only echoes this Cap back on the event.",
+    "kind": "function",
+    "public": true,
+    "signature": "(kernel: Any, event: str, action: str, *, once: bool=True, args_from: dict[str, str] | None=None, static_args: dict[str, Any] | None=None, args: dict[str, Any] | None=None) -> Continuation"
+   },
+   "resolve_args": {
+    "doc": "Fill Intent args from slots. Sources: store:KEY, event:KEY, literal via static_args.",
+    "kind": "function",
+    "public": true,
+    "signature": "(cont: Continuation, *, store: dict[str, Any], event: dict[str, Any]) -> dict[str, Any]"
+   }
+  }
+ }
+}

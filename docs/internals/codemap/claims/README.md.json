@@ -1,0 +1,16 @@
+{
+ "README.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek apply"
+   },
+   {
+    "kind": "module",
+    "resolved": false,
+    "text": "cek_host.legal"
+   }
+  ]
+ }
+}
