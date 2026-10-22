@@ -1,0 +1,80 @@
+{
+ "cek_surface.agreement": {
+  "consumers": [
+   "cek-surface/tests/test_phase2_stdlibs.py"
+  ],
+  "doc": "Host↔Peer domain-stdlib agreement.",
+  "exported_as": [],
+  "features": [
+   "stamp-and-stdlibs"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_surface.surface"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface.domain_stdlib",
+    "cek_surface.stamp"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/agreement.py",
+  "public": [
+   "Agreement",
+   "StdlibOffer",
+   "negotiate"
+  ],
+  "symbols": {
+   "Agreement": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "StdlibOffer": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "negotiate": {
+    "doc": "host_offers / peer_accepts: name or (name, version).",
+    "kind": "function",
+    "public": true,
+    "signature": "(host_offers: Iterable[tuple[str, str] | str], peer_accepts: Iterable[tuple[str, str] | str], *, registry: Registry | None=None) -> Agreement"
+   }
+  }
+ }
+}

@@ -1,0 +1,128 @@
+{
+ "cek_host.ed25519": {
+  "consumers": [],
+  "doc": "Ed25519 (RFC 8032) — Host policy only. No extra deps.",
+  "exported_as": [],
+  "features": [
+   "verify-policy"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_host.cap",
+    "cek_host.host",
+    "cek_host.host_verify"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "hashlib"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/ed25519.py",
+  "public": [
+   "public_key",
+   "sign",
+   "verify"
+  ],
+  "symbols": {
+   "_bit": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(h: bytes, i: int) -> int"
+   },
+   "_decodeint": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(s: bytes) -> int"
+   },
+   "_decodepoint": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(s: bytes)"
+   },
+   "_edwards": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(p, q)"
+   },
+   "_encodeint": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(y: int) -> bytes"
+   },
+   "_encodepoint": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(p) -> bytes"
+   },
+   "_hint": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(m: bytes) -> int"
+   },
+   "_inv": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(x: int) -> int"
+   },
+   "_isoncurve": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(p) -> bool"
+   },
+   "_scalarmult": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(p, e: int)"
+   },
+   "_xrecover": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(y: int) -> int"
+   },
+   "public_key": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(seed: bytes) -> bytes"
+   },
+   "sign": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(seed: bytes, msg: bytes) -> bytes"
+   },
+   "verify": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(pk: bytes, msg: bytes, sig: bytes) -> bool"
+   }
+  }
+ }
+}

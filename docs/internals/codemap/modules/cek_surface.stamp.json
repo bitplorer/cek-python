@@ -1,0 +1,61 @@
+{
+ "cek_surface.stamp": {
+  "consumers": [
+   "cek-surface/tests/test_stamp.py"
+  ],
+  "doc": "Session stamp helpers — closed pair set for one Host↔Peer session.",
+  "exported_as": [],
+  "features": [
+   "stamp-and-stdlibs"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface.agreement",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/stamp.py",
+  "public": [
+   "BASELINE_PAIRS",
+   "default_stamp_pairs",
+   "in_stamp",
+   "normalize_stamp",
+   "pairs_as_wire"
+  ],
+  "symbols": {
+   "pairs_as_wire": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(pairs: Iterable[tuple[str, str]]) -> list[dict[str, str]]"
+   },
+   "pairs_from_wire": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(items: Iterable[dict[str, Any]]) -> frozenset[tuple[str, str]]"
+   }
+  }
+ }
+}

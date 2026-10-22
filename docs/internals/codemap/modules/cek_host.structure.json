@@ -1,0 +1,85 @@
+{
+ "cek_host.structure": {
+  "consumers": [
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_stamp.py"
+  ],
+  "doc": "Domain + driver structure validation (core signing / acceptance gate).",
+  "exported_as": [],
+  "features": [
+   "declared-catalog"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog",
+    "cek_surface.domain_loader",
+    "cek_surface.domain_stdlib",
+    "cek_surface.ops"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-catalog",
+  "path": "cek-host/src/cek_host/structure.py",
+  "public": [
+   "FORBIDDEN_PREFIXES",
+   "KNOWN_SEED_DOMAINS",
+   "MAX_NS_DOTS",
+   "RESERVED_BASELINE_DOMAINS",
+   "StructureError",
+   "validate_domain_name",
+   "validate_op_name",
+   "validate_pair"
+  ],
+  "symbols": {
+   "StructureError": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, reason: str)"
+     }
+    },
+    "public": true
+   },
+   "validate_domain_name": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(domain: str, *, allow_reserved: bool=False) -> None"
+   },
+   "validate_op_name": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(name: str) -> None"
+   },
+   "validate_pair": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ns: str, name: str) -> None"
+   }
+  }
+ }
+}

@@ -1,0 +1,147 @@
+{
+ "cek_surface.session": {
+  "consumers": [
+   "cek-surface/demo/http_host.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_continuation_live.py",
+   "cek-surface/tests/test_vectors.py"
+  ],
+  "doc": "Host ↔ Peer session via portable Carrier (default: subprocess NDJSON).",
+  "exported_as": [
+   "cek_surface:PeerSession"
+  ],
+  "features": [
+   "carriers-and-peer-ir"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "asyncio"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "pathlib",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface.carrier"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-peer",
+  "path": "cek-surface/src/cek_surface/session.py",
+  "public": [
+   "PeerSession"
+  ],
+  "symbols": {
+   "PeerSession": {
+    "bases": [],
+    "doc": "Thin façade over a Carrier. Default transport is zero-config subprocess.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, peer_js: Path | None=None, *, carrier: Carrier | None=None, carrier_kind: str='subprocess', **carrier_opts: Any)"
+     },
+     "apply": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]"
+     },
+     "apply_result": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]"
+     },
+     "async_apply": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]"
+     },
+     "async_apply_result": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, result: _ResultLike | dict[str, Any]) -> dict[str, Any]"
+     },
+     "async_install_stamp": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     },
+     "async_perception": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "async_read": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self) -> dict[str, Any]"
+     },
+     "carrier_name": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "install_stamp": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     },
+     "perception": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "read": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "_ResultLike": {
+    "bases": [
+     "Protocol"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": false
+   }
+  }
+ }
+}

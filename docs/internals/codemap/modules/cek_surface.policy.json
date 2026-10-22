@@ -1,0 +1,81 @@
+{
+ "cek_surface.policy": {
+  "consumers": [
+   "cek-surface/tests/test_roadmap.py"
+  ],
+  "doc": "Surface policy (L6). Not Cap law.",
+  "exported_as": [
+   "cek_surface:PolicyDecision",
+   "cek_surface:SurfacePolicy"
+  ],
+  "features": [
+   "op-composition"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "collections",
+     "dataclasses",
+     "time",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/policy.py",
+  "public": [
+   "PolicyDecision",
+   "SurfacePolicy"
+  ],
+  "symbols": {
+   "PolicyDecision": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "SurfacePolicy": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "Optional guards before compose + kernel submit.",
+    "kind": "class",
+    "methods": {
+     "check_action": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, subject: str='default') -> PolicyDecision"
+     },
+     "check_ops": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, ops: list[dict[str, Any]]) -> PolicyDecision"
+     }
+    },
+    "public": true
+   }
+  }
+ }
+}

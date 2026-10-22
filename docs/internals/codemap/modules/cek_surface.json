@@ -1,0 +1,100 @@
+{
+ "cek_surface": {
+  "consumers": [
+   "cek-surface/demo/app.py",
+   "cek-surface/demo/shop_app.py",
+   "cek-surface/tests/test_async.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_catalog.py",
+   "cek-surface/tests/test_composition.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_continuation_live.py",
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_host_kernel.py",
+   "cek-surface/tests/test_layer_honesty.py",
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_public_020.py",
+   "cek-surface/tests/test_roadmap.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/COMPOSITION.md",
+   "docs/ORGANIZATION.md",
+   "scripts/consumer_smoke_testpypi.sh"
+  ],
+  "doc": "cek-surface — CEK-native surface runtime.",
+  "exported_as": [],
+  "features": [],
+  "imported_by": {
+   "function_level": [
+    "cek_host.doctor"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface.cap",
+    "cek_surface.carrier",
+    "cek_surface.catalog",
+    "cek_surface.continuation",
+    "cek_surface.host",
+    "cek_surface.kernel",
+    "cek_surface.ops",
+    "cek_surface.policy",
+    "cek_surface.session",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-root",
+  "path": "cek-surface/src/cek_surface/__init__.py",
+  "public": [
+   "ActionContext",
+   "CATALOG_FQS",
+   "CATALOG_PAIRS",
+   "CapError",
+   "CapService",
+   "Carrier",
+   "CekHostPyKernel",
+   "Continuation",
+   "Ctx",
+   "HostKernel",
+   "Intent",
+   "KernelResult",
+   "MemoryCarrier",
+   "Op",
+   "PeerSession",
+   "PolicyDecision",
+   "Result",
+   "SubprocessNdjsonCarrier",
+   "Surface",
+   "SurfacePolicy",
+   "UndeclaredPair",
+   "WebSocketCarrier",
+   "as_wire",
+   "clear_form_errors",
+   "form_errors",
+   "in_catalog",
+   "load_host_kernel",
+   "match_continuation",
+   "navigate_to",
+   "open_carrier",
+   "plan",
+   "project",
+   "resolve_args",
+   "search_clear",
+   "search_hits",
+   "set_loading",
+   "signal_set"
+  ],
+  "symbols": {}
+ }
+}

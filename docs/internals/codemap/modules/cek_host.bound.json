@@ -1,0 +1,66 @@
+{
+ "cek_host.bound": {
+  "consumers": [
+   "cek-surface/tests/test_phase2.py"
+  ],
+  "doc": "BoundAsk — post-verify token (I2).",
+  "exported_as": [
+   "cek_host:BoundAsk"
+  ],
+  "features": [
+   "verify-policy"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/bound.py",
+  "public": [
+   "BoundAsk"
+  ],
+  "symbols": {
+   "BoundAsk": {
+    "bases": [],
+    "doc": "Proof that Cap verify + once/idempotency succeeded.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args: Any, **kwargs: Any) -> None"
+     },
+     "_bind": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, action: str, args: dict[str, Any], claims: dict[str, Any], now: float) -> BoundAsk"
+     }
+    },
+    "public": true
+   }
+  }
+ }
+}

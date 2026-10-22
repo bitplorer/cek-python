@@ -1,0 +1,142 @@
+{
+ "cek_surface.domain_stdlib": {
+  "consumers": [
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py"
+  ],
+  "doc": "Domain stdlibs — runtime-level domain expansion.",
+  "exported_as": [],
+  "features": [
+   "stamp-and-stdlibs"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface.agreement",
+    "cek_surface.domain_loader"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog",
+    "cek_host.structure"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/domain_stdlib.py",
+  "public": [
+   "BASELINE",
+   "DomainStdlib",
+   "REGISTRY",
+   "Registry",
+   "UI",
+   "agree",
+   "compatible",
+   "default_agreement_stamp",
+   "register",
+   "stamp_from_agreement"
+  ],
+  "symbols": {
+   "DomainStdlib": {
+    "bases": [],
+    "decorators": [
+     "dataclass(frozen=True)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "major": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "pairs": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> frozenset[tuple[str, str]]"
+     }
+    },
+    "public": true
+   },
+   "Registry": {
+    "bases": [],
+    "doc": "Mutable runtime registry. Core seeds are always present.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "all": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> list[DomainStdlib]"
+     },
+     "get": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name: str) -> DomainStdlib | None"
+     },
+     "names": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> list[str]"
+     },
+     "register": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, stdlib: DomainStdlib) -> None"
+     }
+    },
+    "public": true
+   },
+   "agree": {
+    "doc": "Intersect Host offers with Peer accepts. Order follows host_offers.",
+    "kind": "function",
+    "public": true,
+    "signature": "(host_offers: Iterable[str], peer_accepts: Iterable[str], *, host_versions: dict[str, str] | None=None, peer_versions: dict[str, str] | None=None, registry: Registry | None=None) -> list[DomainStdlib]"
+   },
+   "compatible": {
+    "doc": "Same major version = compatible.",
+    "kind": "function",
+    "public": true,
+    "signature": "(offered: DomainStdlib, accepted_version: str) -> bool"
+   },
+   "default_agreement_stamp": {
+    "doc": "Default agreement {baseline, ui} → the declared catalog.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> frozenset[tuple[str, str]]"
+   },
+   "register": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(stdlib: DomainStdlib) -> None"
+   },
+   "stamp_from_agreement": {
+    "doc": "Union seed pairs of agreed domain-stdlibs (declared catalog ∪ extensions).",
+    "kind": "function",
+    "public": true,
+    "signature": "(agreed: Iterable[DomainStdlib]) -> frozenset[tuple[str, str]]"
+   }
+  }
+ }
+}

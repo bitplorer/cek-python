@@ -1,0 +1,261 @@
+{
+ "cek_host.host": {
+  "consumers": [
+   "cek-surface/demo/bench_load_chaos.py",
+   "cek-surface/tests/test_async.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_catalog.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_contract_vectors.py",
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_explain_doctor.py",
+   "cek-surface/tests/test_hardening.py",
+   "cek-surface/tests/test_host_parity.py",
+   "cek-surface/tests/test_layer_honesty.py",
+   "cek-surface/tests/test_phase2.py",
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_public_020.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/ORGANIZATION.md",
+   "docs/archive/PACKAGING.md",
+   "docs/archive/PERFORMANCE.md",
+   "docs/archive/SHIPPED.md",
+   "docs/archive/S_TIER_SCORECARD.md",
+   "scripts/consumer_smoke_testpypi.sh",
+   "scripts/verify.sh"
+  ],
+  "doc": "Python Host runtime — language port of decide.",
+  "exported_as": [
+   "cek_host:Host",
+   "cek_host:KernelResult",
+   "cek_host:LAW_GENERATION",
+   "cek_surface:KernelResult",
+   "cek_surface:Result"
+  ],
+  "features": [
+   "cap-mint-verify",
+   "idempotency-bind",
+   "lineage-reverse",
+   "once-single-use",
+   "submit-result",
+   "verify-policy"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "asyncio"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host.ed25519"
+   ],
+   "module_level": [
+    "cek_host.bound",
+    "cek_host.cap",
+    "cek_host.digest",
+    "cek_host.doctor",
+    "cek_host.explain",
+    "cek_host.host_project",
+    "cek_host.host_verify",
+    "cek_host.idem",
+    "cek_host.lineage",
+    "cek_host.once"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/host.py",
+  "public": [
+   "Host",
+   "KernelResult",
+   "LAW_GENERATION"
+  ],
+  "symbols": {
+   "Host": {
+    "bases": [],
+    "doc": "Authority kernel: Cap machine + Result packaging.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, secret: bytes=DEV_SECRET, require_cap: bool=True, *, once: OnceBackend | None=None, idem: IdemBackend | None=None, lineage: LineageBackend | None=None, mode: str='dev', allow_memory_stores: bool=False, ttl_s: int=3600, ed25519_seed: bytes | None=None, ed25519_trust: list[bytes] | None=None, accepted_generations: list[str] | None=None) -> None"
+     },
+     "_finish": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, bound: BoundAsk, project_ops: list[dict[str, Any]] | None, activity_id: str | None, idempotency_key: str | None) -> KernelResult"
+     },
+     "_forget_idem": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str | None) -> str"
+     },
+     "_verify": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, consume_once: bool, check_once: bool=True) -> KernelResult"
+     },
+     "async_check": {
+      "doc": "Awaitable check. Same law as check; does not occupy the event loop.",
+      "kind": "async function",
+      "signature": "(self, action: str, args: dict[str, Any] | None=None, cap: str | None=None, **kw: Any) -> KernelResult"
+     },
+     "async_submit": {
+      "doc": "Awaitable submit. Same law as submit; store I/O runs in a worker.",
+      "kind": "async function",
+      "signature": "(self, intent: dict[str, Any] | str | None=None, args: dict[str, Any] | None=None, cap: str | None=None, *, action: str | None=None, activity_id: str | None=None, project_ops: list[dict[str, Any]] | None=None, idempotency_key: str | None=None, **_kw: Any) -> KernelResult"
+     },
+     "async_submit_ops": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, project_ops: list[dict[str, Any]], *, cap: str | None=None, action: str='', args: dict[str, Any] | None=None, activity_id: str | None=None, idempotency_key: str | None=None) -> KernelResult"
+     },
+     "attenuate": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, token: str, **kw: Any) -> str"
+     },
+     "check": {
+      "doc": "Verify without burning once (Surface pre-compose gate).",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any] | None=None, cap: str | None=None, **kw: Any) -> KernelResult"
+     },
+     "dev": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, **kw: Any) -> Host"
+     },
+     "doctor": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, fail: bool=False) -> DoctorReport"
+     },
+     "end_activity": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> ReverseOutcome"
+     },
+     "explain": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, error: str | None=None) -> Explanation"
+     },
+     "idem_label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "lineage_label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "mint": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, *, once: bool=False, args: dict[str, Any] | None=None, seal_args: bool=False, law_generation: str | None=..., attach_ed25519: bool=True, **kw: Any) -> str"
+     },
+     "once_label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "prod": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Refuses default secret and memory stores unless allow_memory_stores.",
+      "kind": "function",
+      "signature": "(cls, secret: bytes, once: OnceBackend, *, idem: IdemBackend | None=None, lineage: LineageBackend | None=None, allow_memory_stores: bool=False, require_cap: bool=True, ttl_s: int=3600, ed25519_seed: bytes | None=None) -> Host"
+     },
+     "report_receipt": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str, landed: list[dict[str, Any]] | None=None, *, receipt: dict[str, Any] | None=None) -> None"
+     },
+     "submit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, intent: dict[str, Any] | str | None=None, args: dict[str, Any] | None=None, cap: str | None=None, *, action: str | None=None, activity_id: str | None=None, project_ops: list[dict[str, Any]] | None=None, idempotency_key: str | None=None, **_kw: Any) -> KernelResult"
+     },
+     "submit_ops": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, project_ops: list[dict[str, Any]], *, cap: str | None=None, action: str='', args: dict[str, Any] | None=None, activity_id: str | None=None, idempotency_key: str | None=None) -> KernelResult"
+     }
+    },
+    "public": true
+   },
+   "KernelResult": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "explain": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Explanation"
+     },
+     "ok": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> bool"
+     },
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "_refuse": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(error: str) -> KernelResult"
+   },
+   "_replayed": {
+    "doc": "Same bytes as the stored result. Not a new decide.",
+    "kind": "function",
+    "public": false,
+    "signature": "(kind: str, ops: list[dict[str, Any]], error: str | None) -> KernelResult"
+   }
+  }
+ }
+}

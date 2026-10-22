@@ -1,0 +1,166 @@
+{
+ "cek_surface.kernel": {
+  "consumers": [
+   "cek-surface/demo/bench_load_chaos.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_host_kernel.py",
+   "cek-surface/tests/test_layer_honesty.py"
+  ],
+  "doc": "Host-kernel boundary.",
+  "exported_as": [
+   "cek_surface:CekHostPyKernel",
+   "cek_surface:HostKernel",
+   "cek_surface:load_host_kernel"
+  ],
+  "features": [
+   "surface-runtime"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_host.doctor"
+   ],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "asyncio"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.explain",
+    "cek_surface.ops"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-kernel",
+  "path": "cek-surface/src/cek_surface/kernel.py",
+  "public": [
+   "CekHostPyKernel",
+   "HostKernel",
+   "load_host_kernel"
+  ],
+  "symbols": {
+   "CekHostPyKernel": {
+    "bases": [],
+    "doc": "Thin adapter. One Cap machine: cek_host.Host.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, inner: CekHost | None=None) -> None"
+     },
+     "async_check": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, idempotency_key: str | None=None) -> KernelResult"
+     },
+     "async_submit": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, project_ops: list[dict[str, Any]] | None=None, idempotency_key: str | None=None) -> KernelResult"
+     },
+     "check": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, idempotency_key: str | None=None) -> KernelResult"
+     },
+     "doctor": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kw: Any)"
+     },
+     "end_activity": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str)"
+     },
+     "explain": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, error: str | None=None)"
+     },
+     "mint": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, **kw: Any) -> str"
+     },
+     "report_receipt": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str, landed: list[dict[str, Any]] | None=None, **kw: Any)"
+     },
+     "submit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, project_ops: list[dict[str, Any]] | None=None, idempotency_key: str | None=None) -> KernelResult"
+     }
+    },
+    "public": true
+   },
+   "HostKernel": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "Minimal surface expected from cek-host.",
+    "kind": "class",
+    "methods": {
+     "check": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, idempotency_key: str | None=None) -> KernelResult"
+     },
+     "mint": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, *, once: bool=False, args: dict[str, Any] | None=None, seal_args: bool=False, **kw: Any) -> str"
+     },
+     "submit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, project_ops: list[dict[str, Any]] | None=None, idempotency_key: str | None=None) -> KernelResult"
+     }
+    },
+    "public": true
+   },
+   "__getattr__": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str)"
+   },
+   "_as_kernel_result": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(r: Any) -> KernelResult"
+   },
+   "load_host_kernel": {
+    "doc": "Fail closed if cek-host is missing. No EmbeddedHostKernel.",
+    "kind": "function",
+    "public": true,
+    "signature": "(host: CekHost | None=None) -> HostKernel"
+   }
+  }
+ }
+}

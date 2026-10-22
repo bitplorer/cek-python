@@ -1,0 +1,56 @@
+{
+ "cek_host.cli": {
+  "consumers": [
+   "cek-surface/tests/test_explain_doctor.py"
+  ],
+  "doc": "cek CLI — never silent (G7 / Vercel DX).",
+  "exported_as": [],
+  "features": [
+   "host-tooling"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.__main__"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "argparse",
+     "pathlib",
+     "sys"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host",
+    "cek_host.doctor",
+    "cek_host.explain",
+    "cek_host.once",
+    "cek_host.scaffold"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-tooling",
+  "path": "cek-host/src/cek_host/cli.py",
+  "public": [
+   "main"
+  ],
+  "symbols": {
+   "main": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(argv: list[str] | None=None) -> int"
+   }
+  }
+ }
+}

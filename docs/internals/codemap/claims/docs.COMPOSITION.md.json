@@ -1,0 +1,36 @@
+{
+ "docs/COMPOSITION.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Continuation"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Op"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Surface"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:navigate_to"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:plan"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:set_loading"
+   }
+  ]
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "cek_host.scaffold": {
+  "consumers": [
+   "cek-surface/tests/test_explain_doctor.py"
+  ],
+  "doc": "create-app — scaffold is the documentation (G7).",
+  "exported_as": [],
+  "features": [
+   "host-tooling"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_host.cli"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "pathlib",
+     "secrets"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-tooling",
+  "path": "cek-host/src/cek_host/scaffold.py",
+  "public": [
+   "APP_PY",
+   "README",
+   "create_app"
+  ],
+  "symbols": {
+   "create_app": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(dest: str | Path) -> Path"
+   }
+  }
+ }
+}

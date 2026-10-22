@@ -1,0 +1,137 @@
+{
+ "cek_host.cap": {
+  "consumers": [
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_layer_honesty.py",
+   "docs/archive/S_TIER_SCORECARD.md",
+   "docs/archive/TESTING.md",
+   "scripts/verify.sh"
+  ],
+  "doc": "Cap tokens — authority primitive for cek-host.",
+  "exported_as": [
+   "cek_host:CapError",
+   "cek_host:CapService",
+   "cek_host:resource_of",
+   "cek_host:scope_allows",
+   "cek_surface:CapError",
+   "cek_surface:CapService"
+  ],
+  "features": [
+   "cap-mint-verify"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.host",
+    "cek_host.host_verify",
+    "cek_surface.cap"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "hmac",
+     "json",
+     "secrets",
+     "time",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host.ed25519"
+   ],
+   "module_level": [
+    "cek_host.digest",
+    "cek_host.once"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/cap.py",
+  "public": [
+   "CapError",
+   "CapService",
+   "args_hash",
+   "resource_of",
+   "scope_allows"
+  ],
+  "symbols": {
+   "CapError": {
+    "bases": [
+     "Exception"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "CapService": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "_check_scopes": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, claims: dict[str, Any], action: str, args: dict[str, Any] | None) -> None"
+     },
+     "_check_subject": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, claims: dict[str, Any], args: dict[str, Any] | None, override: str | None) -> None"
+     },
+     "attenuate": {
+      "doc": "I14 / K7: attenuate cannot widen.",
+      "kind": "function",
+      "signature": "(self, token: str, *, scopes: list[str] | None=None, not_after: float | None=None, once: bool | None=None, subject: str | None=None) -> str"
+     },
+     "commit_once": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, claims: dict[str, Any]) -> None"
+     },
+     "decode": {
+      "doc": "Verify HMAC and parse claims. Does not check action/expiry/once/scopes.",
+      "kind": "function",
+      "signature": "(self, token: str) -> dict[str, Any]"
+     },
+     "mint": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, *, once: bool=False, args: dict[str, Any] | None=None, seal_args: bool=False, not_after: float | None=None, scopes: list[str] | None=None, subject: str | None=None, jti: str | None=None, law_generation: str | None=None, ed25519: str | None=None, ed25519_seed: bytes | None=None, args_hash_value: str | None=None) -> str"
+     },
+     "verify": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, token: str, action: str, args: dict[str, Any] | None=None, *, consume_once: bool=True, check_once: bool=True, subject: str | None=None) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "resource_of": {
+    "doc": "Same mapping as cek-runtime/ports/cek-host-py — do not invent a third.",
+    "kind": "function",
+    "public": true,
+    "signature": "(action: str, args: dict[str, Any] | None) -> tuple[str, str]"
+   },
+   "scope_allows": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(scope: str, kind: str, name: str) -> bool"
+   }
+  }
+ }
+}

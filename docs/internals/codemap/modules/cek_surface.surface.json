@@ -1,0 +1,266 @@
+{
+ "cek_surface.surface": {
+  "consumers": [
+   "cek-surface/demo/app.py",
+   "cek-surface/demo/bench_load_chaos.py",
+   "cek-surface/demo/shop_app.py",
+   "cek-surface/tests/test_async.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_composition.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_continuation_live.py",
+   "cek-surface/tests/test_core.py",
+   "cek-surface/tests/test_host_kernel.py",
+   "cek-surface/tests/test_phase2_stdlibs.py",
+   "cek-surface/tests/test_roadmap.py",
+   "cek-surface/tests/test_search_stdlib.py",
+   "cek-surface/tests/test_stamp.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/COMPOSITION.md",
+   "docs/ORGANIZATION.md",
+   "docs/archive/PACKAGING.md",
+   "scripts/consumer_smoke_testpypi.sh",
+   "scripts/verify.sh"
+  ],
+  "doc": "Surface runtime — composition, events, Peer session.",
+  "exported_as": [
+   "cek_surface:Ctx",
+   "cek_surface:Surface"
+  ],
+  "features": [
+   "carriers-and-peer-ir",
+   "continuations",
+   "stamp-and-stdlibs",
+   "surface-runtime"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "asyncio"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "copy",
+     "dataclasses",
+     "inspect",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host.explain",
+    "cek_surface.agreement",
+    "cek_surface.domain_loader"
+   ],
+   "module_level": [
+    "cek_host.catalog",
+    "cek_surface.continuation",
+    "cek_surface.kernel",
+    "cek_surface.ops",
+    "cek_surface.policy",
+    "cek_surface.session",
+    "cek_surface.stamp"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface",
+  "path": "cek-surface/src/cek_surface/surface.py",
+  "public": [
+   "Ctx",
+   "EventHandler",
+   "Handler",
+   "Surface"
+  ],
+  "symbols": {
+   "Ctx": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "Surface": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "App-facing Host: actions compose Ops; kernel authorizes; Peer applies.",
+    "kind": "class",
+    "methods": {
+     "_arm_minted": {
+      "doc": "Keep a new Cap only when this handling succeeded.",
+      "kind": "function",
+      "signature": "(self, result: KernelResult, continuations) -> None"
+     },
+     "_async_authorize_event_ops": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, event: dict[str, Any], ops: Any) -> KernelResult | None"
+     },
+     "_async_compose_and_authorize": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, idempotency_key: str | None=None) -> tuple[KernelResult, list | None]"
+     },
+     "_async_deliver": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]"
+     },
+     "_authorize_event_ops": {
+      "doc": "Bare @on is not a second decide.",
+      "kind": "function",
+      "signature": "(self, event: dict[str, Any], ops: Any) -> KernelResult | None"
+     },
+     "_compose_and_authorize": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any], cap: str | None, *, activity_id: str | None=None, idempotency_key: str | None=None) -> tuple[KernelResult, list | None]"
+     },
+     "_deliver": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: KernelResult, *, drain_async: bool, continuations=None) -> dict[str, Any]"
+     },
+     "_published_continuations": {
+      "doc": "Caps minted by this handling only. An older row stays for handle_event.",
+      "kind": "function",
+      "signature": "(self, continuations) -> list"
+     },
+     "_restore_store": {
+      "doc": "Handler writes are not a commit. A refusal puts the store back.",
+      "kind": "function",
+      "signature": "(self, before: dict[str, Any]) -> None"
+     },
+     "_take_continuation": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event: dict[str, Any]) -> Continuation | None"
+     },
+     "action": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name: str) -> Callable[[Handler], Handler]"
+     },
+     "async_drain_events": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, max_rounds: int=12) -> list[dict[str, Any]]"
+     },
+     "async_handle_event": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, event: dict[str, Any]) -> KernelResult | None"
+     },
+     "async_submit": {
+      "doc": "Same law as submit. Awaits async handlers and Host.async_submit.",
+      "kind": "async function",
+      "signature": "(self, action: str, args: dict[str, Any] | None=None, *, cap: str | None=None, activity_id: str | None=None, idempotency_key: str | None=None, auto_mint: bool=False, once: bool=False, seal_args: bool=False, drain_async: bool=True) -> dict[str, Any]"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "continuation_dicts": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> list[dict[str, Any]]"
+     },
+     "drain_events": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, max_rounds: int=12) -> list[dict[str, Any]]"
+     },
+     "ensure_peer": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> PeerSession"
+     },
+     "explain": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, error: str | None=None)"
+     },
+     "filter_cached": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, kv_key: str, query: str, out_target: str) -> dict[str, Any]"
+     },
+     "handle_event": {
+      "doc": "Peer event → Host. Continuations (pre-minted Caps) win; else @on.",
+      "kind": "function",
+      "signature": "(self, event: dict[str, Any]) -> KernelResult | None"
+     },
+     "load_stdlib_dir": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, directory: str) -> list[str]"
+     },
+     "mark_pending": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, target: str, on: bool=True) -> dict[str, Any]"
+     },
+     "mint": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, **kw: Any) -> str"
+     },
+     "mint_continuation": {
+      "doc": "Mint a continuation Cap. The Peer fills slots; the Host still verifies.",
+      "kind": "function",
+      "signature": "(self, event: str, action: str, *, once: bool=True, args_from: dict[str, str] | None=None, static_args: dict[str, Any] | None=None, args: dict[str, Any] | None=None) -> Continuation"
+     },
+     "on": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_type: str) -> Callable[[EventHandler], EventHandler]"
+     },
+     "perception": {
+      "doc": "Perception only. Does not mint, does not enter lineage.",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "preview": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, target: str, patch: Any) -> dict[str, Any]"
+     },
+     "submit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: str, args: dict[str, Any] | None=None, *, cap: str | None=None, activity_id: str | None=None, idempotency_key: str | None=None, auto_mint: bool=False, once: bool=False, seal_args: bool=False, drain_async: bool=True) -> dict[str, Any]"
+     },
+     "use_stdlibs": {
+      "doc": "Recompute the session stamp from Host↔Peer agreement.",
+      "kind": "function",
+      "signature": "(self, host_offers: list[str], peer_accepts: list[str] | None=None) -> frozenset"
+     }
+    },
+    "public": true
+   },
+   "_has_async": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(ops: list[dict[str, Any]]) -> bool"
+   }
+  }
+ }
+}

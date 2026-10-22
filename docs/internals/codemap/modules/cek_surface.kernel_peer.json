@@ -1,0 +1,158 @@
+{
+ "cek_surface.kernel_peer": {
+  "consumers": [
+   "cek-surface/tests/test_kernel_peer.py",
+   "cek-surface/tests/test_phase3_wrap.py"
+  ],
+  "doc": "Peer wrap — apply via the in-process Rust peer (`cek_peer_pyo3`).",
+  "exported_as": [],
+  "features": [
+   "in-process-peer"
+  ],
+  "imported_by": {
+   "function_level": [
+    "cek_surface.carrier"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "cek-peer-pyo3": [
+     "cek_peer_pyo3"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "importlib.util",
+     "json",
+     "os",
+     "pathlib",
+     "subprocess",
+     "sys",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_host.rust_wrap"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-peer",
+  "path": "cek-surface/src/cek_surface/kernel_peer.py",
+  "public": [
+   "KernelPeerCarrier",
+   "PYO3_INSTALL",
+   "apply_via_kernel",
+   "find_cek_peer_pyo3",
+   "load_cek_peer_pyo3",
+   "reset_pyo3_cache"
+  ],
+  "symbols": {
+   "KernelPeerCarrier": {
+    "bases": [],
+    "doc": "Carrier that wraps the Rust Peer (in-process PyO3). No mint.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, profile: str='ui', bin_path: str | None=None, backend: str | None=None) -> None"
+     },
+     "apply": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: dict[str, Any]) -> dict[str, Any]"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "perception": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "read_event": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, timeout: float | None=None) -> dict[str, Any] | None"
+     },
+     "stamp": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "_apply_request": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(result: dict[str, Any], *, profile: str, unknown_op_policy: str) -> dict[str, Any]"
+   },
+   "_apply_via_pyo3": {
+    "doc": "One apply through a bound handle. Caller owns construct/bind/release.",
+    "kind": "function",
+    "public": false,
+    "signature": "(result: dict[str, Any], *, profile: str, unknown_op_policy: str, abi: Any | None=None) -> dict[str, Any]"
+   },
+   "_apply_via_subprocess": {
+    "doc": "Shell `cek apply`. Not the default. The default is cek_peer_pyo3.",
+    "kind": "function",
+    "public": false,
+    "signature": "(result: dict[str, Any], *, profile: str, unknown_op_policy: str, bin_path: str | None) -> dict[str, Any]"
+   },
+   "_kernel_backend": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(explicit: str | None) -> str"
+   },
+   "_load_cdylib": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(path: str) -> Any"
+   },
+   "_runtime_roots": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "() -> list[Path]"
+   },
+   "apply_via_kernel": {
+    "doc": "Call the Rust peer. Default is in-process PyO3. Raises if that module is missing.",
+    "kind": "function",
+    "public": true,
+    "signature": "(result: dict[str, Any], *, profile: str='ui', unknown_op_policy: str='skip', bin_path: str | None=None, backend: str | None=None) -> dict[str, Any]"
+   },
+   "find_cek_peer_pyo3": {
+    "doc": "Locate the in-process cdylib. None if the module is not installed.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> str | None"
+   },
+   "load_cek_peer_pyo3": {
+    "doc": "Import the in-process apply module. Fail closed with install text.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> Any"
+   },
+   "reset_pyo3_cache": {
+    "doc": "Drop the cached extension (tests).",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> None"
+   }
+  }
+ }
+}

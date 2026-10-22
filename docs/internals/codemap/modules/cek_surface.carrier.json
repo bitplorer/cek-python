@@ -1,0 +1,272 @@
+{
+ "cek_surface.carrier": {
+  "consumers": [
+   "cek-surface/demo/http_host.py",
+   "cek-surface/tests/test_carrier_ir.py",
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_continuation_live.py",
+   "cek-surface/tests/test_kernel_peer.py",
+   "cek-surface/tests/test_vectors.py",
+   "docs/ORGANIZATION.md"
+  ],
+  "doc": "Portable Intent/Result carriers — opt-in, plug-and-play.",
+  "exported_as": [
+   "cek_surface:Carrier",
+   "cek_surface:MemoryCarrier",
+   "cek_surface:SubprocessNdjsonCarrier",
+   "cek_surface:WebSocketCarrier",
+   "cek_surface:open_carrier"
+  ],
+  "features": [
+   "carriers-and-peer-ir",
+   "in-process-peer"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.session"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "asyncio"
+    ],
+    "websockets": [
+     "websockets"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "json",
+     "pathlib",
+     "queue",
+     "subprocess",
+     "threading",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [
+    "cek_surface.kernel_peer"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-peer",
+  "path": "cek-surface/src/cek_surface/carrier.py",
+  "public": [
+   "Carrier",
+   "MemoryCarrier",
+   "SubprocessNdjsonCarrier",
+   "WebSocketCarrier",
+   "open_carrier"
+  ],
+  "symbols": {
+   "Carrier": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "Plug-and-play transport boundary.",
+    "kind": "class",
+    "methods": {
+     "apply": {
+      "doc": "Send Result for Peer apply; return receipt/world message.",
+      "kind": "function",
+      "signature": "(self, result: dict[str, Any]) -> dict[str, Any]"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "perception": {
+      "doc": "Perception only. Not lineage. Not shared world.",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "read_event": {
+      "doc": "Block for Peer-emitted events. None on timeout/EOF. The declared catalog has none.",
+      "kind": "function",
+      "signature": "(self, timeout: float | None=None) -> dict[str, Any] | None"
+     },
+     "stamp": {
+      "doc": "Install session stamp on Peer. Optional on older carriers.",
+      "kind": "function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "MemoryCarrier": {
+    "bases": [],
+    "doc": "In-process queue pair. Host and a mock Peer share queues.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_roundtrip": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, msg: dict[str, Any]) -> dict[str, Any]"
+     },
+     "apply": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: dict[str, Any]) -> dict[str, Any]"
+     },
+     "async_apply": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, result: dict[str, Any]) -> dict[str, Any]"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "peer_poll": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, timeout: float=0.05) -> dict[str, Any] | None"
+     },
+     "peer_push": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, msg: dict[str, Any]) -> None"
+     },
+     "perception": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "read_event": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, timeout: float | None=None) -> dict[str, Any] | None"
+     },
+     "stamp": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "SubprocessNdjsonCarrier": {
+    "bases": [],
+    "doc": "Default demo carrier: node peer.mjs over stdin/stdout NDJSON.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, peer_js: Path | None=None)"
+     },
+     "_rpc": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, msg: dict[str, Any]) -> dict[str, Any]"
+     },
+     "apply": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: dict[str, Any]) -> dict[str, Any]"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "perception": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "read_event": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, timeout: float | None=None) -> dict[str, Any] | None"
+     },
+     "stamp": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "WebSocketCarrier": {
+    "bases": [],
+    "doc": "Opt-in carrier. Requires `websockets` and a peer that speaks same JSON frames.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, url: str | None=None, host: str='127.0.0.1', port: int=8765, mode: str='client')"
+     },
+     "_connect": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self)"
+     },
+     "_reader": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self)"
+     },
+     "_rpc": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, msg: dict[str, Any]) -> dict[str, Any]"
+     },
+     "apply": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, result: dict[str, Any]) -> dict[str, Any]"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "perception": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, message: dict[str, Any]) -> dict[str, Any]"
+     },
+     "read_event": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, timeout: float | None=None) -> dict[str, Any] | None"
+     },
+     "stamp": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, pairs: list[dict[str, str]]) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "open_carrier": {
+    "doc": "Factory — sensible default is subprocess NDJSON (Node Peer).",
+    "kind": "function",
+    "public": true,
+    "signature": "(kind: str='subprocess', **opts: Any) -> Carrier"
+   }
+  }
+ }
+}

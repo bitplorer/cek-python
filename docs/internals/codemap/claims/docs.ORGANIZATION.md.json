@@ -1,0 +1,76 @@
+{
+ "docs/ORGANIZATION.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek apply"
+   },
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek host-json"
+   },
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "CATALOG_PAIRS"
+   },
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "CEK_KERNEL_CARRIER"
+   },
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "CEK_PEER_PYO3"
+   },
+   {
+    "kind": "env",
+    "resolved": false,
+    "text": "TWINE_PASSWORD"
+   },
+   {
+    "kind": "env",
+    "resolved": false,
+    "text": "TWINE_USERNAME"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_host:Host"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Op"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:Surface"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "cek_surface:open_carrier"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "cek_host"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "cek_host.Host"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "cek_surface"
+   }
+  ]
+ }
+}

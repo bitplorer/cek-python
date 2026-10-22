@@ -1,0 +1,341 @@
+# Features registry (curated). scripts/codemap.py validates every reference:
+# modules must be mapped, ``symbols`` (``module:Name`` or ``module:Class.method``)
+# must resolve, and ``tests`` / ``docs`` paths must exist. The validated entries
+# are folded into codemap/index.json, and each module shard lists its features.
+# Edit this file in the same PR that moves a feature. See CODEMAP.md.
+#
+# Sources: README.md, START.md, docs/ORGANIZATION.md ("What goes where"),
+# docs/INVARIANTS.md, docs/CATALOG_AUTHORITY_TARGET.md, docs/COMPOSITION.md,
+# cek-surface/ARCHITECTURE.md, and the code.
+
+# ------------------------------------------------------------------ cek-host
+
+[[feature]]
+id = "cap-mint-verify"
+purpose = "Mint HMAC Caps bound to an action, sealed args, a validity window and optional subject, scopes and once; verify them and attenuate (narrow only)."
+modules = ["cek_host.cap", "cek_host.host", "cek_host.digest"]
+symbols = [
+  "cek_host.cap:CapService",
+  "cek_host.cap:CapService.mint",
+  "cek_host.cap:CapService.verify",
+  "cek_host.cap:CapService.attenuate",
+  "cek_host.cap:CapError",
+  "cek_host.cap:resource_of",
+  "cek_host.cap:scope_allows",
+  "cek_host.digest:args_hash",
+  "cek_host.host:Host.mint",
+  "cek_host.host:Host.attenuate",
+  "cek_host.host:Host.check",
+]
+tests = [
+  "cek-surface/tests/test_core.py",
+  "cek-surface/tests/test_hardening.py",
+  "cek-surface/tests/test_contract_vectors.py",
+]
+docs = ["START.md", "cek-host/README.md", "docs/INVARIANTS.md"]
+
+[[feature]]
+id = "once-single-use"
+purpose = "A once-Cap is consumed before lineage or an idempotent record; a second use refuses and a store that is down fails closed."
+modules = ["cek_host.once", "cek_host.host"]
+symbols = [
+  "cek_host.once:OnceBackend",
+  "cek_host.once:MemoryOnceBackend",
+  "cek_host.once:FileOnceBackend",
+  "cek_host.once:OnceUsed",
+  "cek_host.once:StoreDown",
+  "cek_host.cap:CapService.commit_once",
+  "cek_host.host:Host._finish",
+]
+tests = [
+  "cek-surface/tests/test_host_parity.py",
+  "cek-surface/tests/test_hardening.py",
+  "cek-surface/tests/test_continuation_bag.py",
+]
+docs = ["docs/INVARIANTS.md", "CHANGELOG.md"]
+
+[[feature]]
+id = "verify-policy"
+purpose = "Post-Cap verify gates: accepted law generations, Ed25519 signatures when the Host holds a seed, and the BoundAsk token that only exists after verify."
+modules = ["cek_host.host_verify", "cek_host.ed25519", "cek_host.bound", "cek_host.host"]
+symbols = [
+  "cek_host.host_verify:check_generation",
+  "cek_host.host_verify:check_ed25519",
+  "cek_host.ed25519:sign",
+  "cek_host.ed25519:verify",
+  "cek_host.ed25519:public_key",
+  "cek_host.bound:BoundAsk",
+  "cek_host.host:Host._verify",
+]
+tests = [
+  "cek-surface/tests/test_phase2.py",
+  "cek-surface/tests/test_contract_vectors.py",
+]
+docs = ["docs/INVARIANTS.md"]
+
+[[feature]]
+id = "idempotency-bind"
+purpose = "Same idempotency key and same body replays the stored Result; a different body refuses; an empty key refuses."
+modules = ["cek_host.idem", "cek_host.host"]
+symbols = [
+  "cek_host.idem:IdemBackend",
+  "cek_host.idem:MemoryIdemBackend",
+  "cek_host.idem:FileIdemBackend",
+  "cek_host.idem:IdemConflict",
+  "cek_host.idem:digest_of_ok",
+  "cek_host.host:Host._forget_idem",
+]
+tests = [
+  "cek-surface/tests/test_phase2.py",
+  "cek-surface/tests/test_contract_vectors.py",
+]
+docs = ["docs/INVARIANTS.md"]
+
+[[feature]]
+id = "lineage-reverse"
+purpose = "Commit lineage per Activity, take Peer receipts, and on end reverse landed-first or list the op as non-reversible."
+modules = ["cek_host.lineage", "cek_host.host"]
+symbols = [
+  "cek_host.lineage:LineageBackend",
+  "cek_host.lineage:MemoryLineageBackend",
+  "cek_host.lineage:FileLineageBackend",
+  "cek_host.lineage:ReverseOutcome",
+  "cek_host.lineage:inverse_ops",
+  "cek_host.lineage:reverse_activity",
+  "cek_host.host:Host.end_activity",
+  "cek_host.host:Host.report_receipt",
+]
+tests = [
+  "cek-surface/tests/test_phase2.py",
+  "cek-surface/tests/test_contract_vectors.py",
+  "cek-surface/tests/test_continuation_bag.py",
+]
+docs = ["docs/INVARIANTS.md", "START.md"]
+
+[[feature]]
+id = "submit-result"
+purpose = "Host.submit and async_submit verify, project and package a Result {kind, ops, error, digest}; a refusal carries ops: [] and the digest is cek1: SHA-256."
+modules = ["cek_host.host", "cek_host.host_project", "cek_host.digest"]
+symbols = [
+  "cek_host.host:Host",
+  "cek_host.host:Host.dev",
+  "cek_host.host:Host.prod",
+  "cek_host.host:Host.submit",
+  "cek_host.host:Host.async_submit",
+  "cek_host.host:Host.submit_ops",
+  "cek_host.host:KernelResult",
+  "cek_host.host_project:resolve_ops",
+  "cek_host.digest:result_digest",
+]
+tests = [
+  "cek-surface/tests/test_core.py",
+  "cek-surface/tests/test_async.py",
+  "cek-surface/tests/test_host_parity.py",
+  "cek-surface/tests/test_vectors.py",
+]
+docs = ["START.md", "cek-host/README.md", "docs/INVARIANTS.md"]
+
+[[feature]]
+id = "declared-catalog"
+purpose = "The declared catalog (Baseline plus UI seed, five pairs) keyed by (ns, name); undeclared pairs raise UndeclaredPair; open or strict catalog mode."
+modules = ["cek_host.catalog", "cek_host.catalog_mode", "cek_host.structure", "cek_surface.catalog"]
+symbols = [
+  "cek_host.catalog:CATALOG_PAIRS",
+  "cek_host.catalog:BASELINE_PAIRS",
+  "cek_host.catalog:UndeclaredPair",
+  "cek_host.catalog:in_catalog",
+  "cek_host.catalog:in_stamp",
+  "cek_host.catalog:project_wire",
+  "cek_host.catalog:default_stamp_pairs",
+  "cek_host.catalog_mode:get_catalog_mode",
+  "cek_host.structure:validate_pair",
+  "cek_surface.catalog:CATALOG_PAIRS",
+]
+tests = [
+  "cek-surface/tests/test_catalog.py",
+  "cek-surface/tests/test_stamp.py",
+  "cek-surface/tests/test_public_020.py",
+]
+docs = ["docs/CATALOG_AUTHORITY_TARGET.md", "cek-host/README.md"]
+
+[[feature]]
+id = "host-wrap"
+purpose = "Opt-in Host wrap: RustHostKernel decides through the Rust cek host-json binary instead of the Python port."
+modules = ["cek_host.rust_wrap"]
+symbols = [
+  "cek_host.rust_wrap:RustHostKernel",
+  "cek_host.rust_wrap:find_cek_bin",
+  "cek_host.rust_wrap:host_json",
+]
+tests = ["cek-surface/tests/test_phase3_wrap.py"]
+docs = ["docs/CATALOG_AUTHORITY_TARGET.md", "docs/ORGANIZATION.md"]
+
+[[feature]]
+id = "host-tooling"
+purpose = "The cek CLI (check, explain, create-app, version), doctor go/no-go findings, teaching explanations and the one-file app scaffold."
+modules = ["cek_host.cli", "cek_host.__main__", "cek_host.doctor", "cek_host.explain", "cek_host.scaffold"]
+symbols = [
+  "cek_host.cli:main",
+  "cek_host.doctor:doctor",
+  "cek_host.doctor:DoctorReport",
+  "cek_host.doctor:DEV_SECRET",
+  "cek_host.explain:explain",
+  "cek_host.explain:Explanation",
+  "cek_host.scaffold:create_app",
+]
+tests = ["cek-surface/tests/test_explain_doctor.py"]
+docs = ["START.md", "README.md"]
+
+# --------------------------------------------------------------- cek-surface
+
+[[feature]]
+id = "surface-runtime"
+purpose = "Surface registers @action handlers, composes list[Op], has the Host kernel authorize them and delivers the Result to the Peer, sync or async."
+modules = ["cek_surface.surface", "cek_surface.kernel", "cek_surface.host", "cek_surface.cap"]
+symbols = [
+  "cek_surface.surface:Surface",
+  "cek_surface.surface:Surface.action",
+  "cek_surface.surface:Surface.on",
+  "cek_surface.surface:Surface.submit",
+  "cek_surface.surface:Surface.async_submit",
+  "cek_surface.surface:Surface.handle_event",
+  "cek_surface.surface:Surface.drain_events",
+  "cek_surface.surface:Ctx",
+  "cek_surface.kernel:HostKernel",
+  "cek_surface.kernel:CekHostPyKernel",
+  "cek_surface.kernel:load_host_kernel",
+  "cek_surface.host:Intent",
+  "cek_surface.host:ActionContext",
+]
+tests = [
+  "cek-surface/tests/test_core.py",
+  "cek-surface/tests/test_async.py",
+  "cek-surface/tests/test_host_kernel.py",
+  "cek-surface/tests/test_layer_honesty.py",
+  "cek-surface/tests/test_http_host.py",
+]
+docs = ["START.md", "cek-surface/README.md", "cek-surface/ARCHITECTURE.md"]
+
+[[feature]]
+id = "op-composition"
+purpose = "Op constructors and macros that emit only declared-catalog (or stamped) pairs, plus the L6 SurfacePolicy rate and op checks."
+modules = ["cek_surface.ops", "cek_surface.policy"]
+symbols = [
+  "cek_surface.ops:Op",
+  "cek_surface.ops:plan",
+  "cek_surface.ops:as_wire",
+  "cek_surface.ops:navigate_to",
+  "cek_surface.ops:set_loading",
+  "cek_surface.ops:signal_set",
+  "cek_surface.ops:form_errors",
+  "cek_surface.ops:clear_form_errors",
+  "cek_surface.ops:search_hits",
+  "cek_surface.ops:search_clear",
+  "cek_surface.policy:SurfacePolicy",
+  "cek_surface.policy:PolicyDecision",
+]
+tests = [
+  "cek-surface/tests/test_composition.py",
+  "cek-surface/tests/test_roadmap.py",
+  "cek-surface/tests/test_vectors.py",
+]
+docs = ["docs/COMPOSITION.md"]
+
+[[feature]]
+id = "stamp-and-stdlibs"
+purpose = "Domain stdlibs extend the catalog at runtime; Host and Peer agree on shared versions and the Host stamps the closed pair set for the session."
+modules = [
+  "cek_surface.stamp",
+  "cek_surface.domain_stdlib",
+  "cek_surface.domain_loader",
+  "cek_surface.agreement",
+  "cek_surface.surface",
+]
+symbols = [
+  "cek_surface.stamp:pairs_as_wire",
+  "cek_surface.stamp:pairs_from_wire",
+  "cek_surface.domain_stdlib:DomainStdlib",
+  "cek_surface.domain_stdlib:Registry",
+  "cek_surface.domain_stdlib:agree",
+  "cek_surface.domain_stdlib:stamp_from_agreement",
+  "cek_surface.domain_loader:load_bundled",
+  "cek_surface.domain_loader:load_dir",
+  "cek_surface.domain_loader:parse_stdlib",
+  "cek_surface.agreement:negotiate",
+  "cek_surface.surface:Surface.use_stdlibs",
+]
+assets = [
+  "cek_surface/stdlibs/demo.echo.stdlib.json",
+  "cek_surface/stdlibs/search.stdlib.json",
+]
+tests = [
+  "cek-surface/tests/test_stamp.py",
+  "cek-surface/tests/test_phase2_stdlibs.py",
+  "cek-surface/tests/test_search_stdlib.py",
+]
+docs = ["docs/CATALOG_AUTHORITY_TARGET.md", "cek-surface/README.md"]
+
+[[feature]]
+id = "continuations"
+purpose = "The Host pre-mints attenuated continuation Caps with Intent templates; the Peer fills declared slots and the Host verifies again; a refusal never arms a new once-Cap."
+modules = ["cek_surface.continuation", "cek_surface.surface"]
+symbols = [
+  "cek_surface.continuation:Continuation",
+  "cek_surface.continuation:mint_continuation",
+  "cek_surface.continuation:match_continuation",
+  "cek_surface.continuation:resolve_args",
+  "cek_surface.surface:Surface.mint_continuation",
+]
+assets = ["cek_surface/js/browser_peer.mjs"]
+tests = [
+  "cek-surface/tests/test_continuation_live.py",
+  "cek-surface/tests/test_continuation_bag.py",
+  "cek-surface/tests/test_carrier_ir.py",
+  "cek-surface/tests/test_browser_continuation.mjs",
+]
+docs = ["docs/COMPOSITION.md", "cek-surface/ARCHITECTURE.md"]
+
+[[feature]]
+id = "carriers-and-peer-ir"
+purpose = "Plug-and-play carriers (subprocess NDJSON, memory, WebSocket) move apply, stamp, perception and events; the JS Peer applies the stamped pairs and paints perception only."
+modules = ["cek_surface.carrier", "cek_surface.session", "cek_surface.surface"]
+symbols = [
+  "cek_surface.carrier:Carrier",
+  "cek_surface.carrier:MemoryCarrier",
+  "cek_surface.carrier:SubprocessNdjsonCarrier",
+  "cek_surface.carrier:WebSocketCarrier",
+  "cek_surface.carrier:open_carrier",
+  "cek_surface.session:PeerSession",
+  "cek_surface.surface:Surface.perception",
+  "cek_surface.surface:Surface.mark_pending",
+  "cek_surface.surface:Surface.preview",
+  "cek_surface.surface:Surface.filter_cached",
+]
+assets = [
+  "cek_surface/js/apply_catalog.mjs",
+  "cek_surface/js/browser_peer.mjs",
+  "cek_surface/js/peer.mjs",
+  "cek_surface/js/peer_ir.mjs",
+]
+tests = [
+  "cek-surface/tests/test_carrier_ir.py",
+  "cek-surface/tests/test_continuation_live.py",
+  "cek-surface/tests/test_vectors.py",
+]
+docs = ["cek-surface/ARCHITECTURE.md", "docs/COMPOSITION.md"]
+
+[[feature]]
+id = "in-process-peer"
+purpose = "carrier_kind=\"kernel\" applies through the in-process Rust peer cek_peer_pyo3 (or, opt-in, subprocess cek apply) and fails closed when it is missing."
+modules = ["cek_surface.kernel_peer", "cek_surface.carrier"]
+symbols = [
+  "cek_surface.kernel_peer:KernelPeerCarrier",
+  "cek_surface.kernel_peer:apply_via_kernel",
+  "cek_surface.kernel_peer:find_cek_peer_pyo3",
+  "cek_surface.kernel_peer:load_cek_peer_pyo3",
+]
+tests = [
+  "cek-surface/tests/test_kernel_peer.py",
+  "cek-surface/tests/test_phase3_wrap.py",
+]
+docs = ["cek-surface/ARCHITECTURE.md", "docs/CATALOG_AUTHORITY_TARGET.md"]

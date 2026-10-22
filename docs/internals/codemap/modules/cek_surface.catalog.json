@@ -1,0 +1,63 @@
+{
+ "cek_surface.catalog": {
+  "consumers": [
+   "cek-surface/tests/test_catalog.py"
+  ],
+  "doc": "Surface binding of the declared catalog — re-exports cek_host.catalog (one Python table).",
+  "exported_as": [],
+  "features": [
+   "declared-catalog"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface",
+    "cek_surface.ops"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.catalog"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "compose",
+  "path": "cek-surface/src/cek_surface/catalog.py",
+  "public": [
+   "BASELINE_FQS",
+   "BASELINE_PAIRS",
+   "CATALOG_FQS",
+   "CATALOG_PAIRS",
+   "DOMAIN_FQS",
+   "DOMAIN_PACKS",
+   "DOMAIN_PAIRS",
+   "UndeclaredPair",
+   "default_stamp_pairs",
+   "fq_of",
+   "in_catalog",
+   "in_stamp",
+   "is_baseline",
+   "is_domain_pair",
+   "name_is_token",
+   "normalize_stamp",
+   "pack_is_scoped",
+   "pack_of",
+   "pack_of_pair",
+   "project",
+   "project_wire"
+  ],
+  "symbols": {}
+ }
+}

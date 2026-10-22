@@ -1,0 +1,84 @@
+{
+ "cek_host.digest": {
+  "consumers": [
+   "cek-surface/tests/test_contract_vectors.py",
+   "cek-surface/tests/test_host_parity.py",
+   "docs/archive/S_TIER_SCORECARD.md",
+   "docs/archive/TESTING.md",
+   "scripts/verify.sh"
+  ],
+  "doc": "Result digests — I8: `cek1:` + FIPS SHA-256.",
+  "exported_as": [
+   "cek_host:args_hash",
+   "cek_host:result_digest"
+  ],
+  "features": [
+   "cap-mint-verify",
+   "submit-result"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.cap",
+    "cek_host.host",
+    "cek_host.host_verify",
+    "cek_host.idem"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "hashlib",
+     "json",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/digest.py",
+  "public": [
+   "DIGEST_ALG",
+   "args_hash",
+   "canon",
+   "cek1_hex",
+   "result_digest"
+  ],
+  "symbols": {
+   "args_hash": {
+    "doc": "Oracle: hash_args({'sku':'abc-123','qty':2}) == 96e4f83e3793b646323a67f314b51044",
+    "kind": "function",
+    "public": true,
+    "signature": "(args: dict[str, Any] | None) -> str"
+   },
+   "canon": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(obj: Any) -> bytes"
+   },
+   "cek1_hex": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(data: bytes) -> str"
+   },
+   "result_digest": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(kind: str, ops: list[Any], error: str | None) -> str"
+   }
+  }
+ }
+}

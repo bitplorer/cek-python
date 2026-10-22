@@ -1,0 +1,36 @@
+{
+ "docs/CATALOG_AUTHORITY_TARGET.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek"
+   },
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek apply"
+   },
+   {
+    "kind": "cli",
+    "resolved": false,
+    "text": "cek host-json"
+   },
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "CATALOG_PAIRS"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "cek_host.catalog"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "cek_surface"
+   }
+  ]
+ }
+}

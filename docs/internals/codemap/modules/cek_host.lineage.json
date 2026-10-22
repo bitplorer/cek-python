@@ -1,0 +1,282 @@
+{
+ "cek_host.lineage": {
+  "consumers": [
+   "cek-surface/tests/test_continuation_bag.py",
+   "cek-surface/tests/test_phase2.py"
+  ],
+  "doc": "LineageBackend — Activity commit + honest reverse (I7, I11, I15, I16).",
+  "exported_as": [
+   "cek_host:FileLineageBackend",
+   "cek_host:LineageBackend",
+   "cek_host:LineageError",
+   "cek_host:MemoryLineageBackend",
+   "cek_host:ReverseOutcome"
+  ],
+  "features": [
+   "lineage-reverse"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_host",
+    "cek_host.host"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "fcntl"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "json",
+     "os",
+     "pathlib",
+     "threading",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.once"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "host-authority",
+  "path": "cek-host/src/cek_host/lineage.py",
+  "public": [
+   "FileLineageBackend",
+   "INVERSE",
+   "LineageBackend",
+   "LineageError",
+   "MemoryLineageBackend",
+   "NON_REVERSIBLE",
+   "ReverseOutcome",
+   "inverse_ops",
+   "reverse_activity",
+   "reverse_class_for"
+  ],
+  "symbols": {
+   "FileLineageBackend": {
+    "bases": [],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, path: str | os.PathLike[str]) -> None"
+     },
+     "_flock": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_funlock": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_load": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     },
+     "_save": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: dict[str, Any]) -> None"
+     },
+     "annotate_landed_latest": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str, landed: list[dict[str, Any]]) -> None"
+     },
+     "commit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, cap_id: str, activity_id: str | None, action: str, authorized_ops: list[dict[str, Any]], reverse_class: str, inverse: list[dict[str, Any]]) -> dict[str, Any]"
+     },
+     "drop": {
+      "doc": "Remove one commit. Used when a later step refuses the decide.",
+      "kind": "function",
+      "signature": "(self, entry_id: str) -> None"
+     },
+     "for_activity": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> list[dict[str, Any]]"
+     },
+     "is_ended": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> bool"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "mark_ended": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> None"
+     }
+    },
+    "public": true
+   },
+   "LineageBackend": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "annotate_landed_latest": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str, landed: list[dict[str, Any]]) -> None"
+     },
+     "commit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, cap_id: str, activity_id: str | None, action: str, authorized_ops: list[dict[str, Any]], reverse_class: str, inverse: list[dict[str, Any]]) -> dict[str, Any]"
+     },
+     "for_activity": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> list[dict[str, Any]]"
+     },
+     "is_ended": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> bool"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "mark_ended": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> None"
+     }
+    },
+    "public": true
+   },
+   "LineageError": {
+    "bases": [
+     "Exception"
+    ],
+    "doc": "Lineage rule failure (already ended, empty id). Not a store-down.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "MemoryLineageBackend": {
+    "bases": [],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, down: bool=False) -> None"
+     },
+     "_chk": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "annotate_landed_latest": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str, landed: list[dict[str, Any]]) -> None"
+     },
+     "commit": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, cap_id: str, activity_id: str | None, action: str, authorized_ops: list[dict[str, Any]], reverse_class: str, inverse: list[dict[str, Any]]) -> dict[str, Any]"
+     },
+     "drop": {
+      "doc": "Remove one commit. Used when a later step refuses the decide.",
+      "kind": "function",
+      "signature": "(self, entry_id: str) -> None"
+     },
+     "for_activity": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> list[dict[str, Any]]"
+     },
+     "is_ended": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> bool"
+     },
+     "label": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "mark_down": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, down: bool=True) -> None"
+     },
+     "mark_ended": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity_id: str) -> None"
+     }
+    },
+    "public": true
+   },
+   "ReverseOutcome": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "inverse_ops": {
+    "doc": "kv.set → kv.delete; kv.delete+prior → kv.set; ui.dom.morph+snapshot → restore.",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: list[dict[str, Any]]) -> list[dict[str, Any]]"
+   },
+   "reverse_activity": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(store: LineageBackend, activity_id: str) -> ReverseOutcome"
+   },
+   "reverse_class_for": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(ops: list[dict[str, Any]]) -> str"
+   }
+  }
+ }
+}

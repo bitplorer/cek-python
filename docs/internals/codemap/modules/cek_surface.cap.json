@@ -1,0 +1,43 @@
+{
+ "cek_surface.cap": {
+  "consumers": [
+   "cek-surface/tests/test_layer_honesty.py"
+  ],
+  "doc": "Re-export Caps from cek-host. Surface does not own Cap policy.",
+  "exported_as": [],
+  "features": [
+   "surface-runtime"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "cek_surface"
+   ],
+   "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "cek_host.cap"
+   ],
+   "type_checking": []
+  },
+  "is_public": true,
+  "layer": "surface-kernel",
+  "path": "cek-surface/src/cek_surface/cap.py",
+  "public": [
+   "CapError",
+   "CapService"
+  ],
+  "symbols": {}
+ }
+}
