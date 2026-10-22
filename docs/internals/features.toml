@@ -167,12 +167,12 @@ symbols = [
   "cek_host.rust_wrap:find_cek_bin",
   "cek_host.rust_wrap:host_json",
 ]
-tests = ["cek-surface/tests/test_phase3_wrap.py"]
+tests = ["cek-surface/tests/test_phase3_wrap.py", "cek-surface/tests/test_cek_bin.py"]
 docs = ["docs/CATALOG_AUTHORITY_TARGET.md", "docs/ORGANIZATION.md"]
 
 [[feature]]
 id = "host-tooling"
-purpose = "The cek CLI (check, explain, create-app, version), doctor go/no-go findings, teaching explanations and the one-file app scaffold."
+purpose = "The cek-host CLI (check, explain, create-app, version; `cek` is its deprecated alias), doctor go/no-go findings, teaching explanations and the one-file app scaffold."
 modules = ["cek_host.cli", "cek_host.__main__", "cek_host.doctor", "cek_host.explain", "cek_host.scaffold"]
 symbols = [
   "cek_host.cli:main",

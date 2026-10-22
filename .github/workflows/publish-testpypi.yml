@@ -12,7 +12,7 @@
 #     Owner: bitplorer  Repo: cek-python
 #     Workflow: publish-testpypi.yml  Environment: testpypi-surface
 #
-# See docs/TESTPYPI_SETUP.md
+# See docs/archive/TESTPYPI_SETUP.md
 #
 # Trigger: workflow_dispatch or push of tag v*
 
@@ -84,3 +84,5 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           packages-dir: dist-surface/
+          # One tag publishes both packages; an unbumped package is already on the index.
+          skip-existing: true

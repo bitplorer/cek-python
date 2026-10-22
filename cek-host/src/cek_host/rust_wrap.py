@@ -10,17 +10,55 @@ import json
 import os
 import shutil
 import subprocess
+from importlib import metadata
 from pathlib import Path
 from typing import Any
+
+
+def _own_scripts() -> set[Path]:
+    """Console scripts that cek-host installed.
+
+    Every match is read: a source-tree egg-info found first on sys.path has
+    no RECORD, while the installed dist-info does.
+    """
+    scripts: set[Path] = set()
+    for dist in metadata.distributions(name="cek-host"):
+        names = {ep.name for ep in dist.entry_points if ep.group == "console_scripts"}
+        scripts.update(
+            Path(dist.locate_file(f)).resolve()
+            for f in dist.files or ()
+            if Path(f).stem in names and Path(f).parent.name in ("bin", "Scripts")
+        )
+    return scripts
+
+
+def _is_python_cli(path: str, own: set[Path]) -> bool:
+    """True for cek-host's own `cek` script, never the Rust cek-cli.
+
+    The RECORD check covers this environment; the text check covers a
+    cek-host script installed by another environment (pipx, a second venv).
+    A Windows `cek.exe` launcher from another environment is not caught:
+    its script is compressed inside the launcher.
+    """
+    resolved = Path(path).resolve()
+    if resolved in own:
+        return True
+    try:
+        with open(resolved, "rb") as f:
+            return b"cek_host.cli" in f.read(4096)
+    except OSError:
+        return False
 
 
 def find_cek_bin() -> str | None:
     env = os.environ.get("CEK_BIN")
     if env and Path(env).is_file():
         return env
-    which = shutil.which("cek")
-    if which:
-        return which
+    own = _own_scripts()
+    for d in os.environ.get("PATH", os.defpath).split(os.pathsep):
+        which = shutil.which("cek", path=d)
+        if which and not _is_python_cli(which, own):
+            return which
     here = Path(__file__).resolve()
     for root in (here.parents[4] / "cek-runtime", here.parents[3] / "cek-runtime"):
         for kind in ("debug", "release"):

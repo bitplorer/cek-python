@@ -123,7 +123,7 @@ New language Peers: same **contract messages** (`apply` / `perception` / `events
 
 ## Publish (TestPyPI)
 
-**Checklist:** [TESTPYPI_SETUP.md](./TESTPYPI_SETUP.md)
+**Checklist:** [archive/TESTPYPI_SETUP.md](./archive/TESTPYPI_SETUP.md)
 
 GitHub Environments: **`testpypi-host`** (`cek-host`) · **`testpypi-surface`** (`cek-surface`).
 

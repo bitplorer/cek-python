@@ -24,6 +24,7 @@ python3 cek-surface/tests/test_search_stdlib.py
 python3 cek-surface/tests/test_async.py
 python3 cek-surface/tests/test_kernel_peer.py
 python3 cek-surface/tests/test_phase3_wrap.py
+python3 cek-surface/tests/test_cek_bin.py
 python3 cek-surface/tests/test_roadmap.py
 python3 cek-surface/tests/test_carrier_ir.py
 python3 cek-surface/tests/test_host_kernel.py

@@ -12,6 +12,11 @@
     "text": "cek host-json"
    },
    {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek-host"
+   },
+   {
     "kind": "env",
     "resolved": true,
     "text": "CATALOG_PAIRS"

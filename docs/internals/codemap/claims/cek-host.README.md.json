@@ -2,6 +2,21 @@
  "cek-host/README.md": {
   "claims": [
    {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek-host"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "cek-host check --fail              # same CLI as python -m cek_host"
+   },
+   {
     "kind": "import",
     "resolved": true,
     "text": "cek_host:Host"
